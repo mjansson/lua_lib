@@ -1,0 +1,41 @@
+
+import os.path
+
+Import("env")
+
+
+# SOURCES
+
+luasources = [
+
+	'environment.c'
+
+	]
+
+luaheaders = [
+
+	'bind.h', 'environment.h', 'lua.h'
+
+	]
+
+
+# ADD INTERNAL FLAGS
+
+libenv = env.Clone()
+libenv.Append( CPPDEFINES=['LUA_COMPILE=1'] )
+
+
+# OUTPUTS
+
+env['lualib'] = libenv.StaticLibrary( 'lua', luasources )
+
+
+# DEPENDENCIES
+
+#if env['toolset'] == 'gnu':
+#	libenv.Depends( [ os.path.splitext( x )[0] + '.o' for x in luasources ], '#/lua/lua.h.gch' )
+
+
+# INSTALLS
+
+libenv.AddPostAction( 'lua', libenv.Install( '#lib/${platform}${platformsuffix}/${buildprofile}', [ env['lualib'] ] ) )
