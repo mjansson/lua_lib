@@ -218,8 +218,8 @@ Export("env")
 VariantDir( 'build/scons/%s/lua' % env['buildpath'] , 'lua', duplicate=0 )
 SConscript( 'build/scons/%s/lua/SConscript' % env['buildpath']  )
 
-#VariantDir( 'build/scons/%s/test' % env['buildpath'] , 'test', duplicate=0 )
-#SConscript( 'build/scons/%s/test/SConscript' % env['buildpath']  )
+VariantDir( 'build/scons/%s/test' % env['buildpath'] , 'test', duplicate=0 )
+SConscript( 'build/scons/%s/test/SConscript' % env['buildpath']  )
 
 #if not env['profile'] and not env['deploy']:
 

@@ -30,83 +30,65 @@
 
 #pragma once
 
-/*! \file lua.h
-    Lua scripting through customized LuaJIT implementation, for foundation based projects */
+/*! \file environment.h
+    Lua scripting environment */
 
 #include <foundation/platform.h>
-#include <foundation/types.h>
+
+#include "types.h"
 
 
-#if defined( LUA_COMPILE ) && LUA_COMPILE
-#  ifdef __cplusplus
-#  define LUA_EXTERN extern "C"
-#  else
-#  define LUA_EXTERN extern
-#  endif
-#  define LUA_API
-#else
-#  ifdef __cplusplus
-#  define LUA_EXTERN extern "C"
-#  define LUA_API extern "C"
-#  else
-#  define LUA_EXTERN extern
-#  define LUA_API extern
-#  endif
-#endif
+//! Allocate environment
+LUA_API lua_environment_t*               lua_environment_allocate( void );
 
+//! Shutdown and free resources
+LUA_API void                             lua_environment_deallocate( lua_environment_t* env );
 
-struct lua_State;
+//! Bind custom method
+LUA_API lua_result_t                     lua_bind( lua_environment_t* env, const char* method, lua_fn fn );
 
-typedef int (*lua_fn)( struct lua_State* );
+//! Bind custom integer
+LUA_API lua_result_t                     lua_bind_int( lua_environment_t* env, const char* property, int value );
 
-//! Return codes
-typedef enum _lua_result
-{
-	//! Call queued
-	LUA_QUEUED                                       = 1,
-	
-	//! Continue script calls
-	LUA_OK                                           = 0,
+//! Bind custom value
+LUA_API lua_result_t                     lua_bind_value( lua_environment_t* env, const char* property, real value );
 
-	//! Error in script evaluation
-	LUA_ERROR                                        = -1,
-	
-	//! Stop further script evaluation
-	LUA_STOP                                         = -2
-} lua_result_t;
+//! Evaluate code
+LUA_API lua_result_t                     lua_eval( lua_environment_t* env, const char* code );
 
-typedef enum _lua_data
-{
-	LUADATA_PTR    = 0,
-	LUADATA_OBJ,
-	LUADATA_INT,
-	LUADATA_REAL,
-	LUADATA_STR,
-	LUADATA_BOOL,
-	LUADATA_INTARR,
-	LUADATA_REALARR
-} lua_data_t;
+//! Call method
+LUA_API lua_result_t                     lua_call_void( lua_environment_t* env, const char* method );
 
-typedef union _lua_value
-{
-	void*            ptr;
-	object_t         obj;
-	int              ival;
-	real             val;
-	const char*      str;
-	bool             flag;
-	lua_fn           fn;
-} lua_value_t;
+//! Call method
+LUA_API lua_result_t                     lua_call_ptr( lua_environment_t* env, const char* method, void* arg );
 
-#define LUA_MAX_ARGS  8
+//! Call method
+LUA_API lua_result_t                     lua_call_object( lua_environment_t* env, const char* method, object_t arg );
 
-typedef struct _lua_arg
-{
-	int32_t              num;
-	uint8_t              type[LUA_MAX_ARGS];
-	uint16_t             size[LUA_MAX_ARGS];
-	lua_value_t          value[LUA_MAX_ARGS];
-} lua_arg_t;
+//! Call method
+LUA_API lua_result_t                     lua_call_real( lua_environment_t* env, const char* method, real arg );
 
-typedef struct _lua_environment lua_environment_t;
+//! Call method
+LUA_API lua_result_t                     lua_call_int( lua_environment_t* env, const char* method, int arg );
+
+//! Call method
+LUA_API lua_result_t                     lua_call_string( lua_environment_t* env, const char* method, const char* arg );
+
+//! Call method
+LUA_API lua_result_t                     lua_call_bool( lua_environment_t* env, const char* method, bool arg );
+
+//! Call method
+LUA_API lua_result_t                     lua_call_custom( lua_environment_t* env, const char* method, lua_arg_t* arg );
+
+//! Access value
+LUA_API const char*                      lua_get_string( lua_environment_t* env, const char* property );
+
+//! Access value
+LUA_API int                              lua_get_int( lua_environment_t* env, const char* property );
+
+//! Execute queued operations and optionally run gc for specified amount of time
+LUA_API void                             lua_execute( lua_environment_t* env, int gc_time, bool force );
+
+//! Garbage collection, run gc for specified amount of time
+LUA_API void                             lua_timed_gc( lua_environment_t* env, int milliseconds );
 

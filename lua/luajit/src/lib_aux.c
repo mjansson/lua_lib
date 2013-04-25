@@ -302,9 +302,10 @@ static int panic(lua_State *L)
 
 #ifdef LUAJIT_USE_SYSMALLOC
 
-#if LJ_64
+/*#if LJ_64
 #error "Must use builtin allocator for 64 bit target"
-#endif
+#endif*/
+#error "Use custom allocator"
 
 static void *mem_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
@@ -346,9 +347,20 @@ LUALIB_API lua_State *luaL_newstate(void)
 #if LJ_64
 LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
 {
-  UNUSED(f); UNUSED(ud);
+	/* Foundation allocator should meet the needs of luajit
+	UNUSED(f); UNUSED(ud);
   fputs("Must use luaL_newstate() for 64 bit target\n", stderr);
-  return NULL;
+	return NULL;*/
+	lua_State *L;
+	if (!f)
+	{
+		f = lj_alloc_f;
+		ud = lj_alloc_create();
+		if (ud == NULL) return NULL;
+	}
+	L = lj_state_newstate(f, ud);
+	if (L) G(L)->panic = panic;
+	return L;
 }
 #endif
 

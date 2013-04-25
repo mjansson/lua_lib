@@ -1,4 +1,4 @@
-/* environment.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* lua.c  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
  * 
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
@@ -28,7 +28,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "environment.h"
+#include "lua.h"
+#include "hashstrings.h"
 
 #include <foundation/foundation.h>
 
@@ -38,8 +39,10 @@
 
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
+#include "luajit/src/lualib.h"
 LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
-LUA_EXTERN int luaopen_bit( lua_State* L );
+LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(const char*) );
+
 
 typedef enum _lua_command
 {
@@ -57,7 +60,13 @@ static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, l
 static lua_result_t lua_do_eval( lua_environment_t* env, const char* code );
 static lua_result_t lua_do_get( lua_environment_t* env, const char* property );
 
+static void*        lua_lookup_builtin( const char* sym );
+
 #define LUA_CALL_QUEUE_SIZE  1024
+
+
+LUA_EXTERN lua_environment_t*      lua_env_from_state( lua_State* state );
+LUA_EXTERN lua_State*              lua_state_from_env( lua_environment_t* env );
 
 
 typedef struct _lua_op
@@ -119,6 +128,41 @@ static NOINLINE const char* lua_read_eval_string( lua_State* state, void* user_d
 	read->size = 0;
 
 	return read->string;
+}
+
+
+static NOINLINE int lua_bind_foundation( lua_State* state )
+{
+	const char* decl =
+	"local ffi = require(\"ffi\")\n"
+	"ffi.cdef[[\n"
+#if BUILD_ENABLE_DEBUG_LOG
+	"void log_debugf(const char*, ...);\n"
+#endif
+#if BUILD_ENABLE_LOG
+	"void log_infof(const char*, ...);\n"
+#endif
+	"void log_warnf(int, const char*, ...);\n"
+	"void log_errorf(int, int, const char*, ...);\n"
+	"]]\n"
+	"log = {}\n"
+#if BUILD_ENABLE_DEBUG_LOG
+	"function log.debug( message ) ffi.C.log_debugf( \"%s\", message ) end\n"
+#else
+	"function log.debug() end\n"
+#endif
+#if BUILD_ENABLE_LOG
+	"function log.info( message ) ffi.C.log_infof( \"%s\", message ) end\n"
+#else
+	"function log.debug() end\n"
+#endif
+	"function log.warn( message ) ffi.C.log_warnf( 6, \"%s\", message ) end\n" //6 = WARNING_SCRIPT
+	"function log.error( message ) ffi.C.log_errorf( 4, 11, \"%s\", message ) end\n" //4 = ERRORLEVEL_ERROR, 11 = ERROR_SCRIPT
+	"log.debug( \"Bound foundation library to Lua environment\" )\n";
+
+	lua_eval( lua_env_from_state( state ), decl );
+
+	return 0;
 }
 
 
@@ -351,37 +395,62 @@ void* lua_allocator( lua_State* state, void* block, size_t osize, size_t nsize )
 
 int lua_panic( lua_State* state )
 {
+	FOUNDATION_ASSERT_FAILFORMAT( "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
 	log_errorf( ERRORLEVEL_PANIC, ERROR_SCRIPT, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
+	return 0;
+}
+
+
+static int lua_environment_initialize( lua_State* state )
+{
+	int stacksize = lua_gettop( state );
+
+	//Libraries
+	log_debugf( "Loading Lua built-ins" );		
+	luaL_openlibs( state );
+
+	//Foundation bindings
+	lua_bind_foundation( state );
+	
+	lua_pop( state, lua_gettop( state ) - stacksize );
 	return 0;
 }
 
 
 lua_environment_t* lua_environment_allocate( void )
 {
-	lua_environment_t* env = memory_allocate_zero( sizeof( lua_environment_t ), 0, MEMORY_PERSISTENT );
+	lua_environment_t* env = 0;
 
-//#if !FOUNDATION_ARCH_X86_64
-	env->state = lua_newstate( (lua_Alloc)lua_allocator, 0 );
-	lua_atpanic( env->state, lua_panic );
-//#else
-//	env->state = luaL_newstate();
-//#endif
+	//TODO: Add functionality to foundation allocator to be able to meet luajit demands (low 47-bit (?) addresses)
+	lua_State* state = lua_newstate( 0, 0 );
+	if( !state )
+	{
+		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Unable to allocate Lua state" );
+		return 0;
+	}
 
-	//Disable automagic gc
-	lua_gc( env->state, LUA_GCCOLLECT, 0 );
+	lua_atpanic( state, lua_panic );
+
+	lj_clib_set_getsym_builtin( lua_lookup_builtin );
 	
-	lua_pushlightuserdata( env->state, env );
-	lua_setglobal( env->state, "__environment" );
+	//Disable automagic gc
+	lua_gc( state, LUA_GCCOLLECT, 0 );
 
+	env = memory_allocate_zero( sizeof( lua_environment_t ), 0, MEMORY_PERSISTENT );
+	
+	lua_pushlightuserdata( state, env );
+	lua_setglobal( state, "__environment" );
+
+	env->state = state;
 	env->calldepth = 0;
 	env->queue_head = 0;
 	env->queue_tail = 0;
 
 	semaphore_initialize( &env->execution_right, 1 );
 
-	//Libraries
-	luaopen_bit( env->state );
-
+	lua_push_method_global( env->state, "__environment_initialize", lua_environment_initialize );
+	lua_call_void( env, "__environment_initialize" );
+	
 	return env;
 }
 
@@ -1029,4 +1098,20 @@ void lua_timed_gc( lua_environment_t* env, int milliseconds )
 		lua_run_gc( env, milliseconds > 0 ? milliseconds : 0 );
 		lua_release_execution_right( env );
 	}
+}
+
+
+static void* lua_lookup_builtin( const char* sym )
+{
+	hash_t symhash = hash( sym, string_length( sym ) );
+	//TODO: Hashtable lookup or similar
+#if BUILD_ENABLE_DEBUG_LOG
+	if( symhash == HASH_SYM_LOG_DEBUGF )              return (void*)(uintptr_t)log_debugf;
+#endif
+#if BUILD_ENABLE_LOG
+	if( symhash == HASH_SYM_LOG_INFOF )               return (void*)(uintptr_t)log_infof;
+#endif
+	if( symhash == HASH_SYM_LOG_WARNF )               return (void*)(uintptr_t)log_warnf;
+	if( symhash == HASH_SYM_LOG_ERRORF )              return (void*)(uintptr_t)log_errorf;
+	return 0;
 }

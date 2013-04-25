@@ -32,7 +32,7 @@
 #define SYMPREFIX_CF		"luaopen_%s"
 #define SYMPREFIX_BC		"luaJIT_BC_%s"
 
-#if LJ_TARGET_DLOPEN
+#if 0 //LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
 
@@ -65,7 +65,7 @@ static const char *ll_bcsym(void *lib, const char *sym)
   return (const char *)dlsym(lib, sym);
 }
 
-#elif LJ_TARGET_WINDOWS
+#elif 0 //LJ_TARGET_WINDOWS
 
 #define WIN32_LEAN_AND_MEAN
 #ifndef WINVER
@@ -153,6 +153,7 @@ static void ll_unloadlib(void *lib)
   UNUSED(lib);
 }
 
+#if 0
 static void *ll_load(lua_State *L, const char *path, int gl)
 {
   UNUSED(path); UNUSED(gl);
@@ -172,11 +173,12 @@ static const char *ll_bcsym(void *lib, const char *sym)
   UNUSED(lib); UNUSED(sym);
   return NULL;
 }
+#endif
 
 #endif
 
 /* ------------------------------------------------------------------------ */
-
+#if 0
 static void **ll_register(lua_State *L, const char *path)
 {
   void **plib;
@@ -252,6 +254,7 @@ static int lj_cf_package_loadlib(lua_State *L)
     return 3;  /* return nil, error message, and where */
   }
 }
+#endif
 
 static int lj_cf_package_unloadlib(lua_State *L)
 {
@@ -262,7 +265,7 @@ static int lj_cf_package_unloadlib(lua_State *L)
 }
 
 /* ------------------------------------------------------------------------ */
-
+#if 0
 static int readable(const char *filename)
 {
   FILE *f = fopen(filename, "r");  /* try to open file */
@@ -391,6 +394,7 @@ static int lj_cf_package_loader_preload(lua_State *L)
   }
   return 1;
 }
+#endif
 
 /* ------------------------------------------------------------------------ */
 
@@ -530,7 +534,7 @@ static int lj_cf_package_seeall(lua_State *L)
 static void setpath(lua_State *L, const char *fieldname, const char *envname,
 		    const char *def, int noenv)
 {
-#if LJ_TARGET_CONSOLE
+#if 1 //LJ_TARGET_CONSOLE
   const char *path = NULL;
   UNUSED(envname);
 #else
@@ -549,8 +553,8 @@ static void setpath(lua_State *L, const char *fieldname, const char *envname,
 }
 
 static const luaL_Reg package_lib[] = {
-  { "loadlib",	lj_cf_package_loadlib },
-  { "searchpath",  lj_cf_package_searchpath },
+	//{ "loadlib",	lj_cf_package_loadlib },
+	//{ "searchpath",  lj_cf_package_searchpath },
   { "seeall",	lj_cf_package_seeall },
   { NULL, NULL }
 };
@@ -563,10 +567,10 @@ static const luaL_Reg package_global[] = {
 
 static const lua_CFunction package_loaders[] =
 {
-  lj_cf_package_loader_preload,
+	/*lj_cf_package_loader_preload,
   lj_cf_package_loader_lua,
   lj_cf_package_loader_c,
-  lj_cf_package_loader_croot,
+	lj_cf_package_loader_croot,*/
   NULL
 };
 

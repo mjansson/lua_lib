@@ -320,6 +320,13 @@ static const char *clib_extsym(CTState *cts, CType *ct, GCstr *name)
 }
 
 /* Index a C library by name. */
+void* (*lj_clib_getsym_builtin)(const char*) = 0;
+
+void lj_clib_set_getsym_builtin( void* (*fn)(const char*) )
+{
+	lj_clib_getsym_builtin = fn;
+}
+
 TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 {
   TValue *tv = lj_tab_setstr(L, cl->cache, name);
@@ -341,7 +348,9 @@ TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 #if LJ_TARGET_WINDOWS
       DWORD oldwerr = GetLastError();
 #endif
-      void *p = clib_getsym(cl, sym);
+	  void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(sym) : 0;
+      if (LJ_UNLIKELY(!p))
+		  p = clib_getsym(cl, sym);
       GCcdata *cd;
       lua_assert(ctype_isfunc(ct->info) || ctype_isextern(ct->info));
 #if LJ_TARGET_X86 && LJ_ABI_WIN

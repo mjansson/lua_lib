@@ -1,0 +1,5 @@
+
+HASH_SYM_LOG_DEBUGF                     log_debugf
+HASH_SYM_LOG_INFOF                      log_infof
+HASH_SYM_LOG_WARNF                      log_warnf
+HASH_SYM_LOG_ERRORF                     log_errorf

@@ -12,17 +12,17 @@ rm *.a 1>/dev/null 2>/dev/null
 
 ISDKF="-arch armv7 -isysroot $IOSDIR/SDKs/$IOSVER"
 make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS clean
-make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS 
+make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS amalg
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/libluajitA7.a
 
 ISDKF="-arch armv7s -isysroot $IOSDIR/SDKs/$IOSVER"
 make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS clean
-make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS 
+make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS amalg
 mv $LUAJIT/src/libluajit.a $BUILD_DIR/libluajitA7s.a
 
 #ISDKF="-arch armv6 -isysroot $IOSDIR/SDKs/$IOSVER"
 #make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS clean
-#make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS 
+#make -j -C $LUAJIT HOST_CC="gcc -m32 -arch i386" CROSS=$IOSBIN TARGET_FLAGS="$ISDKF" TARGET_SYS=iOS amalg
 #mv $LUAJIT/src/libluajit.a $BUILD_DIR/libluajitA6.a
 
 libtool -o ../../lib/ios/libluajit.a $BUILD_DIR/*.a 2> /dev/null
