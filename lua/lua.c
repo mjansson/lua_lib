@@ -41,7 +41,7 @@
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
 LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
-LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(const char*) );
+LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) );
 
 
 typedef enum _lua_command
@@ -60,7 +60,7 @@ static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, l
 static lua_result_t lua_do_eval( lua_environment_t* env, const char* code );
 static lua_result_t lua_do_get( lua_environment_t* env, const char* property );
 
-static void*        lua_lookup_builtin( const char* sym );
+static void*        lua_lookup_builtin( lua_State* state, const char* sym );
 
 #define LUA_CALL_QUEUE_SIZE  1024
 
@@ -128,6 +128,19 @@ static NOINLINE const char* lua_read_eval_string( lua_State* state, void* user_d
 	read->size = 0;
 
 	return read->string;
+}
+
+
+static NOINLINE void lua_initialize_builtin_lookup( hashmap_t* map )
+{
+#if BUILD_ENABLE_DEBUG_LOG
+	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,         (void*)(uintptr_t)log_debugf );
+#endif
+#if BUILD_ENABLE_LOG
+	hashmap_insert( map, HASH_SYM_LOG_INFOF,          (void*)(uintptr_t)log_infof );
+#endif
+	hashmap_insert( map, HASH_SYM_LOG_WARNF,          (void*)(uintptr_t)log_warnf );
+	hashmap_insert( map, HASH_SYM_LOG_ERRORF,         (void*)(uintptr_t)log_errorf );
 }
 
 
@@ -237,6 +250,9 @@ struct _lua_environment
 
 	//! Execution count
 	unsigned int                      executing_count;
+
+	//! Lookup hashmap
+	hashmap_t*                        lookup_map;
 };
 
 
@@ -401,22 +417,6 @@ int lua_panic( lua_State* state )
 }
 
 
-static int lua_environment_initialize( lua_State* state )
-{
-	int stacksize = lua_gettop( state );
-
-	//Libraries
-	log_debugf( "Loading Lua built-ins" );		
-	luaL_openlibs( state );
-
-	//Foundation bindings
-	lua_bind_foundation( state );
-	
-	lua_pop( state, lua_gettop( state ) - stacksize );
-	return 0;
-}
-
-
 lua_environment_t* lua_environment_allocate( void )
 {
 	lua_environment_t* env = 0;
@@ -445,12 +445,23 @@ lua_environment_t* lua_environment_allocate( void )
 	env->calldepth = 0;
 	env->queue_head = 0;
 	env->queue_tail = 0;
+	env->lookup_map = hashmap_allocate( 0, 0 );
 
 	semaphore_initialize( &env->execution_right, 1 );
 
-	lua_push_method_global( env->state, "__environment_initialize", lua_environment_initialize );
-	lua_call_void( env, "__environment_initialize" );
+	unsigned int stacksize = lua_gettop( state );
+
+	lua_initialize_builtin_lookup( env->lookup_map );
 	
+	//Libraries
+	log_debugf( "Loading Lua built-ins" );
+	luaL_openlibs( state );
+
+	//Foundation bindings
+	lua_bind_foundation( state );
+
+	lua_pop( state, lua_gettop( state ) - stacksize );
+
 	return env;
 }
 
@@ -468,6 +479,8 @@ void lua_environment_deallocate( lua_environment_t* env )
 
 	semaphore_destroy( &env->execution_right );
 
+	hashmap_deallocate( env->lookup_map );
+	
 	memory_deallocate( env );
 }
 
@@ -795,6 +808,14 @@ lua_result_t lua_bind( lua_environment_t* env, const char* method, lua_fn fn )
 }
 
 
+lua_result_t lua_bind_native( lua_environment_t* env, const char* symbol, void* value )
+{
+	hash_t symhash = hash( symbol, string_length( symbol ) );
+	hashmap_insert( env->lookup_map, symhash, value );
+	return LUA_OK;
+}
+
+
 lua_result_t lua_bind_int( lua_environment_t* env, const char* property, int value )
 {
 	if( !lua_acquire_execution_right( env, false ) )
@@ -1101,17 +1122,11 @@ void lua_timed_gc( lua_environment_t* env, int milliseconds )
 }
 
 
-static void* lua_lookup_builtin( const char* sym )
+static void* lua_lookup_builtin( lua_State* state, const char* sym )
 {
 	hash_t symhash = hash( sym, string_length( sym ) );
-	//TODO: Hashtable lookup or similar
-#if BUILD_ENABLE_DEBUG_LOG
-	if( symhash == HASH_SYM_LOG_DEBUGF )              return (void*)(uintptr_t)log_debugf;
-#endif
-#if BUILD_ENABLE_LOG
-	if( symhash == HASH_SYM_LOG_INFOF )               return (void*)(uintptr_t)log_infof;
-#endif
-	if( symhash == HASH_SYM_LOG_WARNF )               return (void*)(uintptr_t)log_warnf;
-	if( symhash == HASH_SYM_LOG_ERRORF )              return (void*)(uintptr_t)log_errorf;
-	return 0;
+	lua_environment_t* env = lua_env_from_state( state );
+	void* fn = hashmap_lookup( env->lookup_map, symhash );
+	//log_debugf( "Built-in lookup: %s -> %p", sym, fn );
+	return fn;
 }

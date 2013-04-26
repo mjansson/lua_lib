@@ -320,9 +320,9 @@ static const char *clib_extsym(CTState *cts, CType *ct, GCstr *name)
 }
 
 /* Index a C library by name. */
-void* (*lj_clib_getsym_builtin)(const char*) = 0;
+void* (*lj_clib_getsym_builtin)(lua_State*, const char*) = 0;
 
-void lj_clib_set_getsym_builtin( void* (*fn)(const char*) )
+void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) )
 {
 	lj_clib_getsym_builtin = fn;
 }
@@ -348,7 +348,7 @@ TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 #if LJ_TARGET_WINDOWS
       DWORD oldwerr = GetLastError();
 #endif
-	  void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(sym) : 0;
+	  void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(L, sym) : 0;
       if (LJ_UNLIKELY(!p))
 		  p = clib_getsym(cl, sym);
       GCcdata *cd;

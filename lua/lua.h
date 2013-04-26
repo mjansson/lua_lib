@@ -53,6 +53,9 @@ LUA_API lua_result_t                     lua_bind_int( lua_environment_t* env, c
 //! Bind custom value
 LUA_API lua_result_t                     lua_bind_value( lua_environment_t* env, const char* property, real value );
 
+//! Bind native method available through FFI
+LUA_API lua_result_t                     lua_bind_native( lua_environment_t* env, const char* symbol, void* value );
+
 //! Evaluate code
 LUA_API lua_result_t                     lua_eval( lua_environment_t* env, const char* code );
 
