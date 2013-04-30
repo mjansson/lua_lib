@@ -55,7 +55,7 @@
 #endif
 
 
-struct lua_State;
+typedef struct lua_State lua_State;
 
 typedef int (*lua_fn)( struct lua_State* );
 

@@ -34,16 +34,20 @@
     Stripped down internal Lua table for binding access */
 
 #include <foundation/platform.h>
+#include <foundation/types.h>
 
 #include "lua.h"
 
 
-#define LUA_NUMBER      double
-#define LUA_INTEGER	    ptrdiff_t
+#define LUA_NUMBER         double
+#define LUA_INTEGER        uintptr_t
 
-typedef LUA_NUMBER      lua_Number;
-typedef LUA_INTEGER     lua_Integer;
+typedef LUA_NUMBER         lua_Number;
+typedef LUA_INTEGER        lua_Integer;
 
+typedef int                (*lua_CFunction) (lua_State *L);
+typedef const char *       (*lua_Reader) (lua_State *L, void *ud, size_t *sz);
+typedef int                (*lua_Writer) (lua_State *L, const void* p, size_t sz, void* ud);
 
 LUA_EXTERN int             (lua_gettop) (lua_State *L);
 LUA_EXTERN void            (lua_settop) (lua_State *L, int idx);

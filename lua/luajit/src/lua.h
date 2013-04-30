@@ -46,8 +46,9 @@
 #define LUA_ERRMEM	4
 #define LUA_ERRERR	5
 
-
+#ifndef LUA_HAS_LUA_STATE_TYPE
 typedef struct lua_State lua_State;
+#endif
 
 typedef int (*lua_CFunction) (lua_State *L);
 

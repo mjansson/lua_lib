@@ -36,6 +36,7 @@
 #include <setjmp.h>
 
 #undef LUA_API
+#define LUA_HAS_LUA_STATE_TYPE
 
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
@@ -62,11 +63,10 @@ static lua_result_t lua_do_get( lua_environment_t* env, const char* property );
 
 static void*        lua_lookup_builtin( lua_State* state, const char* sym );
 
+lua_environment_t* lua_env_from_state( lua_State* state );
+lua_State* lua_state_from_env( lua_environment_t* env );
+
 #define LUA_CALL_QUEUE_SIZE  1024
-
-
-LUA_EXTERN lua_environment_t*      lua_env_from_state( lua_State* state );
-LUA_EXTERN lua_State*              lua_state_from_env( lua_environment_t* env );
 
 
 typedef struct _lua_op
@@ -75,6 +75,13 @@ typedef struct _lua_op
 	const char*           name;
 	lua_arg_t             arg;
 } lua_op_t;
+
+
+typedef struct _lua_readstream
+{
+	stream_t*             stream;
+	char                  chunk[128];
+} lua_readstream_t;
 
 
 typedef struct _lua_readbuffer
@@ -92,12 +99,36 @@ typedef struct _lua_readstring
 } lua_readstring_t;
 
 
-static NOINLINE const char* lua_read_buffer( struct lua_State* state, void* user_data, size_t* size )
+static NOINLINE const char* lua_read_stream( lua_State* state, void* user_data, size_t* size )
+{
+	lua_readstream_t* read = (lua_readstream_t*)user_data;
+
+	if( stream_eos( read->stream ) )
+	{
+		if( *size )
+			*size = 0;
+		return 0;
+	}
+	
+	uint64_t num_read = stream_read( read->stream, read->chunk, 128 );
+
+	if( size )
+		*size = (size_t)num_read;
+
+	return num_read ? read->chunk : 0;
+}
+
+
+static NOINLINE const char* lua_read_chunked_buffer( lua_State* state, void* user_data, size_t* size )
 {	
 	lua_readbuffer_t* read = (lua_readbuffer_t*)user_data;
 
 	if( read->offset >= read->size )
+	{
+		if( *size )
+			*size = 0;
 		return 0;
+	}
 
 	const void* current_chunk = pointer_offset_const( read->buffer, read->offset );
 	unsigned int chunk_size = *(const unsigned int*)current_chunk;
@@ -112,7 +143,29 @@ static NOINLINE const char* lua_read_buffer( struct lua_State* state, void* user
 }
 
 
-static NOINLINE const char* lua_read_eval_string( lua_State* state, void* user_data, size_t* size )
+static NOINLINE const char* lua_read_buffer( lua_State* state, void* user_data, size_t* size )
+{	
+	lua_readbuffer_t* read = (lua_readbuffer_t*)user_data;
+
+	if( read->offset >= read->size )
+	{
+		if( *size )
+			*size = 0;
+		return 0;
+	}
+
+	const void* current_chunk = pointer_offset_const( read->buffer, read->offset );
+	unsigned int chunk_size = read->size - read->offset;
+	
+	read->offset += chunk_size;
+	if( size )
+		*size = (size_t)chunk_size;
+
+	return current_chunk;
+}
+
+
+static NOINLINE const char* lua_read_string( lua_State* state, void* user_data, size_t* size )
 {
 	lua_readstring_t* read = (lua_readstring_t*)user_data;
 
@@ -146,35 +199,30 @@ static NOINLINE void lua_initialize_builtin_lookup( hashmap_t* map )
 
 static NOINLINE int lua_bind_foundation( lua_State* state )
 {
-	const char* decl =
-	"local ffi = require(\"ffi\")\n"
-	"ffi.cdef[[\n"
-#if BUILD_ENABLE_DEBUG_LOG
-	"void log_debugf(const char*, ...);\n"
-#endif
-#if BUILD_ENABLE_LOG
-	"void log_infof(const char*, ...);\n"
-#endif
-	"void log_warnf(int, const char*, ...);\n"
-	"void log_errorf(int, int, const char*, ...);\n"
-	"]]\n"
-	"log = {}\n"
-#if BUILD_ENABLE_DEBUG_LOG
-	"function log.debug( message ) ffi.C.log_debugf( \"%s\", message ) end\n"
-#else
-	"function log.debug() end\n"
-#endif
-#if BUILD_ENABLE_LOG
-	"function log.info( message ) ffi.C.log_infof( \"%s\", message ) end\n"
-#else
-	"function log.debug() end\n"
-#endif
-	"function log.warn( message ) ffi.C.log_warnf( 6, \"%s\", message ) end\n" //6 = WARNING_SCRIPT
-	"function log.error( message ) ffi.C.log_errorf( 4, 11, \"%s\", message ) end\n" //4 = ERRORLEVEL_ERROR, 11 = ERROR_SCRIPT
-	"log.debug( \"Bound foundation library to Lua environment\" )\n";
+	static unsigned char bytecode[] = {
+		#include "bind.foundation.hex"
+	};
 
-	lua_eval( lua_env_from_state( state ), decl );
+	lua_readbuffer_t read_buffer = {
+		.buffer = bytecode,
+		.size   = sizeof( bytecode ),
+		.offset = 0
+	};
 
+	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
+	{
+		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
+		lua_pop( state, 1 );
+		return 0;
+	}
+
+	if( lua_pcall( state, 0, 0, 0 ) != 0 )
+	{
+		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
+		lua_pop( state, 1 );
+		return 0;
+	}
+	
 	return 0;
 }
 
@@ -485,16 +533,6 @@ void lua_environment_deallocate( lua_environment_t* env )
 }
 
 
-lua_environment_t* lua_env_from_state( lua_State* state )
-{
-	void* env;
-	lua_getglobal( state, "__environment" );
-	env = lua_touserdata( state, -1 );
-	lua_pop( state, 1 );
-	return env;
-}
-
-
 lua_result_t lua_call_custom( lua_environment_t* env, const char* method, lua_arg_t* arg )
 {
 	if( !lua_acquire_execution_right( env, false ) )
@@ -771,7 +809,7 @@ static lua_result_t lua_do_eval( lua_environment_t* env, const char* code )
 		.size   = string_length( code )
 	};
 
-	if( lua_load( state, lua_read_eval_string, &read_string, "=eval" ) != 0 )
+	if( lua_load( state, lua_read_string, &read_string, "=eval" ) != 0 )
 	{
 		log_debugf( "Script error: Lua eval() failed on load: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
@@ -1130,3 +1168,20 @@ static void* lua_lookup_builtin( lua_State* state, const char* sym )
 	//log_debugf( "Built-in lookup: %s -> %p", sym, fn );
 	return fn;
 }
+
+
+lua_environment_t* lua_env_from_state( lua_State* state )
+{
+	void* env;
+	lua_getglobal( state, "__environment" );
+	env = lua_touserdata( state, -1 );
+	lua_pop( state, 1 );
+	return env;
+}
+
+
+lua_State* lua_state_from_env( lua_environment_t* env )
+{
+	return env->state;
+}
+
