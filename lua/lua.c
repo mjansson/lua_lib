@@ -184,16 +184,37 @@ static NOINLINE const char* lua_read_string( lua_State* state, void* user_data, 
 }
 
 
+static void _log_debugf_disabled( const char* format, ... ) {}
+static void _error_context_push_disabled( const char* name, const char* data ) {}
+static void _error_context_pop_disabled() {} 
+
 static NOINLINE void lua_initialize_builtin_lookup( hashmap_t* map )
 {
 #if BUILD_ENABLE_DEBUG_LOG
-	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,         (void*)(uintptr_t)log_debugf );
+	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,             (void*)(uintptr_t)log_debugf );
+#else
+	hashmap_insert( map, HASH_SYM_LOG_DEBUG,              (void*)(uintptr_t)_log_debugf_disabled );
 #endif
 #if BUILD_ENABLE_LOG
-	hashmap_insert( map, HASH_SYM_LOG_INFOF,          (void*)(uintptr_t)log_infof );
+	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)log_infof );
+#else
+	hashmap_insert( map, HASH_SYM_LOG_DEBUG,              (void*)(uintptr_t)_log_debugf_disabled );
 #endif
-	hashmap_insert( map, HASH_SYM_LOG_WARNF,          (void*)(uintptr_t)log_warnf );
-	hashmap_insert( map, HASH_SYM_LOG_ERRORF,         (void*)(uintptr_t)log_errorf );
+	hashmap_insert( map, HASH_SYM_LOG_WARNF,              (void*)(uintptr_t)log_warnf );
+	hashmap_insert( map, HASH_SYM_LOG_ERRORF,             (void*)(uintptr_t)log_errorf );
+	hashmap_insert( map, HASH_SYM_LOG_STDOUT,             (void*)(uintptr_t)log_stdout );
+	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,      (void*)(uintptr_t)log_enable_prefix );
+	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,           (void*)(uintptr_t)log_suppress );
+
+	hashmap_insert( map, HASH_SYM_ERROR,                  (void*)(uintptr_t)error );
+	hashmap_insert( map, HASH_SYM_ERROR_REPORT,           (void*)(uintptr_t)error_report );
+#if BUILD_ENABLE_ERROR_CONTEXT
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,     (void*)(uintptr_t)_error_context_push );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop );
+#else
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,     (void*)(uintptr_t)_error_context_push_disabled );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop_disabled );
+#endif
 }
 
 

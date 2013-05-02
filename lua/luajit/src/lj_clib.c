@@ -19,7 +19,7 @@
 
 /* -- OS-specific functions ----------------------------------------------- */
 
-#if LJ_TARGET_DLOPEN
+#if 0 //LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
 #include <stdio.h>
@@ -141,7 +141,7 @@ static void *clib_getsym(CLibrary *cl, const char *name)
   return p;
 }
 
-#elif LJ_TARGET_WINDOWS
+#elif 0 //LJ_TARGET_WINDOWS
 
 #define WIN32_LEAN_AND_MEAN
 #ifndef WINVER
@@ -266,12 +266,12 @@ static void *clib_getsym(CLibrary *cl, const char *name)
 LJ_NORET LJ_NOINLINE static void clib_error(lua_State *L, const char *fmt,
 					    const char *name)
 {
-  lj_err_callermsg(L, lj_str_pushf(L, fmt, name, "no support for this OS"));
+  lj_err_callermsg(L, lj_str_pushf(L, fmt, name, "no support for dynamic libraries"));
 }
 
 static void *clib_loadlib(lua_State *L, const char *name, int global)
 {
-  lj_err_callermsg(L, "no support for loading dynamic libraries for this OS");
+  lj_err_callermsg(L, "no support for loading dynamic libraries");
   UNUSED(name); UNUSED(global);
   return NULL;
 }

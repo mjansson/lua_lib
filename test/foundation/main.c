@@ -35,10 +35,20 @@ DECLARE_TEST( foundation, log )
 	lua_environment_t* env = lua_environment_allocate();
 
 	const char* testcode =
+	"local foundation = require(\"foundation\")\n"
+	"local log = foundation.log\n"
+	"local error = foundation.error\n"
+	"log.suppress( error.LEVEL_NONE )\n"
 	"log.debug( \"Testing log debug output\" )\n"
 	"log.info( \"Testing log info output\" )\n"
 	"log.warn( \"Testing log warning output\" )\n"
-	"log.error( \"Testing log error output\" )\n";
+	"log.enable_prefix( false )\n"
+	"log.error( \"Testing log error output without prefix\" )\n"
+	"log.stdout( false )\n"
+	"log.debug( \"Invisible on stdout\" )\n"
+	"log.stdout( true )\n"
+	"log.enable_prefix( true )\n"
+	"log.suppress( error.LEVEL_INFO )\n";
 	
 	lua_eval( env, testcode );
 
