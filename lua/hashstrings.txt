@@ -11,3 +11,13 @@ HASH_SYM_ERROR                          error
 HASH_SYM_ERROR_REPORT                   error_report
 HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
 HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
+
+HASH_SYM_ENVIRONMENT_COMMAND_LINE                   environment_command_line
+HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME                environment_executable_name
+HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY           environment_executable_directory
+HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY      environment_initial_working_directory
+HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY      environment_current_working_directory
+HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY  environment_set_current_working_directory
+HASH_SYM_ENVIRONMENT_HOME_DIRECTORY                 environment_home_directory
+HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY            environment_temporary_directory
+HASH_SYM_ENVIRONMENT_ENVIRONMENT_VARIABLE           environment_variable

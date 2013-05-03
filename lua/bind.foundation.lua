@@ -16,12 +16,31 @@ int   error_report( int, int );
 void  error_context_push( const char*, const char* );
 void  error_context_pop( void );
 
+const char* const*     environment_command_line( void );
+const char*            environment_executable_name( void );
+const char*            environment_executable_directory( void );
+const char*            environment_initial_working_directory( void );
+const char*            environment_current_working_directory( void );
+void                   environment_set_current_working_directory( const char* );
+const char*            environment_home_directory( void );
+const char*            environment_temporary_directory( void );
+const char*            environment_variable( const char* );
+
 ]]
 
 local function log_debug( message ) ffi.C.log_debugf( "%s", message ) end
 local function log_info( message ) ffi.C.log_infof( "%s", message ) end
 local function log_warn( message ) ffi.C.log_warnf( 6, "%s", message ) end -- 6 = WARNING_SCRIPT
 local function log_error( message ) ffi.C.log_errorf( 4, 11, "%s", message ) end -- 4 = ERRORLEVEL_ERROR, 11 = ERROR_SCRIPT
+
+local function string_array_to_table( arr )
+
+end
+
+local function environment_command_line()
+      local arr = ffi.C.environment_command_line()
+      return string_array_to_table( arr )
+end
 
 
 module("foundation")
@@ -72,3 +91,16 @@ error.WARNING_SCRIPT = 6
 error.WARNING_SYSTEM_CALL_FAIL = 7
 error.WARNING_DEADLOCK = 8
 
+string = {}
+string.array_to_table = string_array_to_table
+
+environment = {}
+environment.command_line = environment_command_line
+environment.executable_name = ffi.C.environment_executable_name
+environment.executable_directory = ffi.C.environment_executable_directory
+environment.initial_working_directory = ffi.C.environment_initial_working_directory
+environment.current_working_directory = ffi.C.environment_current_working_directory
+environment.set_current_working_directory = ffi.C.environment_set_current_working_directory
+environment.home_directory = ffi.C.environment_home_directory
+environment.temporary_directory = ffi.C.environment_temporary_directory
+environment.variable = ffi.C.environment_variable

@@ -1,17 +1,31 @@
-/* main.c  -  Lua foundation tests  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Foundation bind test for lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+ * 
+ * This library provides a fork of the LuaJIT library with custom modifications for projects
+ * based on our foundation library.
+ * 
+ * The latest source code maintained by Rampant Pixels is always available at
+ * https://github.com/rampantpixels/lua_lib
+ * 
+ * For more information about LuaJIT, see
+ * http://luajit.org/
  *
- * This library provides a cross-platform vector math library in C11 providing basic support data types and
- * functions to write applications and games in a platform-independent fashion. The latest source code is
- * always available at
- *
- * https://github.com/rampantpixels/vector_lib
- *
- * This library is built on top of the foundation library available at
- *
- * https://github.com/rampantpixels/foundation_lib
- *
- * This library is put in the public domain; you can redistribute it and/or modify it without any restrictions.
- *
+ * The MIT License (MIT)
+ * Copyright (c) 2013 Rampant Pixels AB
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <lua/lua.h>
@@ -34,6 +48,8 @@ DECLARE_TEST( foundation, log )
 {
 	lua_environment_t* env = lua_environment_allocate();
 
+	log_suppress( ERRORLEVEL_NONE );
+	
 	const char* testcode =
 	"local foundation = require(\"foundation\")\n"
 	"local log = foundation.log\n"
@@ -48,12 +64,44 @@ DECLARE_TEST( foundation, log )
 	"log.debug( \"Invisible on stdout\" )\n"
 	"log.stdout( true )\n"
 	"log.enable_prefix( true )\n"
-	"log.suppress( error.LEVEL_INFO )\n";
+	;//"log.suppress( error.LEVEL_INFO )\n";
 	
-	lua_eval( env, testcode );
+	EXPECT_EQ( lua_eval( env, testcode ), LUA_OK );
 
+	EXPECT_EQ( error(), ERROR_SCRIPT );
+	
 	lua_environment_deallocate( env );
 	
+	return 0;
+}
+
+
+DECLARE_TEST( foundation, environment )
+{
+	lua_environment_t* env = lua_environment_allocate();
+
+	log_suppress( ERRORLEVEL_NONE );
+	log_infof( "Running environment lua tests" );
+	
+	const char* testcode =
+	"local foundation = require(\"foundation\")\n"
+	"local log = foundation.log\n"
+	"local error = foundation.error\n"
+	"local env = foundation.environment\n"
+	"log.suppress( error.LEVEL_DEBUG )\n"
+	"log.enable_prefix( false )\n"
+	"log.info( \"Executable name: \" .. env.executable_name() )\n"
+	"log.enable_prefix( true )\n"
+	;//"log.suppress( error.LEVEL_INFO )\n";
+
+	lua_eval( env, testcode );
+
+	log_suppress( ERRORLEVEL_NONE );
+	log_infof( "Done running environment lua tests" );
+	//log_suppress( ERRORLEVEL_INFO );
+	
+	lua_environment_deallocate( env );
+
 	return 0;
 }
 
@@ -61,5 +109,6 @@ DECLARE_TEST( foundation, log )
 void test_declare( void )
 {
 	ADD_TEST( foundation, log );
+	ADD_TEST( foundation, environment );
 }
 
