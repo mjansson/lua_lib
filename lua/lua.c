@@ -65,7 +65,11 @@ typedef enum _lua_command
 typedef struct _lua_op
 {
 	lua_command_t         cmd;
-	const char*           name;
+	union 
+	{
+		const char*       name;
+		void*             ptr;
+	} data;
 	lua_arg_t             arg;
 } lua_op_t;
 
@@ -103,7 +107,8 @@ struct _lua
 
 static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_t* arg );
 static lua_result_t lua_do_bind( lua_t* env, const char* property, lua_command_t cmd, lua_value_t val );
-static lua_result_t lua_do_eval( lua_t* env, const char* code );
+static lua_result_t lua_do_eval_string( lua_t* env, const char* code );
+static lua_result_t lua_do_eval_stream( lua_t* env, stream_t* stream );
 static lua_result_t lua_do_get( lua_t* env, const char* property );
 
 static void*        lua_lookup_builtin( lua_State* state, const char* sym );
@@ -166,7 +171,7 @@ static void lua_push_op( lua_t* env, lua_op_t* op )
 	} while( !atomic_cas32( (volatile int*)&env->queue_tail, ofs, old ) );
 
 	//Got slot, copy except command
-	memcpy( &env->queue[ofs].name, &op->name, sizeof( char* ) + sizeof( lua_arg_t ) );
+	memcpy( &env->queue[ofs].data, &op->data, sizeof( op->data ) + sizeof( lua_arg_t ) );
 	//Now set command, completing insert
 	env->queue[ofs].cmd = op->cmd;
 }
@@ -184,22 +189,19 @@ static void lua_execute_pending( lua_t* env )
 		{
 			case LUACMD_LOAD:
 			{
-				/*if( !env->queue[head].arg.arg[2].flag )
-					_script_do_load_once( env, env->queue[head].arg.arg[0].id, &env->queue[head].arg.arg[1].obj );
-				else
-				_script_do_load( env, env->queue[head].arg.arg[0].id, &env->queue[head].arg.arg[1].obj );*/
+				lua_do_eval_stream( env, env->queue[head].data.ptr );
 				break;
 			}
 
 			case LUACMD_EVAL:
 			{
-				lua_do_eval( env, env->queue[head].name );
+				lua_do_eval_string( env, env->queue[head].data.name );
 				break;
 			}
 			
 			case LUACMD_CALL:
 			{
-				lua_do_call_custom( env, env->queue[head].name, &env->queue[head].arg );
+				lua_do_call_custom( env, env->queue[head].data.name, &env->queue[head].arg );
 				break;				
 			}
 			
@@ -207,7 +209,7 @@ static void lua_execute_pending( lua_t* env )
 			case LUACMD_BIND_INT:
 			case LUACMD_BIND_VAL:
 			{
-				lua_do_bind( env, env->queue[head].name, env->queue[head].cmd, env->queue[head].arg.value[0] );
+				lua_do_bind( env, env->queue[head].data.name, env->queue[head].cmd, env->queue[head].arg.value[0] );
 				break;
 			}
 
@@ -342,7 +344,7 @@ lua_result_t lua_call_custom( lua_t* env, const char* method, lua_arg_t* arg )
 	{
 		lua_op_t op;
 		op.cmd = LUACMD_CALL;
-		op.name = method;
+		op.data.name = method;
 		if( arg )
 			op.arg = *arg;
 		else
@@ -350,8 +352,8 @@ lua_result_t lua_call_custom( lua_t* env, const char* method, lua_arg_t* arg )
 		lua_push_op( env, &op );
 		return LUA_QUEUED;
 	}
-	lua_result_t res = lua_do_call_custom( env, method, arg );
 	lua_execute_pending( env );
+	lua_result_t res = lua_do_call_custom( env, method, arg );
 	lua_release_execution_right( env );
 	return res;
 }
@@ -581,24 +583,41 @@ lua_result_t lua_call_ptr( lua_t* env, const char* method, void* ptr )
 }
 
 
-lua_result_t lua_eval( lua_t* env, const char* code )
+lua_result_t lua_eval_string( lua_t* env, const char* code )
 {
-	if( !lua_acquire_execution_right( env, false ) )
+	if( !lua_acquire_execution_right( env, true ) )
 	{
 		lua_op_t op;
 		op.cmd = LUACMD_EVAL;
-		op.name = code;
+		op.data.name = code;
 		lua_push_op( env, &op );
 		return LUA_QUEUED;
 	}
-	lua_result_t res = lua_do_eval( env, code );
 	lua_execute_pending( env );
+	lua_result_t res = lua_do_eval_string( env, code );
 	lua_release_execution_right( env );
 	return res;
 }
 
 
-static lua_result_t lua_do_eval( lua_t* env, const char* code )
+lua_result_t lua_eval_stream( lua_t* env, stream_t* stream )
+{
+	if( !lua_acquire_execution_right( env, true ) )
+	{
+		lua_op_t op;
+		op.cmd = LUACMD_LOAD;
+		op.data.ptr = stream;
+		lua_push_op( env, &op );
+		return LUA_QUEUED;
+	}
+	lua_execute_pending( env );
+	lua_result_t res = lua_do_eval_stream( env, stream );
+	lua_release_execution_right( env );
+	return res;
+}
+
+
+static lua_result_t lua_do_eval_string( lua_t* env, const char* code )
 {
 	lua_State* state;
 
@@ -614,14 +633,45 @@ static lua_result_t lua_do_eval( lua_t* env, const char* code )
 
 	if( lua_load( state, lua_read_string, &read_string, "=eval" ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Lua eval() failed on load: %s", lua_tostring( state, -1 ) );
+		log_warnf( WARNING_SCRIPT, "Lua eval string failed on load: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Lua eval() failed on pcall: %s", lua_tostring( state, -1 ) );
+		log_warnf( WARNING_SCRIPT, "Lua eval string failed on pcall: %s", lua_tostring( state, -1 ) );
+		lua_pop( state, 1 );
+		return LUA_ERROR;
+	}
+
+	return LUA_OK;
+}
+
+
+static lua_result_t lua_do_eval_stream( lua_t* env, stream_t* stream )
+{
+	lua_State* state;
+
+	if( !env || !stream )
+		return LUA_ERROR;
+
+	state = env->state;
+
+	lua_readstream_t read_stream = {
+		.stream = stream
+	};
+
+	if( lua_load( state, lua_read_stream, &read_stream, "=eval" ) != 0 )
+	{
+		log_warnf( WARNING_SCRIPT, "Lua eval stream failed on load: %s", lua_tostring( state, -1 ) );
+		lua_pop( state, 1 );
+		return LUA_ERROR;
+	}
+
+	if( lua_pcall( state, 0, 0, 0 ) != 0 )
+	{
+		log_warnf( WARNING_SCRIPT, "Lua eval stream failed on pcall: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
@@ -636,7 +686,7 @@ lua_result_t lua_bind( lua_t* env, const char* method, lua_fn fn )
 	{
 		lua_op_t op;
 		op.cmd = LUACMD_BIND;
-		op.name = method;
+		op.data.name = method;
 		op.arg.value[0].fn = fn;
 		lua_push_op( env, &op );
 		return LUA_QUEUED;
@@ -663,7 +713,7 @@ lua_result_t lua_bind_int( lua_t* env, const char* property, int value )
 	{
 		lua_op_t op;
 		op.cmd = LUACMD_BIND_INT;
-		op.name = property;
+		op.data.name = property;
 		op.arg.value[0].ival = value;
 		lua_push_op( env, &op );
 		return LUA_QUEUED;
@@ -682,7 +732,7 @@ lua_result_t lua_bind_value( lua_t* env, const char* property, real value )
 	{
 		lua_op_t op;
 		op.cmd = LUACMD_BIND_VAL;
-		op.name = property;
+		op.data.name = property;
 		op.arg.value[0].val = value;
 		lua_push_op( env, &op );
 		return LUA_QUEUED;

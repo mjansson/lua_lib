@@ -69,8 +69,11 @@ LUA_API lua_result_t                     lua_bind_value( lua_t* env, const char*
 LUA_API lua_result_t                     lua_bind_native( lua_t* env, const char* symbol, void* value );
 
 
-//! Evaluate code
-LUA_API lua_result_t                     lua_eval( lua_t* env, const char* code );
+//! Load code from string
+LUA_API lua_result_t                     lua_eval_string( lua_t* env, const char* code );
+
+//! Load code from stream
+LUA_API lua_result_t                     lua_eval_stream( lua_t* env, stream_t* stream );
 
 
 //! Call method

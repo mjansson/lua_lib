@@ -66,7 +66,7 @@ DECLARE_TEST( foundation, log )
 	"log.enable_prefix( true )\n"
 	"log.suppress( error.LEVEL_INFO )\n";
 	
-	EXPECT_EQ( lua_eval( env, testcode ), LUA_OK );
+	EXPECT_EQ( lua_eval_string( env, testcode ), LUA_OK );
 
 	EXPECT_EQ( error(), ERROR_SCRIPT );
 	
@@ -95,7 +95,7 @@ DECLARE_TEST( foundation, environment )
 	"log.enable_prefix( true )\n"
 	"log.suppress( error.LEVEL_INFO )\n";
 
-	lua_eval( env, testcode );
+	EXPECT_EQ( lua_eval_string( env, testcode ), LUA_OK );
 
 	log_suppress( ERRORLEVEL_NONE );
 	log_infof( "Done running environment lua tests" );
