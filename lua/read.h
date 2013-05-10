@@ -1,4 +1,4 @@
-/* bind.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* read.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
  * 
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
@@ -30,29 +30,16 @@
 
 #pragma once
 
-/*! \file bind.h
-    Utility macros and functions for interacting with Lua state */
+/*! \file read.h
+    Callbacks for reading lua code */
 
 #include <foundation/platform.h>
 
 #include "types.h"
 
-#include "luajit.h"
 
-#define LUABIND_GET_CSTR(x)     (lua_tostring( state, (x) ))
-#define LUABIND_GET_INT(x)      ((int)lua_tointeger( state, (x) ))
-#define LUABIND_GET_UINT(x)     ((unsigned int)lua_tonumber( state, (x) ))
-#define LUABIND_GET_REAL(x)     ((real)lua_tonumber( state, (x) ))
-#define LUABIND_GET_BOOL(x)     (lua_toboolean( state, (x) ))
-#define LUABIND_GET_OBJECT(x)   (lua_toobject( state, (x) ))
-#define LUABIND_GET_DATA(t,x)   ((t*)lua_touserdata( state, (x) ))
-
-#define LUABIND_PUT_NIL()       (lua_pushnil( state ))
-#define LUABIND_PUT_CSTR(x)     (lua_pushstring( state, (x) ))
-#define LUABIND_PUT_INT(x)      (lua_pushinteger( state, (x) ))
-#define LUABIND_PUT_UINT(x)     (lua_pushinteger( state, (x) ))
-#define LUABIND_PUT_REAL(x)     (lua_pushnumber( state, (x) ))
-#define LUABIND_PUT_BOOL(x)     (lua_pushboolean( state, (x) ))
-#define LUABIND_PUT_OBJECT(x)   (lua_pushobject( state, (uint64_t)(x) ))
-#define LUABIND_PUT_DATA(x)     (lua_pushlightuserdata( state, (x) ))
+LUA_API const char* lua_read_stream( lua_State* state, void* user_data, size_t* size );
+LUA_API const char* lua_read_chunked_buffer( lua_State* state, void* user_data, size_t* size );
+LUA_API const char* lua_read_buffer( lua_State* state, void* user_data, size_t* size );
+LUA_API const char* lua_read_string( lua_State* state, void* user_data, size_t* size );
 

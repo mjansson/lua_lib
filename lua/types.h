@@ -108,5 +108,26 @@ typedef struct _lua_arg
 	lua_value_t          value[LUA_MAX_ARGS];
 } lua_arg_t;
 
-typedef struct _lua_environment lua_environment_t;
+
+typedef struct _lua_readstream
+{
+	stream_t*             stream;
+	char                  chunk[512];
+} lua_readstream_t;
+
+typedef struct _lua_readbuffer
+{
+	const void*           buffer;
+	unsigned int          size;
+	unsigned int          offset;
+} lua_readbuffer_t;
+
+typedef struct _lua_readstring
+{
+	const char*           string;
+	unsigned int          size;
+} lua_readstring_t;
+
+
+typedef struct _lua lua_t;
 

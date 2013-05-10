@@ -30,6 +30,8 @@
 
 #include "lua.h"
 #include "hashstrings.h"
+#include "foundation.h"
+#include "read.h"
 
 #include <foundation/foundation.h>
 
@@ -56,15 +58,6 @@ typedef enum _lua_command
 	LUACMD_BIND_VAL
 } lua_command_t;
 
-static lua_result_t lua_do_call_custom( lua_environment_t* env, const char* method, lua_arg_t* arg );
-static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, lua_command_t cmd, lua_value_t val );
-static lua_result_t lua_do_eval( lua_environment_t* env, const char* code );
-static lua_result_t lua_do_get( lua_environment_t* env, const char* property );
-
-static void*        lua_lookup_builtin( lua_State* state, const char* sym );
-
-lua_environment_t* lua_env_from_state( lua_State* state );
-lua_State* lua_state_from_env( lua_environment_t* env );
 
 #define LUA_CALL_QUEUE_SIZE  1024
 
@@ -77,234 +70,7 @@ typedef struct _lua_op
 } lua_op_t;
 
 
-typedef struct _lua_readstream
-{
-	stream_t*             stream;
-	char                  chunk[128];
-} lua_readstream_t;
-
-
-typedef struct _lua_readbuffer
-{
-	const void*           buffer;
-	unsigned int          size;
-	unsigned int          offset;
-} lua_readbuffer_t;
-
-
-typedef struct _lua_readstring
-{
-	const char*           string;
-	unsigned int          size;
-} lua_readstring_t;
-
-
-static NOINLINE const char* lua_read_stream( lua_State* state, void* user_data, size_t* size )
-{
-	lua_readstream_t* read = (lua_readstream_t*)user_data;
-
-	if( stream_eos( read->stream ) )
-	{
-		if( *size )
-			*size = 0;
-		return 0;
-	}
-	
-	uint64_t num_read = stream_read( read->stream, read->chunk, 128 );
-
-	if( size )
-		*size = (size_t)num_read;
-
-	return num_read ? read->chunk : 0;
-}
-
-
-static NOINLINE const char* lua_read_chunked_buffer( lua_State* state, void* user_data, size_t* size )
-{	
-	lua_readbuffer_t* read = (lua_readbuffer_t*)user_data;
-
-	if( read->offset >= read->size )
-	{
-		if( *size )
-			*size = 0;
-		return 0;
-	}
-
-	const void* current_chunk = pointer_offset_const( read->buffer, read->offset );
-	unsigned int chunk_size = *(const unsigned int*)current_chunk;
-	
-	read->offset += chunk_size + sizeof( unsigned int );
-	if( size )
-		*size = (size_t)chunk_size;
-
-	//log_debugf( "Read Lua chunk:\n%s", pointer_offset_const( current_chunk, sizeof( unsigned int ) ) );
-
-	return pointer_offset_const( current_chunk, sizeof( unsigned int ) );
-}
-
-
-static NOINLINE const char* lua_read_buffer( lua_State* state, void* user_data, size_t* size )
-{	
-	lua_readbuffer_t* read = (lua_readbuffer_t*)user_data;
-
-	if( read->offset >= read->size )
-	{
-		if( *size )
-			*size = 0;
-		return 0;
-	}
-
-	const void* current_chunk = pointer_offset_const( read->buffer, read->offset );
-	unsigned int chunk_size = read->size - read->offset;
-	
-	read->offset += chunk_size;
-	if( size )
-		*size = (size_t)chunk_size;
-
-	return current_chunk;
-}
-
-
-static NOINLINE const char* lua_read_string( lua_State* state, void* user_data, size_t* size )
-{
-	lua_readstring_t* read = (lua_readstring_t*)user_data;
-
-	if( !read->size )
-	{
-		if( size )
-			*size = 0;
-		return 0;
-	}
-
-	if( size )
-		*size = read->size;
-	read->size = 0;
-
-	return read->string;
-}
-
-
-static void _log_debugf_disabled( const char* format, ... ) {}
-static void _error_context_push_disabled( const char* name, const char* data ) {}
-static void _error_context_pop_disabled() {} 
-
-static NOINLINE void lua_initialize_builtin_lookup( hashmap_t* map )
-{
-#if BUILD_ENABLE_DEBUG_LOG
-	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,             (void*)(uintptr_t)log_debugf );
-#else
-	hashmap_insert( map, HASH_SYM_LOG_DEBUG,              (void*)(uintptr_t)_log_debugf_disabled );
-#endif
-#if BUILD_ENABLE_LOG
-	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)log_infof );
-#else
-	hashmap_insert( map, HASH_SYM_LOG_DEBUG,              (void*)(uintptr_t)_log_debugf_disabled );
-#endif
-	hashmap_insert( map, HASH_SYM_LOG_WARNF,              (void*)(uintptr_t)log_warnf );
-	hashmap_insert( map, HASH_SYM_LOG_ERRORF,             (void*)(uintptr_t)log_errorf );
-	hashmap_insert( map, HASH_SYM_LOG_STDOUT,             (void*)(uintptr_t)log_stdout );
-	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,      (void*)(uintptr_t)log_enable_prefix );
-	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,           (void*)(uintptr_t)log_suppress );
-
-	hashmap_insert( map, HASH_SYM_ERROR,                  (void*)(uintptr_t)error );
-	hashmap_insert( map, HASH_SYM_ERROR_REPORT,           (void*)(uintptr_t)error_report );
-#if BUILD_ENABLE_ERROR_CONTEXT
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,     (void*)(uintptr_t)_error_context_push );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop );
-#else
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,     (void*)(uintptr_t)_error_context_push_disabled );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop_disabled );
-#endif
-
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_COMMAND_LINE,                   (void*)(uintptr_t)environment_command_line );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME,                (void*)(uintptr_t)environment_executable_name );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY,           (void*)(uintptr_t)environment_executable_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY,      (void*)(uintptr_t)environment_initial_working_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY,      (void*)(uintptr_t)environment_current_working_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY,  (void*)(uintptr_t)environment_set_current_working_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_HOME_DIRECTORY,                 (void*)(uintptr_t)environment_home_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY,            (void*)(uintptr_t)environment_temporary_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_ENVIRONMENT_VARIABLE,           (void*)(uintptr_t)environment_variable );
-}
-
-
-static NOINLINE int lua_bind_foundation( lua_State* state )
-{
-	static unsigned char bytecode[] = {
-		#include "bind.foundation.hex"
-	};
-
-	lua_readbuffer_t read_buffer = {
-		.buffer = bytecode,
-		.size   = sizeof( bytecode ),
-		.offset = 0
-	};
-
-	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
-	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
-		lua_pop( state, 1 );
-		return 0;
-	}
-
-	if( lua_pcall( state, 0, 0, 0 ) != 0 )
-	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
-		lua_pop( state, 1 );
-		return 0;
-	}
-	
-	return 0;
-}
-
-
-static NOINLINE void lua_push_integer( lua_State* state, const char* name, int value )
-{
-	lua_pushstring( state, name );
-	lua_pushinteger( state, value );
-	lua_settable( state, -3 );
-}
-
-
-static NOINLINE void lua_push_integer_global( lua_State* state, const char* name, int value )
-{
-	lua_pushinteger( state, value );
-	lua_setglobal( state, name );
-}
-
-
-static NOINLINE void lua_push_number( lua_State* state, const char* name, real value )
-{
-	lua_pushstring( state, name );
-	lua_pushnumber( state, value );
-	lua_settable( state, -3 );
-}
-
-
-static NOINLINE void lua_push_number_global( lua_State* state, const char* name, real value )
-{
-	lua_pushnumber( state, value );
-	lua_setglobal( state, name );
-}
-
-
-static NOINLINE void lua_push_method( lua_State* state, const char* name, lua_CFunction fn )
-{
-	lua_pushstring( state, name );
-	lua_pushcclosure( state, fn, 0 );
-	lua_settable( state, -3 );
-}
-
-
-static NOINLINE void lua_push_method_global( lua_State* state, const char* name, lua_CFunction fn )
-{
-	lua_pushcclosure( state, fn, 0 );
-	lua_setglobal( state, name );
-}
-
-
-
-struct _lua_environment
+struct _lua
 {
 	//! Lua state
 	lua_State*                        state;
@@ -335,13 +101,21 @@ struct _lua_environment
 };
 
 
-static FORCEINLINE bool lua_has_execution_right( lua_environment_t* env )
+static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_t* arg );
+static lua_result_t lua_do_bind( lua_t* env, const char* property, lua_command_t cmd, lua_value_t val );
+static lua_result_t lua_do_eval( lua_t* env, const char* code );
+static lua_result_t lua_do_get( lua_t* env, const char* property );
+
+static void*        lua_lookup_builtin( lua_State* state, const char* sym );
+
+
+static FORCEINLINE bool lua_has_execution_right( lua_t* env )
 {
 	return ( env->executing_thread == thread_id() );
 }
 
 
-static NOINLINE bool lua_acquire_execution_right( lua_environment_t* env, bool force )
+static NOINLINE bool lua_acquire_execution_right( lua_t* env, bool force )
 {
 	uint64_t self = thread_id();
 	if( env->executing_thread == self )
@@ -368,7 +142,7 @@ static NOINLINE bool lua_acquire_execution_right( lua_environment_t* env, bool f
 }
 
 
-static void lua_release_execution_right( lua_environment_t* env )
+static void lua_release_execution_right( lua_t* env )
 {
 	FOUNDATION_ASSERT( env->executing_thread == thread_id() );
 	FOUNDATION_ASSERT( env->executing_count > 0 );
@@ -380,7 +154,7 @@ static void lua_release_execution_right( lua_environment_t* env )
 }
 
 
-static void lua_push_op( lua_environment_t* env, lua_op_t* op )
+static void lua_push_op( lua_t* env, lua_op_t* op )
 {
 	unsigned int ofs, old;
 	do
@@ -398,7 +172,7 @@ static void lua_push_op( lua_environment_t* env, lua_op_t* op )
 }
 
 
-static void lua_execute_pending( lua_environment_t* env )
+static void lua_execute_pending( lua_t* env )
 {
 	profile_begin_block( "lua exec" );
 
@@ -453,13 +227,13 @@ static void lua_execute_pending( lua_environment_t* env )
 }
 
 
-static FORCEINLINE void lua_run_gc( lua_environment_t* env, int milliseconds )
+static FORCEINLINE void lua_run_gc( lua_t* env, int milliseconds )
 {
 	lua_gc( env->state, LUA_GCSTEP, milliseconds );
 }
 
 
-void* lua_allocator( lua_State* state, void* block, size_t osize, size_t nsize )
+static NOINLINE void* lua_allocator( lua_State* state, void* block, size_t osize, size_t nsize )
 {
 	//Based on the generic Lua allocation routine
 	void* oldblock;
@@ -488,7 +262,7 @@ void* lua_allocator( lua_State* state, void* block, size_t osize, size_t nsize )
 }
 
 
-int lua_panic( lua_State* state )
+static NOINLINE int lua_panic( lua_State* state )
 {
 	FOUNDATION_ASSERT_FAILFORMAT( "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
 	log_errorf( ERRORLEVEL_PANIC, ERROR_SCRIPT, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
@@ -496,9 +270,9 @@ int lua_panic( lua_State* state )
 }
 
 
-lua_environment_t* lua_environment_allocate( void )
+lua_t* lua_allocate( void )
 {
-	lua_environment_t* env = 0;
+	lua_t* env = 0;
 
 	//TODO: Add functionality to foundation allocator to be able to meet luajit demands (low 47-bit (?) addresses)
 	lua_State* state = lua_newstate( 0, 0 );
@@ -515,7 +289,7 @@ lua_environment_t* lua_environment_allocate( void )
 	//Disable automagic gc
 	lua_gc( state, LUA_GCCOLLECT, 0 );
 
-	env = memory_allocate_zero( sizeof( lua_environment_t ), 0, MEMORY_PERSISTENT );
+	env = memory_allocate_zero( sizeof( lua_t ), 0, MEMORY_PERSISTENT );
 	
 	lua_pushlightuserdata( state, env );
 	lua_setglobal( state, "__environment" );
@@ -530,14 +304,12 @@ lua_environment_t* lua_environment_allocate( void )
 
 	unsigned int stacksize = lua_gettop( state );
 
-	lua_initialize_builtin_lookup( env->lookup_map );
-	
 	//Libraries
 	log_debugf( "Loading Lua built-ins" );
 	luaL_openlibs( state );
 
 	//Foundation bindings
-	lua_bind_foundation( state );
+	lua_load_foundation( state );
 
 	lua_pop( state, lua_gettop( state ) - stacksize );
 
@@ -545,7 +317,7 @@ lua_environment_t* lua_environment_allocate( void )
 }
 
 
-void lua_environment_deallocate( lua_environment_t* env )
+void lua_deallocate( lua_t* env )
 {
 	if( !env )
 		return;
@@ -564,7 +336,7 @@ void lua_environment_deallocate( lua_environment_t* env )
 }
 
 
-lua_result_t lua_call_custom( lua_environment_t* env, const char* method, lua_arg_t* arg )
+lua_result_t lua_call_custom( lua_t* env, const char* method, lua_arg_t* arg )
 {
 	if( !lua_acquire_execution_right( env, false ) )
 	{
@@ -585,7 +357,7 @@ lua_result_t lua_call_custom( lua_environment_t* env, const char* method, lua_ar
 }
 
 
-static lua_result_t lua_do_call_custom( lua_environment_t* env, const char* method, lua_arg_t* arg )
+static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_t* arg )
 {
 	lua_State* state;
 	lua_result_t result;
@@ -749,7 +521,7 @@ static lua_result_t lua_do_call_custom( lua_environment_t* env, const char* meth
 	//TODO: Parse return value from call
 	if( lua_pcall( state, numargs, 0, 0 ) != 0 )
 	{
-		log_debugf( "Script error: Calling %s : %s", method, lua_tostring( state, -1 ) );
+		log_warnf( WARNING_SCRIPT, "Calling %s : %s", method, lua_tostring( state, -1 ) );
 		result = LUA_ERROR;
 	}
 
@@ -761,55 +533,55 @@ static lua_result_t lua_do_call_custom( lua_environment_t* env, const char* meth
 }
 
 
-lua_result_t lua_call_void( lua_environment_t* env, const char* method )
+lua_result_t lua_call_void( lua_t* env, const char* method )
 {
 	return lua_call_custom( env, method, 0 );
 }
 
 
-lua_result_t lua_call_val( lua_environment_t* env, const char* method, real val )
+lua_result_t lua_call_val( lua_t* env, const char* method, real val )
 {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_REAL, .value[0].val = val };
 	return lua_call_custom( env, method, &arg );
 }
 
 
-lua_result_t lua_call_int( lua_environment_t* env, const char* method, int val )
+lua_result_t lua_call_int( lua_t* env, const char* method, int val )
 {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_INT, .value[0].ival = val };
 	return lua_call_custom( env, method, &arg );
 }
 
 
-lua_result_t lua_call_bool( lua_environment_t* env, const char* method, bool val )
+lua_result_t lua_call_bool( lua_t* env, const char* method, bool val )
 {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_BOOL, .value[0].flag = val };
 	return lua_call_custom( env, method, &arg );
 }
 
 
-lua_result_t lua_call_string( lua_environment_t* env, const char* method, const char* str )
+lua_result_t lua_call_string( lua_t* env, const char* method, const char* str )
 {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_STR, .value[0].str = str };
 	return lua_call_custom( env, method, &arg );
 }
 
 
-lua_result_t lua_call_object( lua_environment_t* env, const char* method, object_t obj )
+lua_result_t lua_call_object( lua_t* env, const char* method, object_t obj )
 {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_OBJ, .value[0].obj = obj };
 	return lua_call_custom( env, method, &arg );
 }
 
 
-lua_result_t lua_call_ptr( lua_environment_t* env, const char* method, void* ptr )
+lua_result_t lua_call_ptr( lua_t* env, const char* method, void* ptr )
 {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_PTR, .value[0].ptr = ptr };
 	return lua_call_custom( env, method, &arg );
 }
 
 
-lua_result_t lua_eval( lua_environment_t* env, const char* code )
+lua_result_t lua_eval( lua_t* env, const char* code )
 {
 	if( !lua_acquire_execution_right( env, false ) )
 	{
@@ -826,7 +598,7 @@ lua_result_t lua_eval( lua_environment_t* env, const char* code )
 }
 
 
-static lua_result_t lua_do_eval( lua_environment_t* env, const char* code )
+static lua_result_t lua_do_eval( lua_t* env, const char* code )
 {
 	lua_State* state;
 
@@ -842,14 +614,14 @@ static lua_result_t lua_do_eval( lua_environment_t* env, const char* code )
 
 	if( lua_load( state, lua_read_string, &read_string, "=eval" ) != 0 )
 	{
-		log_debugf( "Script error: Lua eval() failed on load: %s", lua_tostring( state, -1 ) );
+		log_warnf( WARNING_SCRIPT, "Lua eval() failed on load: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_debugf( "Script error: Lua eval() failed on pcall: %s", lua_tostring( state, -1 ) );
+		log_warnf( WARNING_SCRIPT, "Lua eval() failed on pcall: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
@@ -858,7 +630,7 @@ static lua_result_t lua_do_eval( lua_environment_t* env, const char* code )
 }
 
 
-lua_result_t lua_bind( lua_environment_t* env, const char* method, lua_fn fn )
+lua_result_t lua_bind( lua_t* env, const char* method, lua_fn fn )
 {
 	if( !lua_acquire_execution_right( env, false ) )
 	{
@@ -877,7 +649,7 @@ lua_result_t lua_bind( lua_environment_t* env, const char* method, lua_fn fn )
 }
 
 
-lua_result_t lua_bind_native( lua_environment_t* env, const char* symbol, void* value )
+lua_result_t lua_bind_native( lua_t* env, const char* symbol, void* value )
 {
 	hash_t symhash = hash( symbol, string_length( symbol ) );
 	hashmap_insert( env->lookup_map, symhash, value );
@@ -885,7 +657,7 @@ lua_result_t lua_bind_native( lua_environment_t* env, const char* symbol, void* 
 }
 
 
-lua_result_t lua_bind_int( lua_environment_t* env, const char* property, int value )
+lua_result_t lua_bind_int( lua_t* env, const char* property, int value )
 {
 	if( !lua_acquire_execution_right( env, false ) )
 	{
@@ -904,7 +676,7 @@ lua_result_t lua_bind_int( lua_environment_t* env, const char* property, int val
 }
 
 
-lua_result_t lua_bind_value( lua_environment_t* env, const char* property, real value )
+lua_result_t lua_bind_value( lua_t* env, const char* property, real value )
 {
 	if( !lua_acquire_execution_right( env, false ) )
 	{
@@ -923,7 +695,52 @@ lua_result_t lua_bind_value( lua_environment_t* env, const char* property, real 
 }
 
 
-static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, lua_command_t cmd, lua_value_t val )
+static NOINLINE void lua_push_integer( lua_State* state, const char* name, int value )
+{
+	lua_pushstring( state, name );
+	lua_pushinteger( state, value );
+	lua_settable( state, -3 );
+}
+
+
+static NOINLINE void lua_push_integer_global( lua_State* state, const char* name, int value )
+{
+	lua_pushinteger( state, value );
+	lua_setglobal( state, name );
+}
+
+
+static NOINLINE void lua_push_number( lua_State* state, const char* name, real value )
+{
+	lua_pushstring( state, name );
+	lua_pushnumber( state, value );
+	lua_settable( state, -3 );
+}
+
+
+static NOINLINE void lua_push_number_global( lua_State* state, const char* name, real value )
+{
+	lua_pushnumber( state, value );
+	lua_setglobal( state, name );
+}
+
+
+static NOINLINE void lua_push_method( lua_State* state, const char* name, lua_CFunction fn )
+{
+	lua_pushstring( state, name );
+	lua_pushcclosure( state, fn, 0 );
+	lua_settable( state, -3 );
+}
+
+
+static NOINLINE void lua_push_method_global( lua_State* state, const char* name, lua_CFunction fn )
+{
+	lua_pushcclosure( state, fn, 0 );
+	lua_setglobal( state, name );
+}
+
+
+static lua_result_t lua_do_bind( lua_t* env, const char* property, lua_command_t cmd, lua_value_t val )
 {
 	lua_State* state;
 	int stacksize;
@@ -958,7 +775,7 @@ static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, l
 		}
 		else if( !lua_istable( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Script error: Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
+			log_warnf( WARNING_SCRIPT, "Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
 			string_deallocate( buffer );
 			lua_pop( state, lua_gettop( state ) - stacksize );
 			return LUA_ERROR;
@@ -987,7 +804,7 @@ static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, l
 			}
 			else if( !lua_istable( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Script error: Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
+				log_warnf( WARNING_SCRIPT, "Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
 				string_deallocate( buffer );
 				lua_pop( state, lua_gettop( state ) - stacksize );
 				return LUA_ERROR;
@@ -1043,7 +860,7 @@ static lua_result_t lua_do_bind( lua_environment_t* env, const char* property, l
 }
 
 
-const char* lua_get_string( lua_environment_t* env, const char* property )
+const char* lua_get_string( lua_t* env, const char* property )
 {
 	const char* value = "";
 	lua_State* state = env->state;
@@ -1064,7 +881,7 @@ const char* lua_get_string( lua_environment_t* env, const char* property )
 }
 
 
-int lua_get_int( lua_environment_t* env, const char* property )
+int lua_get_int( lua_t* env, const char* property )
 {
 	int value = 0;
 	lua_State* state = env->state;
@@ -1085,7 +902,7 @@ int lua_get_int( lua_environment_t* env, const char* property )
 }
 
 
-static lua_result_t lua_do_get( lua_environment_t* env, const char* property )
+static lua_result_t lua_do_get( lua_t* env, const char* property )
 {
 	lua_State* state;
 	lua_result_t result;
@@ -1105,13 +922,13 @@ static lua_result_t lua_do_get( lua_environment_t* env, const char* property )
 		lua_getglobal( state, cstr );
 		if( lua_isnil( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Script error: Invalid script get, '%s' is not set (%s)", cstr, property );
+			log_warnf( WARNING_SCRIPT, "Invalid script get, '%s' is not set (%s)", cstr, property );
 			string_deallocate( buffer );
 			return LUA_ERROR;
 		}
 		else if( !lua_istable( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Script error: Invalid script get, existing data '%s' in '%s' is not a table", cstr, property );
+			log_warnf( WARNING_SCRIPT, "Invalid script get, existing data '%s' in '%s' is not a table", cstr, property );
 			string_deallocate( buffer );
 			return LUA_ERROR;
 		}
@@ -1128,13 +945,13 @@ static lua_result_t lua_do_get( lua_environment_t* env, const char* property )
 			lua_gettable( state, -2 );
 			if( lua_isnil( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Script error: Invalid script call, '%s' is not set (%s)", cstr, property );
+				log_warnf( WARNING_SCRIPT, "Invalid script call, '%s' is not set (%s)", cstr, property );
 				string_deallocate( buffer );
 				return LUA_ERROR;
 			}
 			else if( !lua_istable( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Script error: Invalid script call, existing data '%s' in '%s' is not a table", cstr, property );
+				log_warnf( WARNING_SCRIPT, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, property );
 				string_deallocate( buffer );
 				return LUA_ERROR;
 			}
@@ -1160,7 +977,7 @@ static lua_result_t lua_do_get( lua_environment_t* env, const char* property )
 	if( lua_isnil( state, -1 ) )
 	{
 		//Property does not exist in Lua context
-		log_debugf( "Script error: Invalid script get, '%s' is not a property", property );
+		log_warnf( WARNING_SCRIPT, "Invalid script get, '%s' is not a property", property );
 		return LUA_ERROR;
 	}
 
@@ -1168,7 +985,7 @@ static lua_result_t lua_do_get( lua_environment_t* env, const char* property )
 }
 
 
-void lua_execute( lua_environment_t* env, int gc_time, bool force )
+void lua_execute( lua_t* env, int gc_time, bool force )
 {
 	if( ( env->queue[ env->queue_head ].cmd == LUACMD_WAIT ) && !gc_time )
 		return; //Nothing executable pending
@@ -1181,7 +998,8 @@ void lua_execute( lua_environment_t* env, int gc_time, bool force )
 	}
 }
 
-void lua_timed_gc( lua_environment_t* env, int milliseconds )
+
+void lua_timed_gc( lua_t* env, int milliseconds )
 {
 	if( lua_acquire_execution_right( env, false ) )
 	{
@@ -1194,14 +1012,14 @@ void lua_timed_gc( lua_environment_t* env, int milliseconds )
 static void* lua_lookup_builtin( lua_State* state, const char* sym )
 {
 	hash_t symhash = hash( sym, string_length( sym ) );
-	lua_environment_t* env = lua_env_from_state( state );
+	lua_t* env = lua_from_state( state );
 	void* fn = hashmap_lookup( env->lookup_map, symhash );
 	//log_debugf( "Built-in lookup: %s -> %p", sym, fn );
 	return fn;
 }
 
 
-lua_environment_t* lua_env_from_state( lua_State* state )
+lua_t* lua_from_state( lua_State* state )
 {
 	void* env;
 	lua_getglobal( state, "__environment" );
@@ -1211,8 +1029,14 @@ lua_environment_t* lua_env_from_state( lua_State* state )
 }
 
 
-lua_State* lua_state_from_env( lua_environment_t* env )
+lua_State* lua_state( lua_t* env )
 {
 	return env->state;
+}
+
+
+hashmap_t* lua_lookup_map( lua_t* env )
+{
+	return env->lookup_map;
 }
 

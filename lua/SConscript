@@ -8,13 +8,13 @@ Import("env")
 
 luasources = [
 
-	'lua.c'
+	'foundation.c', 'lua.c', 'read.c'
 
 	]
 
 luaheaders = [
 
-	'bind.h', 'lua.h', 'types.h'
+	'bind.h', 'foundation.h', 'lua.h', 'read.h', 'types.h'
 
 	]
 

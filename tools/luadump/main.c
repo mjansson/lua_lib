@@ -31,6 +31,7 @@
 #include <foundation/foundation.h>
 #include <lua/lua.h>
 #include <lua/bind.h>
+#include <lua/read.h>
 
 #include "errorcodes.h"
 
@@ -45,7 +46,7 @@ typedef struct
 	stream_t*           input_stream;
 	stream_t*           output_stream;
 	
-	lua_environment_t*  env;
+	lua_t*  env;
 
 	bool                hex;
 
@@ -56,34 +57,7 @@ typedef struct
 
 static luadump_t  luadump_parse_command_line( const char* const* cmdline );
 static void       luadump_print_usage( void );
-static int        luadump_load_jitbc( lua_environment_t* env );
-
-
-typedef struct _lua_readstream
-{
-	stream_t*             stream;
-	char                  chunk[128];
-} lua_readstream_t;
-
-
-static NOINLINE const char* lua_read_stream( lua_State* state, void* user_data, size_t* size )
-{
-	lua_readstream_t* read = (lua_readstream_t*)user_data;
-
-	if( stream_eos( read->stream ) )
-	{
-		if( *size )
-			*size = 0;
-		return 0;
-	}
-	
-	uint64_t num_read = stream_read( read->stream, read->chunk, 128 );
-
-	if( size )
-		*size = (size_t)num_read;
-
-	return num_read ? read->chunk : 0;
-}
+static int        luadump_load_jitbc( lua_t* env );
 
 
 static NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_t size, void* user_data )
@@ -164,8 +138,8 @@ int main_run( void* main_arg )
 	if( !string_length( dump.input_file ) )
 		return LUADUMP_RESULT_OK;
 	
-	dump.env = lua_environment_allocate();
-	state = lua_state_from_env( dump.env );
+	dump.env = lua_allocate();
+	state = lua_state( dump.env );
 	
 	/*if( ( result = luadump_load_jitbc( dump.env ) ) != LUADUMP_RESULT_OK )
 		goto exit;
@@ -222,7 +196,7 @@ exit:
 	stream_deallocate( dump.input_stream );
 	stream_deallocate( dump.output_stream );
 	
-	lua_environment_deallocate( dump.env );
+	lua_deallocate( dump.env );
 
 	string_deallocate( dump.input_file );
 	string_deallocate( dump.output_file );
@@ -297,11 +271,11 @@ static const char jit_bc[] = {
 	0
 };
 
-LUA_API lua_environment_t*      lua_env_from_state( struct lua_State* state );
-LUA_API struct lua_State*       lua_state_from_env( lua_environment_t* env );
+LUA_API lua_t*      lua_env_from_state( struct lua_State* state );
+LUA_API struct lua_State*       lua_state_from_env( lua_t* env );
 
 
-static int luadump_load_jitbc( lua_environment_t* env )
+static int luadump_load_jitbc( lua_t* env )
 {
 	//Load IO lib which is disabled in init
 	struct lua_State* state = lua_state_from_env( env );
@@ -323,7 +297,7 @@ static int luadump_load_jitbc( lua_environment_t* env )
 
 #else
 
-static int luadump_load_jitbc( lua_environment_t* env )
+static int luadump_load_jitbc( lua_t* env )
 {
 	return LUADUMP_RESULT_OK;
 }

@@ -46,7 +46,7 @@ application_t test_application( void )
 
 DECLARE_TEST( foundation, log )
 {
-	lua_environment_t* env = lua_environment_allocate();
+	lua_t* env = lua_allocate();
 
 	log_suppress( ERRORLEVEL_NONE );
 	
@@ -64,13 +64,13 @@ DECLARE_TEST( foundation, log )
 	"log.debug( \"Invisible on stdout\" )\n"
 	"log.stdout( true )\n"
 	"log.enable_prefix( true )\n"
-	;//"log.suppress( error.LEVEL_INFO )\n";
+	"log.suppress( error.LEVEL_INFO )\n";
 	
 	EXPECT_EQ( lua_eval( env, testcode ), LUA_OK );
 
 	EXPECT_EQ( error(), ERROR_SCRIPT );
 	
-	lua_environment_deallocate( env );
+	lua_deallocate( env );
 	
 	return 0;
 }
@@ -78,29 +78,30 @@ DECLARE_TEST( foundation, log )
 
 DECLARE_TEST( foundation, environment )
 {
-	lua_environment_t* env = lua_environment_allocate();
+	lua_t* env = lua_allocate();
 
 	log_suppress( ERRORLEVEL_NONE );
 	log_infof( "Running environment lua tests" );
 	
 	const char* testcode =
-	"local foundation = require(\"foundation\")\n"
+	"local foundation = require( \"foundation\" )\n"
+	"local ffi = require( \"ffi\" )\n"
 	"local log = foundation.log\n"
 	"local error = foundation.error\n"
 	"local env = foundation.environment\n"
 	"log.suppress( error.LEVEL_DEBUG )\n"
 	"log.enable_prefix( false )\n"
-	"log.info( \"Executable name: \" .. env.executable_name() )\n"
+	"log.info( \"Executable name: \" .. ffi.string( env.executable_name() ) )\n"
 	"log.enable_prefix( true )\n"
-	;//"log.suppress( error.LEVEL_INFO )\n";
+	"log.suppress( error.LEVEL_INFO )\n";
 
 	lua_eval( env, testcode );
 
 	log_suppress( ERRORLEVEL_NONE );
 	log_infof( "Done running environment lua tests" );
-	//log_suppress( ERRORLEVEL_INFO );
+	log_suppress( ERRORLEVEL_INFO );
 	
-	lua_environment_deallocate( env );
+	lua_deallocate( env );
 
 	return 0;
 }
