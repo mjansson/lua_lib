@@ -6,7 +6,8 @@ ffi.cdef[[
 void  log_debugf( const char*, ... );
 void  log_infof( const char*, ... );
 void  log_warnf( int, const char*, ... );
-void  log_errorf( int, int, const char*, ... );
+void  log_errorf( int, const char*, ... );
+void  log_panicf( int, const char*, ... );
 void  log_stdout( bool );
 void  log_enable_prefix( bool );
 void  log_suppress( int );
@@ -31,7 +32,8 @@ const char*            environment_variable( const char* );
 local function log_debug( message ) ffi.C.log_debugf( "%s", message ) end
 local function log_info( message ) ffi.C.log_infof( "%s", message ) end
 local function log_warn( message ) ffi.C.log_warnf( 6, "%s", message ) end -- 6 = WARNING_SCRIPT
-local function log_error( message ) ffi.C.log_errorf( 4, 11, "%s", message ) end -- 4 = ERRORLEVEL_ERROR, 11 = ERROR_SCRIPT
+local function log_error( message ) ffi.C.log_errorf( 11, "%s", message ) end -- 11 = ERROR_SCRIPT
+local function log_panic( message ) ffi.C.log_panicf( 11, "%s", message ) end -- 11 = ERROR_SCRIPT
 
 local function string_array_to_table( arr )
 
@@ -50,6 +52,7 @@ log.debug = log_debug
 log.info = log_info
 log.warn = log_warn
 log.error = log_error
+log.panic = log_panic
 log.stdout = ffi.C.log_stdout
 log.enable_prefix = ffi.C.log_enable_prefix
 log.suppress = ffi.C.log_suppress

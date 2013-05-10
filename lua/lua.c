@@ -265,7 +265,7 @@ static NOINLINE void* lua_allocator( lua_State* state, void* block, size_t osize
 static NOINLINE int lua_panic( lua_State* state )
 {
 	FOUNDATION_ASSERT_FAILFORMAT( "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
-	log_errorf( ERRORLEVEL_PANIC, ERROR_SCRIPT, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
+	log_errorf( ERROR_SCRIPT, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
 	return 0;
 }
 
@@ -278,7 +278,7 @@ lua_t* lua_allocate( void )
 	lua_State* state = lua_newstate( 0, 0 );
 	if( !state )
 	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Unable to allocate Lua state" );
+		log_errorf( ERROR_SCRIPT, "Unable to allocate Lua state" );
 		return 0;
 	}
 

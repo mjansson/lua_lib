@@ -106,14 +106,14 @@ int lua_load_foundation( lua_State* state )
 	
 	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
 	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
+		log_errorf( ERROR_SCRIPT, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return 0;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
+		log_errorf( ERROR_SCRIPT, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return 0;
 	}

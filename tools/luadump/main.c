@@ -169,7 +169,7 @@ int main_run( void* main_arg )
 
 	if( lua_load( state, lua_read_stream, &read_stream, "=eval" ) != 0 )
 	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua load failed: %s", lua_tostring( state, -1 ) );
+		log_errorf( ERROR_SCRIPT, "Lua load failed: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		result = LUADUMP_RESULT_FAILED_EVAL;
 		goto exit;
@@ -180,7 +180,7 @@ int main_run( void* main_arg )
 	//lua_pop( state, 1 );
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_errorf( ERRORLEVEL_ERROR, ERROR_SCRIPT, "Lua pcall failed: %s", lua_tostring( state, -1 ) );
+		log_errorf( ERROR_SCRIPT, "Lua pcall failed: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 	}
 	else
