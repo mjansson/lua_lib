@@ -41,9 +41,14 @@
 #include "luajit/src/lua.h"
 
 
-static void _log_debugf_disabled( const char* format, ... ) {}
-static void _error_context_push_disabled( const char* name, const char* data ) {}
-static void _error_context_pop_disabled() {} 
+static void  _log_debugf_disabled( const char* format, ... ) {}
+
+static void  _error_context_push_disabled( const char* name, const char* data ) {}
+static void  _error_context_pop_disabled() {} 
+
+static int          _array_size( const void* arr ) { return ( arr ? array_size( arr ) : 0 ); }
+static const void*  _array_element_pointer( const void* arr, int pos ) { return ( arr && ( pos >= 0 ) && ( pos < array_size( arr ) ) ) ? ((const void* const*)arr)[pos] : 0; }
+
 
 static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 {
@@ -66,6 +71,9 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,      (void*)(uintptr_t)log_enable_prefix );
 	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,           (void*)(uintptr_t)log_suppress );
 
+	hashmap_insert( map, HASH_SYM_ARRAY_SIZE,             (void*)(uintptr_t)_array_size );
+	hashmap_insert( map, HASH_SYM_ARRAY_ELEMENT_POINTER,  (void*)(uintptr_t)_array_element_pointer );
+	
 	hashmap_insert( map, HASH_SYM_ERROR,                  (void*)(uintptr_t)error );
 	hashmap_insert( map, HASH_SYM_ERROR_REPORT,           (void*)(uintptr_t)error_report );
 #if BUILD_ENABLE_ERROR_CONTEXT
@@ -100,7 +108,7 @@ int lua_load_foundation( lua_State* state )
 		.offset = 0
 	};
 
-	log_debugf( "Loading foundation built-ins" );
+	log_debugf( "Loading foundation built-ins (%u bytes of bytecode)", read_buffer.size );
 
 	lua_load_foundation_builtins( state );
 	

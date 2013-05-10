@@ -17,6 +17,8 @@
 #define HASH_SYM_ERROR_REPORT static_hash_string( "error_report", 0xfaa57007b4bf59e7ULL )
 #define HASH_SYM_ERROR_CONTEXT_PUSH static_hash_string( "error_context_push", 0x529bed2211cf5d1cULL )
 #define HASH_SYM_ERROR_CONTEXT_POP static_hash_string( "error_context_pop", 0x50c8231b81e1af9ULL )
+#define HASH_SYM_ARRAY_SIZE static_hash_string( "array_size", 0xd0ad29b372a85956ULL )
+#define HASH_SYM_ARRAY_ELEMENT_POINTER static_hash_string( "array_element_pointer", 0xba3507c23a2f9a8eULL )
 #define HASH_SYM_ENVIRONMENT_COMMAND_LINE static_hash_string( "environment_command_line", 0x15198430aa0b7f7dULL )
 #define HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME static_hash_string( "environment_executable_name", 0x1805e6c27176d00fULL )
 #define HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY static_hash_string( "environment_executable_directory", 0x23b7e0b08c936a9dULL )

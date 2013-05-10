@@ -12,6 +12,9 @@ HASH_SYM_ERROR_REPORT                   error_report
 HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
 HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
 
+HASH_SYM_ARRAY_SIZE                     array_size
+HASH_SYM_ARRAY_ELEMENT_POINTER          array_element_pointer
+
 HASH_SYM_ENVIRONMENT_COMMAND_LINE                   environment_command_line
 HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME                environment_executable_name
 HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY           environment_executable_directory

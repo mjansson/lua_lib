@@ -17,6 +17,9 @@ int   error_report( int, int );
 void  error_context_push( const char*, const char* );
 void  error_context_pop( void );
 
+int                    array_size( const void* );
+const void*            array_element_pointer( const void*, int );
+
 const char* const*     environment_command_line( void );
 const char*            environment_executable_name( void );
 const char*            environment_executable_directory( void );
@@ -36,7 +39,12 @@ local function log_error( message ) ffi.C.log_errorf( 11, "%s", message ) end --
 local function log_panic( message ) ffi.C.log_panicf( 11, "%s", message ) end -- 11 = ERROR_SCRIPT
 
 local function string_array_to_table( arr )
-
+      local tab = {}
+      local arr_size = ffi.C.array_size( arr )
+      for i=1,arr_size do
+            tab[i] = ffi.string( ffi.C.array_element_pointer( arr, i-1 ) )
+      end
+      return tab
 end
 
 local function environment_command_line()

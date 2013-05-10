@@ -92,6 +92,14 @@ DECLARE_TEST( foundation, environment )
 	"log.suppress( error.LEVEL_DEBUG )\n"
 	"log.enable_prefix( false )\n"
 	"log.info( \"Executable name: \" .. ffi.string( env.executable_name() ) )\n"
+	"local cmdline = \"\"\n"
+	"local cmdline_tab = env.command_line()\n"
+	"local i = 1\n"
+	"while cmdline_tab[i] ~= nil do\n"
+	"  cmdline = cmdline .. \" \" .. cmdline_tab[i]\n"
+	"  i = i + 1\n"
+	"end\n"
+	"log.info( \"Command line:\" .. cmdline )\n"
 	"log.enable_prefix( true )\n"
 	"log.suppress( error.LEVEL_INFO )\n";
 
