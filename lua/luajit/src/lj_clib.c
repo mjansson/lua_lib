@@ -19,6 +19,16 @@
 
 /* -- OS-specific functions ----------------------------------------------- */
 
+#if LJ_TARGET_WINDOWS
+
+#define WIN32_LEAN_AND_MEAN
+#ifndef WINVER
+#define WINVER 0x0500
+#endif
+#include <windows.h>
+
+#endif
+
 #if 0 //LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
@@ -349,9 +359,9 @@ TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
       DWORD oldwerr = GetLastError();
 #endif
 	  void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(L, sym) : 0;
+      GCcdata *cd;
       if (LJ_UNLIKELY(!p))
 		  p = clib_getsym(cl, sym);
-      GCcdata *cd;
       lua_assert(ctype_isfunc(ct->info) || ctype_isextern(ct->info));
 #if LJ_TARGET_X86 && LJ_ABI_WIN
       /* Retry with decorated name for fastcall/stdcall functions. */

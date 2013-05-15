@@ -210,3 +210,4 @@ lua/luajit/src/lj_recdef.h
 lua/luajit/src/lj_vm.s
 lua/luajit/src/luajit
 
+lua/luajit/src/luajit.exp

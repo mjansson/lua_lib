@@ -46,6 +46,8 @@
 LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
 LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) );
 
+#undef LUA_API
+
 
 typedef enum _lua_command
 {

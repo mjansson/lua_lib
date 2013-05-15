@@ -58,12 +58,12 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 #if BUILD_ENABLE_DEBUG_LOG
 	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,             (void*)(uintptr_t)log_debugf );
 #else
-	hashmap_insert( map, HASH_SYM_LOG_DEBUG,              (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,             (void*)(uintptr_t)_log_debugf_disabled );
 #endif
 #if BUILD_ENABLE_LOG
 	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)log_infof );
 #else
-	hashmap_insert( map, HASH_SYM_LOG_DEBUG,              (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)_log_debugf_disabled );
 #endif
 	hashmap_insert( map, HASH_SYM_LOG_WARNF,              (void*)(uintptr_t)log_warnf );
 	hashmap_insert( map, HASH_SYM_LOG_ERRORF,             (void*)(uintptr_t)log_errorf );

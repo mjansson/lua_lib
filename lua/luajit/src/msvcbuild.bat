@@ -74,9 +74,11 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 @goto :MTDLL
 :STATIC
-%LJCOMPILE% /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
+REM %LJCOMPILE% /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
+%LJCOMPILE% /DLUA_BUILD_AS_DLL ljamalg.c
 @if errorlevel 1 goto :BAD
-%LJLIB% /OUT:lua51.lib lj_*.obj lib_*.obj
+REM %LJLIB% /OUT:lua51.lib lj_*.obj lib_*.obj
+%LJLIB% /OUT:lua51.lib ljamalg.obj lj_vm.obj
 @if errorlevel 1 goto :BAD
 @goto :MTDLL
 :AMALGDLL
