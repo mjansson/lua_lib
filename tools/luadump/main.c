@@ -52,6 +52,8 @@ typedef struct
 
 	char*               bytecode;
 	unsigned int        bytecode_size;
+
+	error_level_t       suppress_level;
 } luadump_t;
 	
 
@@ -87,7 +89,7 @@ static NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_
 		{
 			log_suppress( ERRORLEVEL_DEBUG );
 			log_infof( line );
-			log_suppress( ERRORLEVEL_INFO );
+			log_suppress( dump->suppress_level );
 		}
 		memory_deallocate( line );
 	}
@@ -217,6 +219,8 @@ static luadump_t luadump_parse_command_line( const char* const* cmdline )
 	bool display_help = false;
 
 	luadump_t dump = {0};
+
+	dump.suppress_level = ERRORLEVEL_INFO;
 	
 	error_context_push( "parsing command line", "" );
 	for( arg = 1, asize = array_size( cmdline ); arg < asize; ++arg )
@@ -234,6 +238,8 @@ static luadump_t luadump_parse_command_line( const char* const* cmdline )
 				dump.output_file = string_clone( cmdline[arg] );
 			}
 		}
+		else if( string_equal( cmdline[arg], "--debug" ) )
+			dump.suppress_level = ERRORLEVEL_NONE;
 		else if( string_equal( cmdline[arg], "--" ) )
 			break; //Stop parsing cmdline options
 		else

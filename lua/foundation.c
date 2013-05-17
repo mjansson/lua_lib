@@ -93,6 +93,54 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_HOME_DIRECTORY,                 (void*)(uintptr_t)environment_home_directory );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY,            (void*)(uintptr_t)environment_temporary_directory );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_ENVIRONMENT_VARIABLE,           (void*)(uintptr_t)environment_variable );
+	
+	hashmap_insert( map, HASH_SYM_STREAM_OPEN,                    (void*)(uintptr_t)stream_open );
+	hashmap_insert( map, HASH_SYM_STREAM_CLONE,                   (void*)(uintptr_t)stream_clone );
+	hashmap_insert( map, HASH_SYM_STREAM_DEALLOCATE,              (void*)(uintptr_t)stream_deallocate );
+	hashmap_insert( map, HASH_SYM_STREAM_TELL,                    (void*)(uintptr_t)stream_tell );
+	hashmap_insert( map, HASH_SYM_STREAM_SEEK,                    (void*)(uintptr_t)stream_seek );
+	hashmap_insert( map, HASH_SYM_STREAM_EOS,                     (void*)(uintptr_t)stream_eos );
+	hashmap_insert( map, HASH_SYM_STREAM_SET_BYTEORDER,           (void*)(uintptr_t)stream_set_byteorder );
+	hashmap_insert( map, HASH_SYM_STREAM_SET_BINARY,              (void*)(uintptr_t)stream_set_binary );
+	hashmap_insert( map, HASH_SYM_STREAM_IS_SEQUENTIAL,           (void*)(uintptr_t)stream_is_sequential );
+	hashmap_insert( map, HASH_SYM_STREAM_IS_RELIABLE,             (void*)(uintptr_t)stream_is_reliable );
+	hashmap_insert( map, HASH_SYM_STREAM_IS_INORDER,              (void*)(uintptr_t)stream_is_inorder );
+	hashmap_insert( map, HASH_SYM_STREAM_IS_SWAPPED,              (void*)(uintptr_t)stream_is_swapped );
+	hashmap_insert( map, HASH_SYM_STREAM_BYTEORDER,               (void*)(uintptr_t)stream_byteorder );
+	hashmap_insert( map, HASH_SYM_STREAM_LAST_MODIFIED,           (void*)(uintptr_t)stream_last_modified );
+	hashmap_insert( map, HASH_SYM_STREAM_READ,                    (void*)(uintptr_t)stream_read );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_LINE,               (void*)(uintptr_t)stream_read_line );
+	hashmap_insert( map, HASH_SYM_STREAM_SIZE,                    (void*)(uintptr_t)stream_size );
+	hashmap_insert( map, HASH_SYM_STREAM_DETERMINE_BINARY_MODE,   (void*)(uintptr_t)stream_determine_binary_mode );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_BOOL,               (void*)(uintptr_t)stream_read_bool );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_INT8,               (void*)(uintptr_t)stream_read_int8 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT8,              (void*)(uintptr_t)stream_read_uint8 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_INT16,              (void*)(uintptr_t)stream_read_int16 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT16,             (void*)(uintptr_t)stream_read_uint16 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_INT32,              (void*)(uintptr_t)stream_read_int32 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT32,             (void*)(uintptr_t)stream_read_uint32 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_INT64,              (void*)(uintptr_t)stream_read_int64 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT64,             (void*)(uintptr_t)stream_read_uint64 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_FLOAT32,            (void*)(uintptr_t)stream_read_float32 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_FLOAT64,            (void*)(uintptr_t)stream_read_float64 );
+	hashmap_insert( map, HASH_SYM_STREAM_READ_STRING,             (void*)(uintptr_t)stream_read_string );
+	hashmap_insert( map, HASH_SYM_STREAM_BUFFER_READ,             (void*)(uintptr_t)stream_buffer_read );
+	hashmap_insert( map, HASH_SYM_STREAM_AVAILABLE_READ,          (void*)(uintptr_t)stream_available_read );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_BOOL,              (void*)(uintptr_t)stream_write_bool );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT8,              (void*)(uintptr_t)stream_write_int8 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT8,             (void*)(uintptr_t)stream_write_uint8 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT16,             (void*)(uintptr_t)stream_write_int16 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT16,            (void*)(uintptr_t)stream_write_uint16 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT32,             (void*)(uintptr_t)stream_write_int32 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT32,            (void*)(uintptr_t)stream_write_uint32 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT64,             (void*)(uintptr_t)stream_write_int64 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT64,            (void*)(uintptr_t)stream_write_uint64 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_FLOAT32,           (void*)(uintptr_t)stream_write_float32 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_FLOAT64,           (void*)(uintptr_t)stream_write_float64 );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_STRING,            (void*)(uintptr_t)stream_write_string );
+	hashmap_insert( map, HASH_SYM_STREAM_WRITE_ENDL,              (void*)(uintptr_t)stream_write_endl );
+	hashmap_insert( map, HASH_SYM_STREAM_TRUNCATE,                (void*)(uintptr_t)stream_truncate );
+	hashmap_insert( map, HASH_SYM_STREAM_FLUSH,                   (void*)(uintptr_t)stream_flush );
 }
 
 
