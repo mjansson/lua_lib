@@ -1,4 +1,4 @@
-/* lua.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* types.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
  * 
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
@@ -30,8 +30,8 @@
 
 #pragma once
 
-/*! \file lua.h
-    Lua scripting through customized LuaJIT implementation, for foundation based projects */
+/*! \file types.h
+    Data types used by Lua scripting library */
 
 #include <foundation/platform.h>
 #include <foundation/types.h>
@@ -40,10 +40,11 @@
 #if defined( LUA_COMPILE ) && LUA_COMPILE
 #  ifdef __cplusplus
 #  define LUA_EXTERN extern "C"
+#  define LUA_API extern "C"
 #  else
 #  define LUA_EXTERN extern
+#  define LUA_API extern
 #  endif
-#  define LUA_API
 #else
 #  ifdef __cplusplus
 #  define LUA_EXTERN extern "C"
