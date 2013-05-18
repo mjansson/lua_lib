@@ -141,41 +141,49 @@
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win32\debug\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win32\release\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|Win32'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win32\profile\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|Win32'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win32\deploy\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win64\debug\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win64\release\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win64\profile\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Deploy|x64'">
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>..\..\bin\win64\deploy\</OutDir>
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>test-$(ProjectName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
