@@ -44,6 +44,17 @@ application_t test_application( void )
 }
 
 
+int test_initialize( void )
+{
+	return 0;
+}
+
+
+void test_shutdown( void )
+{
+}
+
+
 DECLARE_TEST( foundation, log )
 {
 	lua_t* env = lua_allocate();
