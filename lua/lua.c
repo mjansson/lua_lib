@@ -246,7 +246,7 @@ static NOINLINE void* lua_allocator( lua_State* state, void* block, size_t osize
 	oldblock = block;
 	if( oldblock && nsize ) //Reallocation
 	{
-		block = memory_reallocate( oldblock, nsize, 0 );
+		block = memory_reallocate( oldblock, nsize, 0, osize );
 	}
 	else if( nsize ) //Allocation
 	{

@@ -33,7 +33,7 @@
 #include <test/test.h>
 
 
-application_t test_application( void )
+application_t test_foundation_application( void )
 {
 	application_t app = {0};
 	app.name = "Foundation tests";
@@ -44,13 +44,13 @@ application_t test_application( void )
 }
 
 
-int test_initialize( void )
+int test_foundation_initialize( void )
 {
 	return 0;
 }
 
 
-void test_shutdown( void )
+void test_foundation_shutdown( void )
 {
 }
 
@@ -126,9 +126,34 @@ DECLARE_TEST( foundation, environment )
 }
 
 
-void test_declare( void )
+void test_foundation_declare( void )
 {
 	ADD_TEST( foundation, log );
 	ADD_TEST( foundation, environment );
 }
 
+
+test_suite_t test_foundation_suite = {
+	test_foundation_application,
+	test_foundation_declare,
+	test_foundation_initialize,
+	test_foundation_shutdown
+};
+
+
+#if FOUNDATION_PLATFORM_ANDROID
+
+int test_foundation_run( void )
+{
+	test_suite = test_foundation_suite;
+	return test_run_all();
+}
+
+#else
+
+test_suite_t test_suite_define( void )
+{
+	return test_foundation_suite;
+}
+
+#endif
