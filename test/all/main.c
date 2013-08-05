@@ -159,7 +159,7 @@ exit:
 		string_array_deallocate( exe_paths );
 
 #endif
-	
+
 	thread_terminate( thread );
 	thread_destroy( thread );
 	while( thread_is_running( thread ) )
