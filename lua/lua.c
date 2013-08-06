@@ -309,7 +309,7 @@ lua_t* lua_allocate( void )
 	unsigned int stacksize = lua_gettop( state );
 
 	//Libraries
-	log_debugf( "Loading Lua built-ins" );
+	log_debug( "Loading Lua built-ins" );
 	luaL_openlibs( state );
 
 	//Foundation bindings
