@@ -43,8 +43,11 @@
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
+#if FOUNDATION_PLATFORM_WINDOWS
 #include "luajit/src/lj_err.h"
-//LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
+#else
+LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
+#endif
 LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) );
 
 #undef LUA_API
