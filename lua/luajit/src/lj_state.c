@@ -175,11 +175,11 @@ static void close_state(lua_State *L)
     g->allocf(g->allocd, G2GG(g), sizeof(GG_State), 0);
 }
 
-#if LJ_64
-lua_State *lj_state_newstate(lua_Alloc f, void *ud)
-#else
+//#if LJ_64
+//lua_State *lj_state_newstate(lua_Alloc f, void *ud)
+//#else
 LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
-#endif
+//#endif
 {
   GG_State *GG = (GG_State *)f(ud, NULL, 0, sizeof(GG_State));
   lua_State *L = &GG->L;

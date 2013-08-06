@@ -335,16 +335,16 @@ LUALIB_API lua_State *luaL_newstate(void)
   lua_State *L;
   void *ud = lj_alloc_create();
   if (ud == NULL) return NULL;
-#if LJ_64
-  L = lj_state_newstate(lj_alloc_f, ud);
-#else
+//#if LJ_64
+//  L = lj_state_newstate(lj_alloc_f, ud);
+//#else
   L = lua_newstate(lj_alloc_f, ud);
-#endif
+//#endif
   if (L) G(L)->panic = panic;
   return L;
 }
 
-#if LJ_64
+#if 0 //LJ_64
 LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
 {
 	/* Foundation allocator should meet the needs of luajit
@@ -352,12 +352,13 @@ LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
   fputs("Must use luaL_newstate() for 64 bit target\n", stderr);
 	return NULL;*/
 	lua_State *L;
+	/* Must use external (foundation) allocator
 	if (!f)
 	{
 		f = lj_alloc_f;
 		ud = lj_alloc_create();
 		if (ud == NULL) return NULL;
-	}
+	}*/
 	L = lj_state_newstate(f, ud);
 	if (L) G(L)->panic = panic;
 	return L;

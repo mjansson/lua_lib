@@ -43,7 +43,8 @@
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
-LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
+#include "luajit/src/lj_err.h"
+//LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
 LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) );
 
 #undef LUA_API
@@ -237,31 +238,16 @@ static FORCEINLINE void lua_run_gc( lua_t* env, int milliseconds )
 }
 
 
-static NOINLINE void* lua_allocator( lua_State* state, void* block, size_t osize, size_t nsize )
+static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_t nsize )
 {
-	//Based on the generic Lua allocation routine
-	void* oldblock;
-	//global_State* global = state ? G(state) : 0;
-	FOUNDATION_ASSERT( (osize == 0) == (block == 0) );
-	oldblock = block;
-	if( oldblock && nsize ) //Reallocation
-	{
-		block = memory_reallocate( oldblock, nsize, 0, osize );
-	}
-	else if( nsize ) //Allocation
-	{
+	if( !nsize && osize )
+		memory_deallocate( block );
+	else if( !block )
 		block = memory_allocate( nsize, 0, MEMORY_PERSISTENT );
-	}
-	else //Deallocation
-	{
-		memory_deallocate( oldblock );
-		block = 0;
-	}
-	if( state && block == 0 && nsize > 0 )
-		lj_err_throw( state, LUA_ERRMEM );
-	FOUNDATION_ASSERT( (nsize == 0) == (block == 0) );
-	//if( global )
-	//	global->totalbytes = (global->totalbytes - osize) + nsize;
+	else if( nsize )
+		block = memory_reallocate( block, nsize, 0, osize );
+	if( block == 0 && nsize > 0 && env && ((lua_t*)env)->state )
+		lj_err_throw( ((lua_t*)env)->state, LUA_ERRMEM );
 	return block;
 }
 
@@ -276,13 +262,14 @@ static NOINLINE int lua_panic( lua_State* state )
 
 lua_t* lua_allocate( void )
 {
-	lua_t* env = 0;
+	lua_t* env = memory_allocate_zero( sizeof( lua_t ), 0, MEMORY_PERSISTENT );
 
-	//TODO: Add functionality to foundation allocator to be able to meet luajit demands (low 47-bit (?) addresses)
-	lua_State* state = lua_newstate( 0, 0 );
+	//TODO: Add functionality to foundation allocator to be able to meet luajit demands (low 31-bit (?) addresses)
+	lua_State* state = luaL_newstate();//lua_newstate( lua_allocator, env );
 	if( !state )
 	{
 		log_errorf( ERROR_SCRIPT, "Unable to allocate Lua state" );
+		memory_deallocate( env );
 		return 0;
 	}
 
@@ -293,8 +280,6 @@ lua_t* lua_allocate( void )
 	//Disable automagic gc
 	lua_gc( state, LUA_GCCOLLECT, 0 );
 
-	env = memory_allocate_zero( sizeof( lua_t ), 0, MEMORY_PERSISTENT );
-	
 	lua_pushlightuserdata( state, env );
 	lua_setglobal( state, "__environment" );
 
