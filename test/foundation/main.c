@@ -60,7 +60,9 @@ DECLARE_TEST( foundation, log )
 	lua_t* env = lua_allocate();
 
 	log_suppress( ERRORLEVEL_NONE );
-	
+
+	EXPECT_NE( env, 0 );
+
 	const char* testcode =
 	"local foundation = require(\"foundation\")\n"
 	"local log = foundation.log\n"
@@ -93,7 +95,9 @@ DECLARE_TEST( foundation, environment )
 
 	log_suppress( ERRORLEVEL_NONE );
 	log_infof( "Running environment lua tests" );
-	
+
+	EXPECT_NE( env, 0 );
+
 	const char* testcode =
 	"local foundation = require( \"foundation\" )\n"
 	"local ffi = require( \"ffi\" )\n"
