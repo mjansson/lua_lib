@@ -246,7 +246,7 @@ static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_
 	if( !nsize && osize )
 		memory_deallocate( block );
 	else if( !block )
-		block = memory_allocate( nsize, 0, MEMORY_PERSISTENT );
+		block = memory_allocate( nsize, 0, MEMORY_PERSISTENT_32BIT_ADDRESS );
 	else if( nsize )
 		block = memory_reallocate( block, nsize, 0, osize );
 	if( block == 0 && nsize > 0 && env && ((lua_t*)env)->state )
@@ -265,10 +265,10 @@ static NOINLINE int lua_panic( lua_State* state )
 
 lua_t* lua_allocate( void )
 {
-	lua_t* env = memory_allocate_zero( sizeof( lua_t ), 0, MEMORY_PERSISTENT );
+	lua_t* env = memory_allocate_zero( sizeof( lua_t ), 0, MEMORY_PERSISTENT_32BIT_ADDRESS );
 
-	//TODO: Add functionality to foundation allocator to be able to meet luajit demands (low 31-bit (?) addresses)
-	lua_State* state = luaL_newstate();//lua_newstate( lua_allocator, env );
+	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
+	lua_State* state = lua_newstate( lua_allocator, env );
 	if( !state )
 	{
 		log_errorf( ERROR_SCRIPT, "Unable to allocate Lua state" );
