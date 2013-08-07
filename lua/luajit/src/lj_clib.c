@@ -332,11 +332,6 @@ static const char *clib_extsym(CTState *cts, CType *ct, GCstr *name)
 /* Index a C library by name. */
 void* (*lj_clib_getsym_builtin)(lua_State*, const char*) = 0;
 
-void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) )
-{
-	lj_clib_getsym_builtin = fn;
-}
-
 TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 {
   TValue *tv = lj_tab_setstr(L, cl->cache, name);

@@ -43,12 +43,7 @@
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
-#if FOUNDATION_PLATFORM_WINDOWS
-#include "luajit/src/lj_err.h"
-#else
-LUA_EXTERN void lj_err_throw( lua_State* L, int errcode );
-#endif
-LUA_EXTERN void lj_clib_set_getsym_builtin( void* (*fn)(lua_State*, const char*) );
+LUA_EXTERN void* (*lj_clib_getsym_builtin)(lua_State*, const char*);
 
 #undef LUA_API
 
@@ -250,7 +245,7 @@ static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_
 	else if( nsize )
 		block = memory_reallocate( block, nsize, 0, osize );
 	if( block == 0 && nsize > 0 && env && ((lua_t*)env)->state )
-		lj_err_throw( ((lua_t*)env)->state, LUA_ERRMEM );
+		log_panicf( ERROR_OUT_OF_MEMORY, "Unable to allocate Lua memory (%u bytes)", nsize );
 	return block;
 }
 
@@ -278,7 +273,7 @@ lua_t* lua_allocate( void )
 
 	lua_atpanic( state, lua_panic );
 
-	lj_clib_set_getsym_builtin( lua_lookup_builtin );
+	lj_clib_getsym_builtin = lua_lookup_builtin;
 	
 	//Disable automagic gc
 	lua_gc( state, LUA_GCCOLLECT, 0 );
