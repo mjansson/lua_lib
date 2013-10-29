@@ -35,7 +35,7 @@
 
 #include <foundation/platform.h>
 
-#include "types.h"
+#include <lua/types.h>
 
 
 LUA_API int                              lua_load_foundation( lua_State* state );

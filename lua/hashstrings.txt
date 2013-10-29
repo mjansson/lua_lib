@@ -1,10 +1,14 @@
 
+HASH_LUA                                lua
+
 HASH_SYM_LOG_DEBUGF                     log_debugf
 HASH_SYM_LOG_INFOF                      log_infof
 HASH_SYM_LOG_WARNF                      log_warnf
 HASH_SYM_LOG_ERRORF                     log_errorf
-HASH_SYM_LOG_STDOUT                     log_stdout
+HASH_SYM_LOG_PANICF                     log_panicf
+HASH_SYM_LOG_ENABLE_STDOUT              log_enable_stdout
 HASH_SYM_LOG_ENABLE_PREFIX              log_enable_prefix
+HASH_SYM_LOG_SET_SUPPRESS               log_set_suppress
 HASH_SYM_LOG_SUPPRESS                   log_suppress
 
 HASH_SYM_ERROR                          error

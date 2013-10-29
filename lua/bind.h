@@ -35,9 +35,8 @@
 
 #include <foundation/platform.h>
 
-#include "types.h"
-
-#include "luajit.h"
+#include <lua/types.h>
+#include <lua/luajit.h>
 
 #define LUABIND_GET_CSTR(x)     (lua_tostring( state, (x) ))
 #define LUABIND_GET_INT(x)      ((int)lua_tointeger( state, (x) ))

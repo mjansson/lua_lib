@@ -245,7 +245,7 @@ static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_
 	else if( nsize )
 		block = memory_reallocate( block, nsize, 0, osize );
 	if( block == 0 && nsize > 0 && env && ((lua_t*)env)->state )
-		log_panicf( ERROR_OUT_OF_MEMORY, "Unable to allocate Lua memory (%u bytes)", nsize );
+		log_panicf( HASH_LUA, ERROR_OUT_OF_MEMORY, "Unable to allocate Lua memory (%u bytes)", nsize );
 	return block;
 }
 
@@ -253,7 +253,7 @@ static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_
 static NOINLINE int lua_panic( lua_State* state )
 {
 	FOUNDATION_ASSERT_FAILFORMAT( "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
-	log_errorf( ERROR_SCRIPT, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
+	log_errorf( HASH_LUA, ERROR_EXCEPTION, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
 	return 0;
 }
 
@@ -266,7 +266,7 @@ lua_t* lua_allocate( void )
 	lua_State* state = lua_newstate( lua_allocator, env );
 	if( !state )
 	{
-		log_errorf( ERROR_SCRIPT, "Unable to allocate Lua state" );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Unable to allocate Lua state" );
 		memory_deallocate( env );
 		return 0;
 	}
@@ -292,7 +292,7 @@ lua_t* lua_allocate( void )
 	unsigned int stacksize = lua_gettop( state );
 
 	//Libraries
-	log_debug( "Loading Lua built-ins" );
+	log_debug( HASH_LUA, "Loading Lua built-ins" );
 	luaL_openlibs( state );
 
 	//Foundation bindings
@@ -369,7 +369,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 		lua_getglobal( state, cstr );
 		if( lua_isnil( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Invalid script call, '%s' is not set (%s)", cstr, method );
+			log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, '%s' is not set (%s)", cstr, method );
 			string_deallocate( buffer );
 			--env->calldepth;
 			lua_pop( state, lua_gettop( state ) - stacksize );
@@ -377,7 +377,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 		}
 		else if( !lua_istable( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, method );
+			log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, method );
 			string_deallocate( buffer );
 			--env->calldepth;
 			lua_pop( state, lua_gettop( state ) - stacksize );
@@ -396,7 +396,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 			lua_gettable( state, -2 );
 			if( lua_isnil( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Invalid script call, '%s' is not set (%s)", cstr, method );
+				log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, '%s' is not set (%s)", cstr, method );
 				string_deallocate( buffer );
 				--env->calldepth;
 				lua_pop( state, lua_gettop( state ) - stacksize );
@@ -404,7 +404,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 			}
 			else if( !lua_istable( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, method );
+				log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, method );
 				string_deallocate( buffer );
 				--env->calldepth;
 				lua_pop( state, lua_gettop( state ) - stacksize );
@@ -435,7 +435,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 		lua_pop( state, lua_gettop( state ) - stacksize );
 
 		//Method does not exist in Lua context
-		log_debugf( "Invalid script call, '%s' is not a function", method );
+		log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, '%s' is not a function", method );
 
 		return LUA_ERROR;
 	}
@@ -508,7 +508,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 	//TODO: Parse return value from call
 	if( lua_pcall( state, numargs, 0, 0 ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Calling %s : %s", method, lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Calling %s : %s", method, lua_tostring( state, -1 ) );
 		result = LUA_ERROR;
 	}
 
@@ -618,14 +618,14 @@ static lua_result_t lua_do_eval_string( lua_t* env, const char* code )
 
 	if( lua_load( state, lua_read_string, &read_string, "=eval" ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Lua eval string failed on load: %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Lua eval string failed on load: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Lua eval string failed on pcall: %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua eval string failed on pcall: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
@@ -649,14 +649,14 @@ static lua_result_t lua_do_eval_stream( lua_t* env, stream_t* stream )
 
 	if( lua_load( state, lua_read_stream, &read_stream, "=eval" ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Lua eval stream failed on load: %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Lua eval stream failed on load: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_warnf( WARNING_SCRIPT, "Lua eval stream failed on pcall: %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua eval stream failed on pcall: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return LUA_ERROR;
 	}
@@ -806,11 +806,11 @@ static lua_result_t lua_do_bind( lua_t* env, const char* property, lua_command_t
 			lua_newtable( state );
 			lua_pushvalue( state, -1 );
 			lua_setglobal( state, cstr );
-			log_debugf( "Created global table: %s", cstr );
+			log_debugf( HASH_LUA, "Created global table: %s", cstr );
 		}
 		else if( !lua_istable( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
+			log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
 			string_deallocate( buffer );
 			lua_pop( state, lua_gettop( state ) - stacksize );
 			return LUA_ERROR;
@@ -835,11 +835,11 @@ static lua_result_t lua_do_bind( lua_t* env, const char* property, lua_command_t
 				lua_pushstring( state, cstr );
 				lua_pushvalue( state, -2 );
 				lua_settable( state, -4 );
-				log_debugf( "Created table: %s", buffer );
+				log_debugf( HASH_LUA, "Created table: %s", buffer );
 			}
 			else if( !lua_istable( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
+				log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script bind call, existing data '%s' in '%s' is not a table", cstr, property );
 				string_deallocate( buffer );
 				lua_pop( state, lua_gettop( state ) - stacksize );
 				return LUA_ERROR;
@@ -957,13 +957,13 @@ static lua_result_t lua_do_get( lua_t* env, const char* property )
 		lua_getglobal( state, cstr );
 		if( lua_isnil( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Invalid script get, '%s' is not set (%s)", cstr, property );
+			log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script get, '%s' is not set (%s)", cstr, property );
 			string_deallocate( buffer );
 			return LUA_ERROR;
 		}
 		else if( !lua_istable( state, -1 ) )
 		{
-			log_warnf( WARNING_SCRIPT, "Invalid script get, existing data '%s' in '%s' is not a table", cstr, property );
+			log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script get, existing data '%s' in '%s' is not a table", cstr, property );
 			string_deallocate( buffer );
 			return LUA_ERROR;
 		}
@@ -980,13 +980,13 @@ static lua_result_t lua_do_get( lua_t* env, const char* property )
 			lua_gettable( state, -2 );
 			if( lua_isnil( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Invalid script call, '%s' is not set (%s)", cstr, property );
+				log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, '%s' is not set (%s)", cstr, property );
 				string_deallocate( buffer );
 				return LUA_ERROR;
 			}
 			else if( !lua_istable( state, -1 ) )
 			{
-				log_warnf( WARNING_SCRIPT, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, property );
+				log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script call, existing data '%s' in '%s' is not a table", cstr, property );
 				string_deallocate( buffer );
 				return LUA_ERROR;
 			}
@@ -1012,7 +1012,7 @@ static lua_result_t lua_do_get( lua_t* env, const char* property )
 	if( lua_isnil( state, -1 ) )
 	{
 		//Property does not exist in Lua context
-		log_warnf( WARNING_SCRIPT, "Invalid script get, '%s' is not a property", property );
+		log_errorf( HASH_LUA, ERROR_INVALID_VALUE, "Invalid script get, '%s' is not a property", property );
 		return LUA_ERROR;
 	}
 
@@ -1049,7 +1049,7 @@ static void* lua_lookup_builtin( lua_State* state, const char* sym )
 	hash_t symhash = hash( sym, string_length( sym ) );
 	lua_t* env = lua_from_state( state );
 	void* fn = hashmap_lookup( env->lookup_map, symhash );
-	//log_debugf( "Built-in lookup: %s -> %p", sym, fn );
+	//log_debugf( HASH_LUA, "Built-in lookup: %s -> %p", sym, fn );
 	return fn;
 }
 

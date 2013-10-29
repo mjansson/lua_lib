@@ -32,6 +32,7 @@
 #include <lua/lua.h>
 #include <lua/bind.h>
 #include <lua/read.h>
+#include <lua/hashstrings.h>
 
 #include "errorcodes.h"
 
@@ -46,7 +47,7 @@ typedef struct
 	stream_t*           input_stream;
 	stream_t*           output_stream;
 	
-	lua_t*  env;
+	lua_t*              env;
 
 	bool                hex;
 
@@ -87,9 +88,9 @@ static NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_
 		}
 		else
 		{
-			log_suppress( ERRORLEVEL_DEBUG );
-			log_infof( line );
-			log_suppress( dump->suppress_level );
+			log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
+			log_info( HASH_LUA, line );
+			log_set_suppress( HASH_LUA, dump->suppress_level );
 		}
 		memory_deallocate( line );
 	}
@@ -113,7 +114,8 @@ int main_initialize( void )
 	int ret = 0;
 
 	log_enable_prefix( false );
-	log_suppress( ERRORLEVEL_INFO );
+	log_set_suppress( 0, ERRORLEVEL_INFO );
+	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
 	
 	application_t application = {0};
 	application.name = "luadump";
@@ -131,10 +133,10 @@ int main_initialize( void )
 
 
 int main_run( void* main_arg )
-{
+{	
 	int result = LUADUMP_RESULT_OK;
 	luadump_t dump = luadump_parse_command_line( environment_command_line() );
-
+	
 	lua_State* state = 0;
 	
 	if( !string_length( dump.input_file ) )
@@ -171,7 +173,7 @@ int main_run( void* main_arg )
 
 	if( lua_load( state, lua_read_stream, &read_stream, "=eval" ) != 0 )
 	{
-		log_errorf( ERROR_SCRIPT, "Lua load failed: %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua load failed: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		result = LUADUMP_RESULT_FAILED_EVAL;
 		goto exit;
@@ -182,12 +184,12 @@ int main_run( void* main_arg )
 	//lua_pop( state, 1 );
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_errorf( ERROR_SCRIPT, "Lua pcall failed: %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua pcall failed: %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 	}
 	else
 	{
-		log_infof( "Lua bytecode dump successful" );
+		log_info( HASH_LUA, "Lua bytecode dump successful" );
 		//lua_call_string( dump.env, "foundation.log.info", "Testing log output" );
 	}
 	
@@ -290,11 +292,11 @@ static int luadump_load_jitbc( lua_t* env )
 	lua_pushstring( state, LUA_IOLIBNAME );
 	lua_call( state, 1, 0 );
 
-	log_debugf( "Define jit.vmdef module" );
+	log_debugf( HASH_LUA, "Define jit.vmdef module" );
 	if( lua_eval( env, jit_vmdef ) != LUA_OK )
 		return LUADUMP_RESULT_UNABLE_TO_LOAD_JITLIB_VMDEF;
 
-	log_debugf( "Define jit.bc module" );
+	log_debugf( HASH_LUA, "Define jit.bc module" );
 	if( lua_eval( env, jit_bc ) != LUA_OK )
 		return LUADUMP_RESULT_UNABLE_TO_LOAD_JITLIB_BC;
 
@@ -313,8 +315,8 @@ static int luadump_load_jitbc( lua_t* env )
 
 static void luadump_print_usage( void )
 {
-	log_suppress( ERRORLEVEL_DEBUG );
-	log_infof( 
+	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
+	log_info( HASH_LUA,
 		"luadump usage:\n"
 		"  luadump [--output <filename>] [--hex] [--help] file\n"
 		"    Optional arguments:\n"
@@ -322,6 +324,6 @@ static void luadump_print_usage( void )
 		"      --hex                        Output in hex format\n"
 		"      --help                       Show this message"
 	);
-	log_suppress( ERRORLEVEL_INFO );
+	log_set_suppress( HASH_LUA, ERRORLEVEL_INFO );
 }
 

@@ -35,7 +35,8 @@
 
 #include <foundation/platform.h>
 
-#include "types.h"
+#include <lua/types.h>
+#include <lua/hashstrings.h>
 
 
 //! Allocate environment

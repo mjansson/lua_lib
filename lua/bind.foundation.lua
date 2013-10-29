@@ -7,19 +7,25 @@ typedef struct _foundation_stream stream_t;
 typedef float float32_t;
 typedef double float64_t;
 
-void  log_debugf( const char*, ... );
-void  log_infof( const char*, ... );
-void  log_warnf( int, const char*, ... );
-void  log_errorf( int, const char*, ... );
-void  log_panicf( int, const char*, ... );
-void  log_stdout( bool );
+uint64_t hash( const char*, unsigned int );
+
+void  log_debugf( uint64_t, const char*, ... );
+void  log_infof( uint64_t, const char*, ... );
+void  log_warnf( uint64_t, int, const char*, ... );
+void  log_errorf( uint64_t, int, const char*, ... );
+void  log_panicf( uint64_t, int, const char*, ... );
+void  log_enable_stdout( bool );
 void  log_enable_prefix( bool );
-void  log_suppress( int );
+void  log_set_suppress( uint64_t, int );
+int   log_suppress( uint64_t );
 
 int   error( void );
 int   error_report( int, int );
 void  error_context_push( const char*, const char* );
 void  error_context_pop( void );
+
+unsigned int           string_length( const char* );
+unsigned int           string_glyphs( const char* );
 
 int                    array_size( const void* );
 const void*            array_element_pointer( const void*, int );
@@ -84,11 +90,15 @@ void                   stream_flush( stream_t* );
 
 ]]
 
-local function log_debug( message ) ffi.C.log_debugf( "%s", message ) end
-local function log_info( message ) ffi.C.log_infof( "%s", message ) end
-local function log_warn( message ) ffi.C.log_warnf( 6, "%s", message ) end -- 6 = WARNING_SCRIPT
-local function log_error( message ) ffi.C.log_errorf( 11, "%s", message ) end -- 11 = ERROR_SCRIPT
-local function log_panic( message ) ffi.C.log_panicf( 11, "%s", message ) end -- 11 = ERROR_SCRIPT
+local function hash( str ) return ffi.C.hash( str, ffi.C.string_length( str ) ) end
+
+local function log_debug( message ) ffi.C.log_debugf( 0x7da58d38bd2b23e6, "%s", message ) end
+local function log_info( message ) ffi.C.log_infof( 0x7da58d38bd2b23e6, "%s", message ) end
+local function log_warn( message ) ffi.C.log_warnf( 0x7da58d38bd2b23e6, 8, "%s", message ) end -- 6 = WARNING_SCRIPT
+local function log_error( message ) ffi.C.log_errorf( 0x7da58d38bd2b23e6, 15, "%s", message ) end -- 15 = ERROR_SCRIPT
+local function log_panic( message ) ffi.C.log_panicf( 0x7da58d38bd2b23e6, 15, "%s", message ) end -- 15 = ERROR_SCRIPT
+local function log_set_suppress( context, level ) ffi.C.log_set_suppress( hash( context ), level ) end
+local function log_suppress( context ) return ffi.C.log_suppress( hash( context ) ) end
 
 local function string_array_to_table( arr )
       local tab = {}
@@ -130,9 +140,10 @@ log.info = log_info
 log.warn = log_warn
 log.error = log_error
 log.panic = log_panic
-log.stdout = ffi.C.log_stdout
+log.enable_stdout = ffi.C.log_enable_stdout
 log.enable_prefix = ffi.C.log_enable_prefix
-log.suppress = ffi.C.log_suppress
+log.set_suppress = log_set_suppress
+log.suppress = log_suppress
 
 error = {}
 error.get = ffi.C.error
@@ -150,26 +161,26 @@ error.INVALID_VALUE = 1
 error.UNSUPPORTED = 2
 error.NOT_IMPLEMENTED = 3
 error.OUT_OF_MEMORY = 4
-error.INTERNAL_FAILURE = 5
-error.MALLOC_FAILURE = 6
-error.EMORY_LEAK = 7
+error.MEMORY_LEAK = 5
+error.MEMORY_ALIGNMENT = 6
+error.INTERNAL_FAILURE = 7
 error.ACCESS_DENIED = 8
 error.EXCEPTION = 9
 error.SYSTEM_CALL_FAIL = 10
-error.SCRIPT = 11
-error.UNKNOWN_TYPE = 12
-error.UNKNOWN_RESOURCE = 13
-error.MEMORY_ALIGNMENT = 14
-error.DEPRECATED = 15
+error.UNKNOWN_TYPE = 11
+error.UNKNOWN_RESOURCE = 12
+error.DEPRECATED = 13
+error.ASSERT = 14
+error.SCRIPT = 15
 error.WARNING_PERFORMANCE = 0
 error.WARNING_DEPRECATED = 1
 error.WARNING_BAD_DATA = 2
 error.WARNING_MEMORY = 3
 error.WARNING_UNSUPPORTED = 4
 error.WARNING_SUSPICIOUS = 5
-error.WARNING_SCRIPT = 6
-error.WARNING_SYSTEM_CALL_FAIL = 7
-error.WARNING_DEADLOCK = 8
+error.WARNING_SYSTEM_CALL_FAIL = 6
+error.WARNING_DEADLOCK = 7
+error.WARNING_SCRIPT = 8
 
 string = {}
 string.array_to_table = string_array_to_table

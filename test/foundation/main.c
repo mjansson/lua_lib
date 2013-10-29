@@ -44,6 +44,12 @@ application_t test_foundation_application( void )
 }
 
 
+memory_system_t test_foundation_memory_system( void )
+{
+	return memory_system_malloc();
+}
+
+
 int test_foundation_initialize( void )
 {
 	return 0;
@@ -59,7 +65,7 @@ DECLARE_TEST( foundation, log )
 {
 	lua_t* env = lua_allocate();
 
-	log_suppress( ERRORLEVEL_NONE );
+	log_set_suppress( HASH_LUA, ERRORLEVEL_NONE );
 
 	EXPECT_NE( env, 0 );
 
@@ -67,17 +73,17 @@ DECLARE_TEST( foundation, log )
 	"local foundation = require(\"foundation\")\n"
 	"local log = foundation.log\n"
 	"local error = foundation.error\n"
-	"log.suppress( error.LEVEL_NONE )\n"
+	"log.set_suppress( \"lua\", error.LEVEL_NONE )\n"
 	"log.debug( \"Testing log debug output\" )\n"
 	"log.info( \"Testing log info output\" )\n"
 	"log.warn( \"Testing log warning output\" )\n"
 	"log.enable_prefix( false )\n"
 	"log.error( \"Testing log error output without prefix\" )\n"
-	"log.stdout( false )\n"
+	"log.enable_stdout( false )\n"
 	"log.debug( \"Invisible on stdout\" )\n"
-	"log.stdout( true )\n"
+	"log.eable_stdout( true )\n"
 	"log.enable_prefix( true )\n"
-	"log.suppress( error.LEVEL_INFO )\n";
+	"log.set_suppress( \"lua\", error.LEVEL_INFO )\n";
 	
 	EXPECT_EQ( lua_eval_string( env, testcode ), LUA_OK );
 
@@ -93,8 +99,8 @@ DECLARE_TEST( foundation, environment )
 {
 	lua_t* env = lua_allocate();
 
-	log_suppress( ERRORLEVEL_NONE );
-	log_infof( "Running environment lua tests" );
+	log_set_suppress( HASH_LUA, ERRORLEVEL_NONE );
+	log_info( HASH_LUA, "Running environment lua tests" );
 
 	EXPECT_NE( env, 0 );
 
@@ -104,7 +110,7 @@ DECLARE_TEST( foundation, environment )
 	"local log = foundation.log\n"
 	"local error = foundation.error\n"
 	"local env = foundation.environment\n"
-	"log.suppress( error.LEVEL_DEBUG )\n"
+	"log.set_suppress( \"lua\", error.LEVEL_DEBUG )\n"
 	"log.enable_prefix( false )\n"
 	"log.info( \"Executable name: \" .. ffi.string( env.executable_name() ) )\n"
 	"local cmdline = \"\"\n"
@@ -116,13 +122,12 @@ DECLARE_TEST( foundation, environment )
 	"end\n"
 	"log.info( \"Command line:\" .. cmdline )\n"
 	"log.enable_prefix( true )\n"
-	"log.suppress( error.LEVEL_INFO )\n";
+	"log.set_suppress( \"lua\", error.LEVEL_INFO )\n";
 
 	EXPECT_EQ( lua_eval_string( env, testcode ), LUA_OK );
 
-	log_suppress( ERRORLEVEL_NONE );
-	log_infof( "Done running environment lua tests" );
-	log_suppress( ERRORLEVEL_INFO );
+	log_infof( HASH_LUA, "Done running environment lua tests" );
+	log_set_suppress( HASH_LUA, ERRORLEVEL_INFO );
 	
 	lua_deallocate( env );
 
@@ -139,6 +144,7 @@ void test_foundation_declare( void )
 
 test_suite_t test_foundation_suite = {
 	test_foundation_application,
+	test_foundation_memory_system,
 	test_foundation_declare,
 	test_foundation_initialize,
 	test_foundation_shutdown

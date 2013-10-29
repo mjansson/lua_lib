@@ -28,12 +28,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "lua.h"
-#include "read.h"
-#include "foundation.h"
-#include "hashstrings.h"
+#include <lua/lua.h>
+#include <lua/read.h>
+#include <lua/foundation.h>
+#include <lua/hashstrings.h>
 
-#include <foundation/log.h>
+#include <foundation/foundation.h>
 
 #undef LUA_API
 #define LUA_HAS_LUA_STATE_TYPE
@@ -41,7 +41,7 @@
 #include "luajit/src/lua.h"
 
 
-static void  _log_debugf_disabled( const char* format, ... ) {}
+static void  _log_debugf_disabled( uint64_t context, const char* format, ... ) {}
 
 static void  _error_context_push_disabled( const char* name, const char* data ) {}
 static void  _error_context_pop_disabled() {} 
@@ -62,13 +62,18 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 #endif
 #if BUILD_ENABLE_LOG
 	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)log_infof );
-#else
-	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)_log_debugf_disabled );
-#endif
 	hashmap_insert( map, HASH_SYM_LOG_WARNF,              (void*)(uintptr_t)log_warnf );
 	hashmap_insert( map, HASH_SYM_LOG_ERRORF,             (void*)(uintptr_t)log_errorf );
-	hashmap_insert( map, HASH_SYM_LOG_STDOUT,             (void*)(uintptr_t)log_stdout );
+	hashmap_insert( map, HASH_SYM_LOG_PANICF,             (void*)(uintptr_t)log_panicf );
+#else
+	hashmap_insert( map, HASH_SYM_LOG_INFOF,              (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_WARNF,              (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_ERRORF,             (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_PANICF,             (void*)(uintptr_t)_log_debugf_disabled );
+#endif
 	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,      (void*)(uintptr_t)log_enable_prefix );
+	hashmap_insert( map, HASH_SYM_LOG_ENABLE_STDOUT,      (void*)(uintptr_t)log_enable_stdout );
+	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,       (void*)(uintptr_t)log_set_suppress );
 	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,           (void*)(uintptr_t)log_suppress );
 
 	hashmap_insert( map, HASH_SYM_ARRAY_SIZE,             (void*)(uintptr_t)_array_size );
@@ -156,20 +161,20 @@ int lua_load_foundation( lua_State* state )
 		.offset = 0
 	};
 
-	log_debugf( "Loading foundation built-ins (%u bytes of bytecode)", read_buffer.size );
+	log_debugf( HASH_LUA, "Loading foundation built-ins (%u bytes of bytecode)", read_buffer.size );
 
 	lua_load_foundation_builtins( state );
 	
 	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
 	{
-		log_errorf( ERROR_SCRIPT, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return 0;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_errorf( ERROR_SCRIPT, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return 0;
 	}
