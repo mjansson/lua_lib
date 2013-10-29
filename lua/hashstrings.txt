@@ -1,6 +1,8 @@
 
 HASH_LUA                                lua
 
+HASH_SYM_HASH                           hash
+
 HASH_SYM_LOG_DEBUGF                     log_debugf
 HASH_SYM_LOG_INFOF                      log_infof
 HASH_SYM_LOG_WARNF                      log_warnf
@@ -18,6 +20,9 @@ HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
 
 HASH_SYM_ARRAY_SIZE                     array_size
 HASH_SYM_ARRAY_ELEMENT_POINTER          array_element_pointer
+
+HASH_SYM_STRING_LENGTH                  string_length
+HASH_SYM_STRING_GLYPHS                  string_glyphs
 
 HASH_SYM_ENVIRONMENT_COMMAND_LINE                   environment_command_line
 HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME                environment_executable_name

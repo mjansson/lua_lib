@@ -7,6 +7,7 @@
     the foundation hashify tool to update this file */
 
 #define HASH_LUA static_hash_string( "lua", 0x7da58d38bd2b23e6ULL )
+#define HASH_SYM_HASH static_hash_string( "hash", 0xe2c5d32edd2079b8ULL )
 #define HASH_SYM_LOG_DEBUGF static_hash_string( "log_debugf", 0x80d642ef9f6407b0ULL )
 #define HASH_SYM_LOG_INFOF static_hash_string( "log_infof", 0xbf8f17ebe9b7ec7eULL )
 #define HASH_SYM_LOG_WARNF static_hash_string( "log_warnf", 0x41bc3bf706a12fbULL )
@@ -22,6 +23,8 @@
 #define HASH_SYM_ERROR_CONTEXT_POP static_hash_string( "error_context_pop", 0x50c8231b81e1af9ULL )
 #define HASH_SYM_ARRAY_SIZE static_hash_string( "array_size", 0xd0ad29b372a85956ULL )
 #define HASH_SYM_ARRAY_ELEMENT_POINTER static_hash_string( "array_element_pointer", 0xba3507c23a2f9a8eULL )
+#define HASH_SYM_STRING_LENGTH static_hash_string( "string_length", 0x718f40c6db5ef609ULL )
+#define HASH_SYM_STRING_GLYPHS static_hash_string( "string_glyphs", 0x19f4e38d72cda7d0ULL )
 #define HASH_SYM_ENVIRONMENT_COMMAND_LINE static_hash_string( "environment_command_line", 0x15198430aa0b7f7dULL )
 #define HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME static_hash_string( "environment_executable_name", 0x1805e6c27176d00fULL )
 #define HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY static_hash_string( "environment_executable_directory", 0x23b7e0b08c936a9dULL )

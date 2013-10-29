@@ -36,7 +36,7 @@
 #include <foundation/platform.h>
 #include <foundation/types.h>
 
-#include "lua.h"
+#include <lua/lua.h>
 
 
 #define LUA_NUMBER         double

@@ -70,8 +70,7 @@ static NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_
 	if( size <= 0 )
 		return 0;
 	
-	if( !dump->bytecode )
-		dump->bytecode = ( dump->bytecode_size ? memory_reallocate( dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size ) : memory_allocate( size, 0, MEMORY_PERSISTENT ) );
+	dump->bytecode = ( dump->bytecode ? memory_reallocate( dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size ) : memory_allocate( size, 0, MEMORY_PERSISTENT ) );
 
 	memcpy( dump->bytecode + dump->bytecode_size, buffer, size );
 	dump->bytecode_size += size;

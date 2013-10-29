@@ -28,10 +28,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "lua.h"
-#include "hashstrings.h"
-#include "foundation.h"
-#include "read.h"
+#include <lua/lua.h>
+#include <lua/hashstrings.h>
+#include <lua/foundation.h>
+#include <lua/read.h>
 
 #include <foundation/foundation.h>
 

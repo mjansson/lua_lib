@@ -81,7 +81,7 @@ DECLARE_TEST( foundation, log )
 	"log.error( \"Testing log error output without prefix\" )\n"
 	"log.enable_stdout( false )\n"
 	"log.debug( \"Invisible on stdout\" )\n"
-	"log.eable_stdout( true )\n"
+	"log.enable_stdout( true )\n"
 	"log.enable_prefix( true )\n"
 	"log.set_suppress( \"lua\", error.LEVEL_INFO )\n";
 	

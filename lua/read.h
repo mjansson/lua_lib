@@ -35,7 +35,7 @@
 
 #include <foundation/platform.h>
 
-#include "types.h"
+#include <lua/types.h>
 
 
 LUA_API const char* lua_read_stream( lua_State* state, void* user_data, size_t* size );

@@ -55,6 +55,8 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	lua_t* env = lua_from_state( state );
 	hashmap_t* map = lua_lookup_map( env );
 	
+	hashmap_insert( map, HASH_SYM_HASH,                   (void*)(uintptr_t)hash );
+
 #if BUILD_ENABLE_DEBUG_LOG
 	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,             (void*)(uintptr_t)log_debugf );
 #else
@@ -88,6 +90,9 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,     (void*)(uintptr_t)_error_context_push_disabled );
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop_disabled );
 #endif
+
+	hashmap_insert( map, HASH_SYM_STRING_LENGTH,          (void*)(uintptr_t)string_length );
+	hashmap_insert( map, HASH_SYM_STRING_GLYPHS,          (void*)(uintptr_t)string_glyphs );
 
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_COMMAND_LINE,                   (void*)(uintptr_t)environment_command_line );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME,                (void*)(uintptr_t)environment_executable_name );
