@@ -81,3 +81,25 @@ HASH_SYM_STREAM_WRITE_STRING            stream_write_string
 HASH_SYM_STREAM_WRITE_ENDL              stream_write_endl
 HASH_SYM_STREAM_TRUNCATE                stream_truncate
 HASH_SYM_STREAM_FLUSH                   stream_flush
+HASH_SYM_STREAM_OPEN_STDOUT             stream_open_stdout
+HASH_SYM_STREAM_OPEN_STDERR             stream_open_stderr
+HASH_SYM_STREAM_OPEN_STDIN              stream_open_stdin
+
+HASH_SYM_SYSTEM_ERROR_MESSAGE           system_error_message
+HASH_SYM_SYSTEM_PLATFORM                system_platform
+HASH_SYM_SYSTEM_ARCHITECTURE            system_architecture
+HASH_SYM_SYSTEM_BYTEORDER               system_byteorder
+HASH_SYM_SYSTEM_HARDWARE_THREADS        system_hardware_threads
+HASH_SYM_SYSTEM_HOSTNAME                system_hostname
+HASH_SYM_SYSTEM_HOSTID                  system_hostid
+HASH_SYM_SYSTEM_USERNAME                system_username
+HASH_SYM_SYSTEM_DEBUGGER_ATTACHED       system_debugger_attached
+HASH_SYM_SYSTEM_PAUSE                   system_pause
+HASH_SYM_SYSTEM_LANGUAGE                system_language
+HASH_SYM_SYSTEM_COUNTRY                 system_country
+HASH_SYM_SYSTEM_LOCALE                  system_locale
+HASH_SYM_SYSTEM_LOCALE_STRING           system_locale_string
+HASH_SYM_SYSTEM_PROCESS_EVENTS          system_process_events
+HASH_SYM_SYSTEM_MESSAGE_BOX             system_message_box
+HASH_SYM_SYSTEM_EVENT_STREAM            system_event_stream
+HASH_SYM_SYSTEM_POST_EVENT              system_post_event

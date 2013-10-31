@@ -79,6 +79,7 @@ static void* event_thread( object_t thread, void* arg )
 			{
 				case FOUNDATIONEVENT_TERMINATE:
 					//process_exit( LUA_RESULT_ABORTED );
+					_lua_terminate = true;
 					break;
 
 				default:

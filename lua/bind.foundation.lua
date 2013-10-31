@@ -4,6 +4,8 @@ local ffi = require( "ffi" )
 ffi.cdef[[
 
 typedef struct _foundation_stream stream_t;
+typedef struct _foundation_event_stream event_stream_t;
+
 typedef float float32_t;
 typedef double float64_t;
 
@@ -87,6 +89,28 @@ void                   stream_write_string( stream_t*, const char* );
 void                   stream_write_endl( stream_t* );
 void                   stream_truncate( stream_t*, uint64_t );
 void                   stream_flush( stream_t* );
+stream_t*              stream_open_stdout( void );
+stream_t*              stream_open_stderr( void );
+stream_t*              stream_open_stdin( void );
+
+const char*            system_error_message( int code );
+int                    system_platform( void );
+int                    system_architecture( void );
+int                    system_byteorder( void );
+unsigned int           system_hardware_threads( void );
+const char*            system_hostname( void );
+uint64_t               system_hostid( void );
+const char*            system_username( void );
+bool                   system_debugger_attached( void );
+void                   system_pause( void );
+uint16_t               system_language( void );
+uint16_t               system_country( void );
+uint32_t               system_locale( void );
+const char*            system_locale_string( void );
+void                   system_process_events( void );
+bool                   system_message_box( const char* title, const char* message, bool cancel_button );
+event_stream_t*        system_event_stream( void );
+void                   system_post_event( int event );
 
 ]]
 
@@ -133,6 +157,11 @@ ARCHITECTURE_ARM7 = 0
 
 BYTEORDER_LITTLEENDIAN = 0
 BYTEORDER_BIGENDIAN = 1
+
+FOUNDATIONEVENT_TERMINATE = 1
+FOUNDATIONEVENT_FILE_CREATED = 2
+FOUNDATIONEVENT_FILE_DELETED = 3
+FOUNDATIONEVENT_FILE_MODIFIED = 4
 
 log = {}
 log.debug = log_debug
@@ -254,4 +283,26 @@ stream.write_string = ffi.C.stream_write_string
 stream.write_endl = ffi.C.stream_write_endl
 stream.truncate = ffi.C.stream_truncate
 stream.flush = ffi.C.stream_flush
+stream.open_stdout = ffi.C.stream_open_stdout
+stream.open_stderr = ffi.C.stream_open_stderr
+stream.open_stdin = ffi.C.stream_open_stdin
 
+system = {}
+system.error_message = ffi.C.system_error_message
+system.platform = ffi.C.system_platform
+system.architecture = ffi.C.system_architecture
+system.byteorder = ffi.C.system_byteorder
+system.hardware_threads = ffi.C.system_hardware_threads
+system.hostname = ffi.C.system_hostname
+system.hostid = ffi.C.system_hostid
+system.username = ffi.C.system_username
+system.debugger_attached = ffi.C.system_debugger_attached
+system.pause = ffi.C.system_pause
+system.language = ffi.C.system_language
+system.country = ffi.C.system_country
+system.locale = ffi.C.system_locale
+system.locale_string = ffi.C.system_locale_string
+system.process_events = ffi.C.system_process_events
+system.message_box = ffi.C.system_message_box
+system.event_stream = ffi.C.system_event_stream
+system.post_event = ffi.C.system_post_event

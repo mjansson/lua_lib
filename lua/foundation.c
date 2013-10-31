@@ -151,6 +151,28 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_STREAM_WRITE_ENDL,              (void*)(uintptr_t)stream_write_endl );
 	hashmap_insert( map, HASH_SYM_STREAM_TRUNCATE,                (void*)(uintptr_t)stream_truncate );
 	hashmap_insert( map, HASH_SYM_STREAM_FLUSH,                   (void*)(uintptr_t)stream_flush );
+	hashmap_insert( map, HASH_SYM_STREAM_OPEN_STDOUT,             (void*)(uintptr_t)stream_open_stdout );
+	hashmap_insert( map, HASH_SYM_STREAM_OPEN_STDERR,             (void*)(uintptr_t)stream_open_stderr );
+	hashmap_insert( map, HASH_SYM_STREAM_OPEN_STDIN,              (void*)(uintptr_t)stream_open_stdin );
+
+	hashmap_insert( map, HASH_SYM_SYSTEM_ERROR_MESSAGE,           (void*)(uintptr_t)system_error_message );
+	hashmap_insert( map, HASH_SYM_SYSTEM_PLATFORM,                (void*)(uintptr_t)system_platform );
+	hashmap_insert( map, HASH_SYM_SYSTEM_ARCHITECTURE,            (void*)(uintptr_t)system_architecture );
+	hashmap_insert( map, HASH_SYM_SYSTEM_BYTEORDER,               (void*)(uintptr_t)system_byteorder );
+	hashmap_insert( map, HASH_SYM_SYSTEM_HARDWARE_THREADS,        (void*)(uintptr_t)system_hardware_threads );
+	hashmap_insert( map, HASH_SYM_SYSTEM_HOSTNAME,                (void*)(uintptr_t)system_hostname );
+	hashmap_insert( map, HASH_SYM_SYSTEM_HOSTID,                  (void*)(uintptr_t)system_hostid );
+	hashmap_insert( map, HASH_SYM_SYSTEM_USERNAME,                (void*)(uintptr_t)system_username );
+	hashmap_insert( map, HASH_SYM_SYSTEM_DEBUGGER_ATTACHED,       (void*)(uintptr_t)system_debugger_attached );
+	hashmap_insert( map, HASH_SYM_SYSTEM_PAUSE,                   (void*)(uintptr_t)system_pause );
+	hashmap_insert( map, HASH_SYM_SYSTEM_LANGUAGE,                (void*)(uintptr_t)system_language );
+	hashmap_insert( map, HASH_SYM_SYSTEM_COUNTRY,                 (void*)(uintptr_t)system_country );
+	hashmap_insert( map, HASH_SYM_SYSTEM_LOCALE,                  (void*)(uintptr_t)system_locale );
+	hashmap_insert( map, HASH_SYM_SYSTEM_LOCALE_STRING,           (void*)(uintptr_t)system_locale_string );
+	hashmap_insert( map, HASH_SYM_SYSTEM_PROCESS_EVENTS,          (void*)(uintptr_t)system_process_events );
+	hashmap_insert( map, HASH_SYM_SYSTEM_MESSAGE_BOX,             (void*)(uintptr_t)system_message_box );
+	hashmap_insert( map, HASH_SYM_SYSTEM_EVENT_STREAM,            (void*)(uintptr_t)system_event_stream );
+	hashmap_insert( map, HASH_SYM_SYSTEM_POST_EVENT,              (void*)(uintptr_t)system_post_event );
 }
 
 
