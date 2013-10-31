@@ -15,8 +15,11 @@ elif toolsenv['platform'] == 'raspberrypi':
 	toolsenv.Append( LIBS=[ 'bcm_host', 'rt', 'm' ] )
 
 env['luadumpprg'] = toolsenv.Program( 'bin/${buildprofile}/luadump${prgsuffix}', 'luadump/main.c' )
+env['luaprg'] = toolsenv.Program( 'bin/${buildprofile}/lua${prgsuffix}', 'lua/main.c' )
 
 
 # INSTALLS
 
 toolsenv.AddPostAction( 'bin/${buildprofile}/luadump${prgsuffix}', toolsenv.Install( '#bin/${platform}${platformsuffix}/${buildprofile}', [ env['luadumpprg'] ] ) )
+toolsenv.AddPostAction( 'bin/${buildprofile}/lua${prgsuffix}', toolsenv.Install( '#bin/${platform}${platformsuffix}/${buildprofile}', [ env['luaprg'] ] ) )
+
