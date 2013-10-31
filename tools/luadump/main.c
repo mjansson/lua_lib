@@ -180,7 +180,6 @@ int main_run( void* main_arg )
 
 	lua_dump( state, lua_dump_writer, &dump );
 
-	//lua_pop( state, 1 );
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
 		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua pcall failed: %s", lua_tostring( state, -1 ) );
@@ -189,7 +188,6 @@ int main_run( void* main_arg )
 	else
 	{
 		log_info( HASH_LUA, "Lua bytecode dump successful" );
-		//lua_call_string( dump.env, "foundation.log.info", "Testing log output" );
 	}
 	
 exit:
