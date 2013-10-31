@@ -117,6 +117,12 @@ LUA_EXTERN int             (lua_setfenv) (lua_State *L, int idx);
 #define LUA_GLOBALSINDEX	(-10002)
 #define lua_upvalueindex(i)	(LUA_GLOBALSINDEX-(i))
 
+#define LUA_YIELD	        1
+#define LUA_ERRRUN	        2
+#define LUA_ERRSYNTAX	    3
+#define LUA_ERRMEM	        4
+#define LUA_ERRERR	        5
+
 #define LUA_TNONE		    (-1)
 
 #define LUA_TNIL		    0

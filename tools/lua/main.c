@@ -33,6 +33,7 @@
 #include <lua/bind.h>
 #include <lua/read.h>
 #include <lua/hashstrings.h>
+#include <lua/luajit.h>
 
 #include "errorcodes.h"
 
@@ -47,6 +48,8 @@ typedef struct
 
 	error_level_t       suppress_level;
 } luainstance_t;
+
+static bool           _lua_terminate = false;
 	
 
 static luainstance_t  _lua_parse_command_line( const char* const* cmdline );
@@ -60,12 +63,42 @@ LUA_API int lua_load( lua_State *L, lua_Reader reader, void *dt, const char *chu
 LUA_API int lua_pcall( lua_State *L, int nargs, int nresults, int errfunc );
 
 
+static void* event_thread( object_t thread, void* arg )
+{
+	event_block_t* block;
+	event_t* event = 0;
+
+	while( !thread_should_terminate( thread ) )
+	{
+		block = event_stream_process( system_event_stream() );
+		event = 0;
+
+		while( ( event = event_next( block, event ) ) )
+		{
+			if( event->system == SYSTEM_FOUNDATION ) switch( event->id )
+			{
+				case FOUNDATIONEVENT_TERMINATE:
+					//process_exit( LUA_RESULT_ABORTED );
+					break;
+
+				default:
+					break;
+			}
+		}
+
+		thread_sleep( 10 );
+	}
+
+	return 0;
+}
+
+
 int main_initialize( void )
 {
 	int ret = 0;
 
 	log_enable_prefix( false );
-	log_set_suppress( 0, ERRORLEVEL_INFO );
+	log_set_suppress( 0, ERRORLEVEL_DEBUG );
 	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
 	
 	application_t application = {0};
@@ -90,6 +123,9 @@ int main_run( void* main_arg )
 	
 	lua_State* state = 0;
 	
+	object_t eventthread = thread_create( event_thread, "event_thread", THREAD_PRIORITY_NORMAL, 0 );
+	thread_start( eventthread, 0 );
+
 	instance.env = lua_allocate();
 	state = lua_state( instance.env );
 	
@@ -100,9 +136,15 @@ int main_run( void* main_arg )
 	
 exit:
 
+	thread_terminate( eventthread );
+	thread_destroy( eventthread );
+
 	lua_deallocate( instance.env );
 	string_deallocate( instance.input_file );
 	
+	while( thread_is_running( eventthread ) )
+		thread_sleep( 10 );
+
 	return result;
 }
 
@@ -119,39 +161,79 @@ static int _lua_interpreter( lua_t* lua )
 	stream_t* out = stream_open_stdout();
 
 	char* entry = 0;
+	char* collated = 0;
 	lua_readstring_t read_string = {0};
 	lua_State* state = lua_state( lua );
 
+	int status;
+
+	log_enable_prefix( false );
+
 	do
 	{
-		stream_write_string( out, "lua> " );
+		stream_write_string( out, collated ? "  >> " : "lua> " );
 		stream_flush( out );
 
 		entry = stream_read_line( in, '\n' );
 		if( entry && string_length( entry ) )
 		{
-			read_string.string = entry;
-			read_string.size = string_length( entry );
-
-			if( lua_load( state, lua_read_string, &read_string, "=eval" ) != 0 )
+			if( collated )
 			{
-				log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua load failed: %s", lua_tostring( state, -1 ) );
-				lua_pop( state, 1 );
+				collated = string_append( string_append( collated, "\n" ), entry );
+				read_string.string = collated;
+				read_string.size = string_length( collated );
 			}
-			else if( lua_pcall( state, 0, 0, 0 ) != 0 )
+			else
 			{
-				log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua pcall failed: %s", lua_tostring( state, -1 ) );
+				read_string.string = entry;
+				read_string.size = string_length( entry );
+			}
+
+			if( ( status = lua_load( state, lua_read_string, &read_string, "=eval" ) ) != 0 )
+			{
+				bool continued = false;
+				const char* msg = lua_tostring( state, -1 );
+				if( status == LUA_ERRSYNTAX )
+				{
+					if( string_equal( msg + strlen( msg ) - 7, "'<eof>'" ) )
+						continued = true;
+				}
+				if( continued )
+				{
+					if( !collated )
+					{
+						collated = entry;
+						entry = 0;
+					}
+				}
+				else
+				{
+					if( string_equal_substr( msg, "eval:", 5 ) )
+						msg += 5;
+					log_errorf( HASH_LUA, ERROR_SCRIPT, "%s", msg );
+				}
 				lua_pop( state, 1 );
 			}
 			else
 			{
-				log_info( HASH_LUA, "Lua interpretation successful" );
+				if( collated )
+					string_deallocate( collated );
+				collated = 0;
+
+				if( lua_pcall( state, 0, 0, 0 ) != 0 )
+				{
+					const char* msg = lua_tostring( state, -1 );
+					if( string_equal_substr( msg, "eval:", 5 ) )
+						msg += 5;
+					log_errorf( HASH_LUA, ERROR_SCRIPT, "%s", msg );
+					lua_pop( state, 1 );
+				}
 			}
 		}
 
 		string_deallocate( entry );
 
-	} while( true );
+	} while( !_lua_terminate && !stream_eos( in ) );
 
 	stream_deallocate( in );
 	stream_deallocate( out );

@@ -36,3 +36,4 @@
 #define LUA_RESULT_UNABLE_TO_LOAD_JITLIB_VMDEF    -2
 #define LUA_RESULT_UNABLE_TO_LOAD_JITLIB_BC       -3
 #define LUA_RESULT_FAILED_EVAL                    -4
+#define LUA_RESULT_ABORTED                        -5

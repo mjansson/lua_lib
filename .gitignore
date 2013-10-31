@@ -211,3 +211,8 @@ lua/luajit/src/lj_vm.s
 lua/luajit/src/luajit
 
 lua/luajit/src/luajit.exp
+
+lua/luajit/src/*.exe
+lua/luajit/src/*.exp
+lua/luajit/src/*.lib
+lua/luajit/src/*.dll
