@@ -18,11 +18,24 @@ HASH_SYM_ERROR_REPORT                   error_report
 HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
 HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
 
+HASH_SYM_ARRAY_ALLOCATE_POINTER         array_allocate_pointer
 HASH_SYM_ARRAY_SIZE                     array_size
 HASH_SYM_ARRAY_ELEMENT_POINTER          array_element_pointer
+HASH_SYM_ARRAY_SET_ELEMENT_POINTER      array_set_element_pointer
+HASH_SYM_ARRAY_DEALLOCATE               array_deallocate
 
-HASH_SYM_STRING_LENGTH                  string_length
-HASH_SYM_STRING_GLYPHS                  string_glyphs
+HASH_SYM_STRING_DEALLOCATE                          string_deallocate
+HASH_SYM_STRING_LENGTH                              string_length
+HASH_SYM_STRING_GLYPHS                              string_glyphs
+HASH_SYM_STRING_MERGE                               string_merge
+HASH_SYM_STRING_EXPLODE                             string_explode
+HASH_SYM_STRING_FROM_UINT128_STATIC                 string_from_uint128_static
+HASH_SYM_STRING_FROM_TIME_STATIC                    string_from_time_static
+HASH_SYM_STRING_FROM_UUID_STATIC                    string_from_uuid_static
+HASH_SYM_STRING_TO_UINT64                           string_to_uint64
+HASH_SYM_STRING_TO_UINT128                          string_to_uint128
+HASH_SYM_STRING_TO_UUID                             string_to_uuid
+HASH_SYM_STRING_IS_VALID_EMAIL_ADDRESS              string_is_valid_email_address
 
 HASH_SYM_ENVIRONMENT_COMMAND_LINE                   environment_command_line
 HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME                environment_executable_name
@@ -103,3 +116,118 @@ HASH_SYM_SYSTEM_PROCESS_EVENTS          system_process_events
 HASH_SYM_SYSTEM_MESSAGE_BOX             system_message_box
 HASH_SYM_SYSTEM_EVENT_STREAM            system_event_stream
 HASH_SYM_SYSTEM_POST_EVENT              system_post_event
+
+HASH_SYM_BASE64_ENCODE                  base64_encode
+HASH_SYM_BASE64_DECODE                  base64_decode
+
+HASH_SYM_BLOWFISH_ALLOCATE              blowfish_allocate
+HASH_SYM_BLOWFISH_DEALLOCATE            blowfish_deallocate
+HASH_SYM_BLOWFISH_INITIALIZE            blowfish_initialize
+HASH_SYM_BLOWFISH_RESET                 blowfish_reset
+HASH_SYM_BLOWFISH_ENCRYPT               blowfish_encrypt
+HASH_SYM_BLOWFISH_DECRYPT               blowfish_decrypt
+
+HASH_SYM_CONFIG_BOOL                    config_bool
+HASH_SYM_CONFIG_INT                     config_int
+HASH_SYM_CONFIG_REAL                    config_real
+HASH_SYM_CONFIG_STRING                  config_string
+HASH_SYM_CONFIG_STRING_HASH             config_string_hash
+HASH_SYM_CONFIG_SET_BOOL                config_set_bool
+HASH_SYM_CONFIG_SET_INT                 config_set_int
+HASH_SYM_CONFIG_SET_REAL                config_set_real
+HASH_SYM_CONFIG_SET_STRING              config_set_string
+HASH_SYM_CONFIG_LOAD                    config_load
+HASH_SYM_CONFIG_PARSE                   config_parse
+HASH_SYM_CONFIG_WRITE                   config_write
+HASH_SYM_CONFIG_PARSE_COMMANDLINE       config_parse_commandline
+
+HASH_SYM_EVENT_POST                     event_post
+HASH_SYM_EVENT_NEXT                     event_next
+HASH_SYM_EVENT_PAYLOAD_SIZE             event_payload_size
+HASH_SYM_EVENT_STREAM_ALLOCATE          event_stream_allocate
+HASH_SYM_EVENT_STREAM_DEALLOCATE        event_stream_deallocate
+HASH_SYM_EVENT_STREAM_PROCESS           event_stream_process
+
+HASH_SYM_FS_OPEN_FILE                   fs_open_file
+HASH_SYM_FS_COPY_FILE                   fs_copy_file
+HASH_SYM_FS_REMOVE_FILE                 fs_remove_file
+HASH_SYM_FS_IS_FILE                     fs_is_file
+HASH_SYM_FS_MAKE_DIRECTORY              fs_make_directory
+HASH_SYM_FS_REMOVE_DIRECTORY            fs_remove_directory
+HASH_SYM_FS_IS_DIRECTORY                fs_is_directory
+HASH_SYM_FS_LAST_MODIFIED               fs_last_modified
+HASH_SYM_FS_TOUCH                       fs_touch
+HASH_SYM_FS_MD5                         fs_md5
+HASH_SYM_FS_MATCHING_FILES              fs_matching_files
+HASH_SYM_FS_FILES                       fs_files
+HASH_SYM_FS_SUBDIRS                     fs_subdirs
+HASH_SYM_FS_MONITOR                     fs_monitor
+HASH_SYM_FS_UNMONITOR                   fs_unmonitor
+HASH_SYM_FS_TEMPORARY_FILE              fs_temporary_file
+HASH_SYM_FS_POST_EVENT                  fs_post_event
+HASH_SYM_FS_EVENT_STREAM                fs_event_stream
+
+HASH_SYM_LIBRARY_LOAD                   library_load
+HASH_SYM_LIBRARY_UNLOAD                 library_unload
+HASH_SYM_LIBRARY_SYMBOL                 library_symbol
+HASH_SYM_LIBRARY_NAME                   library_name
+HASH_SYM_LIBRARY_VALID                  library_valid
+
+HASH_SYM_MD5_ALLOCATE                   md5_allocate
+HASH_SYM_MD5_DEALLOCATE                 md5_deallocate
+HASH_SYM_MD5_INITIALIZE                 md5_initialize
+HASH_SYM_MD5_DIGEST                     md5_digest
+HASH_SYM_MD5_DIGEST_RAW                 md5_digest_raw
+HASH_SYM_MD5_FINALIZE                   md5_finalize
+HASH_SYM_MD5_GET_DIGEST                 md5_get_digest
+HASH_SYM_MD5_GET_DIGEST_RAW             md5_get_digest_raw
+
+HASH_SYM_PIPE_ALLOCATE                  pipe_allocate
+HASH_SYM_PIPE_CLOSE_READ                pipe_close_read
+HASH_SYM_PIPE_CLOSE_WRITE               pipe_close_write
+
+HASH_SYM_PROCESS_ALLOCATE               process_allocate
+HASH_SYM_PROCESS_DEALLOCATE             process_deallocate
+HASH_SYM_PROCESS_SET_WORKING_DIRECTORY  process_set_working_directory
+HASH_SYM_PROCESS_SET_EXECUTABLE_PATH    process_set_executable_path
+HASH_SYM_PROCESS_SET_ARGUMENTS          process_set_arguments
+HASH_SYM_PROCESS_SET_FLAGS              process_set_flags
+HASH_SYM_PROCESS_SPAWN                  process_spawn
+HASH_SYM_PROCESS_STDOUT                 process_stdout
+HASH_SYM_PROCESS_STDIN                  process_stdin
+HASH_SYM_PROCESS_WAIT                   process_wait
+HASH_SYM_PROCESS_SET_VERB               process_set_verb
+HASH_SYM_PROCESS_EXIT_CODE              process_exit_code
+HASH_SYM_SET_EXIT_CODE                  process_set_exit_code
+HASH_SYM_PROCESS_EXIT                   process_exit
+
+HASH_SYM_RANDOM32                       random32
+HASH_SYM_RANDOM32_RANGE                 random32_range
+HASH_SYM_RANDOM64                       random64
+HASH_SYM_RANDOM64_RANGE                 random64_range
+HASH_SYM_RANDOM_NORMALIZED              random_normalized
+HASH_SYM_RANDOM_RANGE                   random_range
+HASH_SYM_RANDOM32_GAUSSIAN_RANGE        random32_gaussian_range
+HASH_SYM_RANDOM_GAUSSIAN_RANGE          random_gaussian_range
+HASH_SYM_RANDOM32_TRIANGLE_RANGE        random32_triangle_range
+HASH_SYM_RANDOM_TRIANGLE_RANGE          random_triangle_range
+HASH_SYM_RANDOM32_WEIGHTED              random32_weighted
+
+HASH_SYM_RINGBUFFER_ALLOCATE            ringbuffer_allocate
+HASH_SYM_RINGBUFFER_DEALLOCATE          ringbuffer_deallocate
+HASH_SYM_RINGBUFFER_SIZE                ringbuffer_size
+HASH_SYM_RINGBUFFER_RESET               ringbuffer_reset
+HASH_SYM_RINGBUFFER_READ                ringbuffer_read
+HASH_SYM_RINGBUFFER_WRITE               ringbuffer_write
+HASH_SYM_RINGBUFFER_TOTAL_READ          ringbuffer_total_read
+HASH_SYM_RINGBUFFER_TOTAL_WRITTEN       ringbuffer_total_written
+HASH_SYM_RINGBUFFER_STREAM_ALLOCATE     ringbuffer_stream_allocate
+
+HASH_SYM_TIME_CURRENT                   time_current
+HASH_SYM_TIME_DIFF                      time_diff
+HASH_SYM_TIME_ELAPSED                   time_elapsed
+HASH_SYM_TIME_ELAPSED_TICKS             time_elapsed_ticks
+HASH_SYM_TIME_TICKS_PER_SECOND          time_ticks_per_second
+HASH_SYM_TIME_TICKS_TO_SECONDS          time_ticks_to_seconds
+HASH_SYM_TIME_STARTUP                   time_startup
+HASH_SYM_TIME_SYSTEM                    time_system

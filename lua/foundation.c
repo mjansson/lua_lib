@@ -46,8 +46,11 @@ static void  _log_debugf_disabled( uint64_t context, const char* format, ... ) {
 static void  _error_context_push_disabled( const char* name, const char* data ) {}
 static void  _error_context_pop_disabled() {} 
 
+static void*        _array_allocate_pointer( int size ) { char** arr = 0; array_grow( arr, size ); return arr; }	
+static void         _array_deallocate( void** arr ) { array_deallocate( arr ); }
 static int          _array_size( const void* arr ) { return ( arr ? array_size( arr ) : 0 ); }
 static const void*  _array_element_pointer( const void* arr, int pos ) { return ( arr && ( pos >= 0 ) && ( pos < array_size( arr ) ) ) ? ((const void* const*)arr)[pos] : 0; }
+static void         _array_set_element_pointer( const void** arr, int pos, void* ptr ) { arr[pos] = ptr; }
 
 
 static NOINLINE void lua_load_foundation_builtins( lua_State* state )
@@ -78,8 +81,11 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,       (void*)(uintptr_t)log_set_suppress );
 	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,           (void*)(uintptr_t)log_suppress );
 
-	hashmap_insert( map, HASH_SYM_ARRAY_SIZE,             (void*)(uintptr_t)_array_size );
-	hashmap_insert( map, HASH_SYM_ARRAY_ELEMENT_POINTER,  (void*)(uintptr_t)_array_element_pointer );
+	hashmap_insert( map, HASH_SYM_ARRAY_ALLOCATE_POINTER,     (void*)(uintptr_t)_array_allocate_pointer );
+	hashmap_insert( map, HASH_SYM_ARRAY_SIZE,                 (void*)(uintptr_t)_array_size );
+	hashmap_insert( map, HASH_SYM_ARRAY_ELEMENT_POINTER,      (void*)(uintptr_t)_array_element_pointer );
+	hashmap_insert( map, HASH_SYM_ARRAY_SET_ELEMENT_POINTER,  (void*)(uintptr_t)_array_set_element_pointer );
+	hashmap_insert( map, HASH_SYM_ARRAY_DEALLOCATE,           (void*)(uintptr_t)_array_deallocate );
 	
 	hashmap_insert( map, HASH_SYM_ERROR,                  (void*)(uintptr_t)error );
 	hashmap_insert( map, HASH_SYM_ERROR_REPORT,           (void*)(uintptr_t)error_report );
@@ -91,8 +97,18 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop_disabled );
 #endif
 
-	hashmap_insert( map, HASH_SYM_STRING_LENGTH,          (void*)(uintptr_t)string_length );
-	hashmap_insert( map, HASH_SYM_STRING_GLYPHS,          (void*)(uintptr_t)string_glyphs );
+	hashmap_insert( map, HASH_SYM_STRING_DEALLOCATE,                          (void*)(uintptr_t)string_deallocate );
+	hashmap_insert( map, HASH_SYM_STRING_LENGTH,                              (void*)(uintptr_t)string_length );
+	hashmap_insert( map, HASH_SYM_STRING_GLYPHS,                              (void*)(uintptr_t)string_glyphs );
+	hashmap_insert( map, HASH_SYM_STRING_MERGE,                               (void*)(uintptr_t)string_merge );
+	hashmap_insert( map, HASH_SYM_STRING_EXPLODE,                             (void*)(uintptr_t)string_explode );
+	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT128_STATIC,                 (void*)(uintptr_t)string_from_uint128_static );
+	hashmap_insert( map, HASH_SYM_STRING_FROM_TIME_STATIC,                    (void*)(uintptr_t)string_from_time_static );
+	hashmap_insert( map, HASH_SYM_STRING_FROM_UUID_STATIC,                    (void*)(uintptr_t)string_from_uuid_static );
+	hashmap_insert( map, HASH_SYM_STRING_TO_UINT64,                           (void*)(uintptr_t)string_to_uint64 );
+	hashmap_insert( map, HASH_SYM_STRING_TO_UINT128,                          (void*)(uintptr_t)string_to_uint128 );
+	hashmap_insert( map, HASH_SYM_STRING_TO_UUID,                             (void*)(uintptr_t)string_to_uint128 );
+	hashmap_insert( map, HASH_SYM_STRING_IS_VALID_EMAIL_ADDRESS,              (void*)(uintptr_t)string_is_valid_email_address );
 
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_COMMAND_LINE,                   (void*)(uintptr_t)environment_command_line );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME,                (void*)(uintptr_t)environment_executable_name );
@@ -173,6 +189,121 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_SYSTEM_MESSAGE_BOX,             (void*)(uintptr_t)system_message_box );
 	hashmap_insert( map, HASH_SYM_SYSTEM_EVENT_STREAM,            (void*)(uintptr_t)system_event_stream );
 	hashmap_insert( map, HASH_SYM_SYSTEM_POST_EVENT,              (void*)(uintptr_t)system_post_event );
+
+	hashmap_insert( map, HASH_SYM_BASE64_ENCODE,                  (void*)(uintptr_t)base64_encode );
+	hashmap_insert( map, HASH_SYM_BASE64_DECODE,                  (void*)(uintptr_t)base64_decode );
+ 
+	hashmap_insert( map, HASH_SYM_BLOWFISH_ALLOCATE,              (void*)(uintptr_t)blowfish_allocate );
+	hashmap_insert( map, HASH_SYM_BLOWFISH_DEALLOCATE,            (void*)(uintptr_t)blowfish_deallocate );
+	hashmap_insert( map, HASH_SYM_BLOWFISH_INITIALIZE,            (void*)(uintptr_t)blowfish_initialize );
+	hashmap_insert( map, HASH_SYM_BLOWFISH_RESET,                 (void*)(uintptr_t)blowfish_reset );
+	hashmap_insert( map, HASH_SYM_BLOWFISH_ENCRYPT,               (void*)(uintptr_t)blowfish_encrypt );
+	hashmap_insert( map, HASH_SYM_BLOWFISH_DECRYPT,               (void*)(uintptr_t)blowfish_decrypt );
+
+	hashmap_insert( map, HASH_SYM_CONFIG_BOOL,                    (void*)(uintptr_t)config_bool );
+	hashmap_insert( map, HASH_SYM_CONFIG_INT,                     (void*)(uintptr_t)config_int );
+	hashmap_insert( map, HASH_SYM_CONFIG_REAL,                    (void*)(uintptr_t)config_real );
+	hashmap_insert( map, HASH_SYM_CONFIG_STRING,                  (void*)(uintptr_t)config_string );
+	hashmap_insert( map, HASH_SYM_CONFIG_STRING_HASH,             (void*)(uintptr_t)config_string_hash );
+	hashmap_insert( map, HASH_SYM_CONFIG_SET_BOOL,                (void*)(uintptr_t)config_set_bool );
+	hashmap_insert( map, HASH_SYM_CONFIG_SET_INT,                 (void*)(uintptr_t)config_set_int );
+	hashmap_insert( map, HASH_SYM_CONFIG_SET_REAL,                (void*)(uintptr_t)config_set_real );
+	hashmap_insert( map, HASH_SYM_CONFIG_SET_STRING,              (void*)(uintptr_t)config_set_string );
+	hashmap_insert( map, HASH_SYM_CONFIG_LOAD,                    (void*)(uintptr_t)config_load );
+	hashmap_insert( map, HASH_SYM_CONFIG_PARSE,                   (void*)(uintptr_t)config_parse );
+	hashmap_insert( map, HASH_SYM_CONFIG_WRITE,                   (void*)(uintptr_t)config_write );
+	hashmap_insert( map, HASH_SYM_CONFIG_PARSE_COMMANDLINE,       (void*)(uintptr_t)config_parse_commandline );
+
+	hashmap_insert( map, HASH_SYM_EVENT_POST,                     (void*)(uintptr_t)event_post );
+	hashmap_insert( map, HASH_SYM_EVENT_NEXT,                     (void*)(uintptr_t)event_next );
+	hashmap_insert( map, HASH_SYM_EVENT_PAYLOAD_SIZE,             (void*)(uintptr_t)event_payload_size );
+	hashmap_insert( map, HASH_SYM_EVENT_STREAM_ALLOCATE,          (void*)(uintptr_t)event_stream_allocate );
+	hashmap_insert( map, HASH_SYM_EVENT_STREAM_DEALLOCATE,        (void*)(uintptr_t)event_stream_deallocate );
+	hashmap_insert( map, HASH_SYM_EVENT_STREAM_PROCESS,           (void*)(uintptr_t)event_stream_process );
+
+	hashmap_insert( map, HASH_SYM_FS_OPEN_FILE,                   (void*)(uintptr_t)fs_open_file );
+	hashmap_insert( map, HASH_SYM_FS_COPY_FILE,                   (void*)(uintptr_t)fs_copy_file );
+	hashmap_insert( map, HASH_SYM_FS_REMOVE_FILE,                 (void*)(uintptr_t)fs_remove_file );
+	hashmap_insert( map, HASH_SYM_FS_IS_FILE,                     (void*)(uintptr_t)fs_is_file );
+	hashmap_insert( map, HASH_SYM_FS_MAKE_DIRECTORY,              (void*)(uintptr_t)fs_make_directory );
+	hashmap_insert( map, HASH_SYM_FS_REMOVE_DIRECTORY,            (void*)(uintptr_t)fs_remove_directory );
+	hashmap_insert( map, HASH_SYM_FS_IS_DIRECTORY,                (void*)(uintptr_t)fs_is_directory );
+	hashmap_insert( map, HASH_SYM_FS_LAST_MODIFIED,               (void*)(uintptr_t)fs_last_modified );
+	hashmap_insert( map, HASH_SYM_FS_TOUCH,                       (void*)(uintptr_t)fs_touch );
+	hashmap_insert( map, HASH_SYM_FS_MD5,                         (void*)(uintptr_t)fs_md5 );
+	hashmap_insert( map, HASH_SYM_FS_MATCHING_FILES,              (void*)(uintptr_t)fs_matching_files );
+	hashmap_insert( map, HASH_SYM_FS_FILES,                       (void*)(uintptr_t)fs_files );
+	hashmap_insert( map, HASH_SYM_FS_SUBDIRS,                     (void*)(uintptr_t)fs_subdirs );
+	hashmap_insert( map, HASH_SYM_FS_MONITOR,                     (void*)(uintptr_t)fs_monitor );
+	hashmap_insert( map, HASH_SYM_FS_UNMONITOR,                   (void*)(uintptr_t)fs_unmonitor );
+	hashmap_insert( map, HASH_SYM_FS_TEMPORARY_FILE,              (void*)(uintptr_t)fs_temporary_file );
+	hashmap_insert( map, HASH_SYM_FS_POST_EVENT,                  (void*)(uintptr_t)fs_post_event );
+	hashmap_insert( map, HASH_SYM_FS_EVENT_STREAM,                (void*)(uintptr_t)fs_event_stream );
+
+	hashmap_insert( map, HASH_SYM_LIBRARY_LOAD,                   (void*)(uintptr_t)library_load );
+	hashmap_insert( map, HASH_SYM_LIBRARY_UNLOAD,                 (void*)(uintptr_t)library_unload );
+	hashmap_insert( map, HASH_SYM_LIBRARY_SYMBOL,                 (void*)(uintptr_t)library_symbol );
+	hashmap_insert( map, HASH_SYM_LIBRARY_NAME,                   (void*)(uintptr_t)library_name );
+	hashmap_insert( map, HASH_SYM_LIBRARY_VALID,                  (void*)(uintptr_t)library_valid );
+
+	hashmap_insert( map, HASH_SYM_MD5_ALLOCATE,                   (void*)(uintptr_t)md5_allocate );
+	hashmap_insert( map, HASH_SYM_MD5_DEALLOCATE,                 (void*)(uintptr_t)md5_deallocate );
+	hashmap_insert( map, HASH_SYM_MD5_INITIALIZE,                 (void*)(uintptr_t)md5_initialize );
+	hashmap_insert( map, HASH_SYM_MD5_DIGEST,                     (void*)(uintptr_t)md5_digest );
+	hashmap_insert( map, HASH_SYM_MD5_DIGEST_RAW,                 (void*)(uintptr_t)md5_digest_raw );
+	hashmap_insert( map, HASH_SYM_MD5_FINALIZE,                   (void*)(uintptr_t)md5_finalize );
+	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST,                 (void*)(uintptr_t)md5_get_digest );
+	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST_RAW,             (void*)(uintptr_t)md5_get_digest_raw );
+
+	hashmap_insert( map, HASH_SYM_PIPE_ALLOCATE,                  (void*)(uintptr_t)pipe_allocate );
+	hashmap_insert( map, HASH_SYM_PIPE_CLOSE_READ,                (void*)(uintptr_t)pipe_close_read );
+	hashmap_insert( map, HASH_SYM_PIPE_CLOSE_WRITE,               (void*)(uintptr_t)pipe_close_write );
+
+	hashmap_insert( map, HASH_SYM_PROCESS_ALLOCATE,               (void*)(uintptr_t)process_allocate );
+	hashmap_insert( map, HASH_SYM_PROCESS_DEALLOCATE,             (void*)(uintptr_t)process_deallocate );
+	hashmap_insert( map, HASH_SYM_PROCESS_SET_WORKING_DIRECTORY,  (void*)(uintptr_t)process_set_working_directory );
+	hashmap_insert( map, HASH_SYM_PROCESS_SET_EXECUTABLE_PATH,    (void*)(uintptr_t)process_set_executable_path );
+	hashmap_insert( map, HASH_SYM_PROCESS_SET_ARGUMENTS,          (void*)(uintptr_t)process_set_arguments );
+	hashmap_insert( map, HASH_SYM_PROCESS_SET_FLAGS,              (void*)(uintptr_t)process_set_flags );
+	hashmap_insert( map, HASH_SYM_PROCESS_SPAWN,                  (void*)(uintptr_t)process_spawn );
+	hashmap_insert( map, HASH_SYM_PROCESS_STDOUT,                 (void*)(uintptr_t)process_stdout );
+	hashmap_insert( map, HASH_SYM_PROCESS_STDIN,                  (void*)(uintptr_t)process_stdin );
+	hashmap_insert( map, HASH_SYM_PROCESS_WAIT,                   (void*)(uintptr_t)process_wait );
+	hashmap_insert( map, HASH_SYM_PROCESS_SET_VERB,               (void*)(uintptr_t)process_set_verb );
+	hashmap_insert( map, HASH_SYM_PROCESS_EXIT_CODE,              (void*)(uintptr_t)process_exit_code );
+	hashmap_insert( map, HASH_SYM_SET_EXIT_CODE,                  (void*)(uintptr_t)process_set_exit_code );
+	hashmap_insert( map, HASH_SYM_PROCESS_EXIT,                   (void*)(uintptr_t)process_exit );
+
+	hashmap_insert( map, HASH_SYM_RANDOM32,                       (void*)(uintptr_t)random32 );
+	hashmap_insert( map, HASH_SYM_RANDOM32_RANGE,                 (void*)(uintptr_t)random32_range );
+	hashmap_insert( map, HASH_SYM_RANDOM64,                       (void*)(uintptr_t)random64 );
+	hashmap_insert( map, HASH_SYM_RANDOM64_RANGE,                 (void*)(uintptr_t)random64_range );
+	hashmap_insert( map, HASH_SYM_RANDOM_NORMALIZED,              (void*)(uintptr_t)random_normalized );
+	hashmap_insert( map, HASH_SYM_RANDOM_RANGE,                   (void*)(uintptr_t)random_range );
+	hashmap_insert( map, HASH_SYM_RANDOM32_GAUSSIAN_RANGE,        (void*)(uintptr_t)random32_gaussian_range );
+	hashmap_insert( map, HASH_SYM_RANDOM_GAUSSIAN_RANGE,          (void*)(uintptr_t)random_gaussian_range );
+	hashmap_insert( map, HASH_SYM_RANDOM32_TRIANGLE_RANGE,        (void*)(uintptr_t)random32_triangle_range );
+	hashmap_insert( map, HASH_SYM_RANDOM_TRIANGLE_RANGE,          (void*)(uintptr_t)random_triangle_range );
+	hashmap_insert( map, HASH_SYM_RANDOM32_WEIGHTED,              (void*)(uintptr_t)random32_weighted );
+
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_ALLOCATE,            (void*)(uintptr_t)ringbuffer_allocate );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_DEALLOCATE,          (void*)(uintptr_t)ringbuffer_deallocate );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_SIZE,                (void*)(uintptr_t)ringbuffer_size );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_RESET,               (void*)(uintptr_t)ringbuffer_reset );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_READ,                (void*)(uintptr_t)ringbuffer_read );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_WRITE,               (void*)(uintptr_t)ringbuffer_write );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_TOTAL_READ,          (void*)(uintptr_t)ringbuffer_total_read );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_TOTAL_WRITTEN,       (void*)(uintptr_t)ringbuffer_total_written );
+	hashmap_insert( map, HASH_SYM_RINGBUFFER_STREAM_ALLOCATE,     (void*)(uintptr_t)ringbuffer_stream_allocate );
+
+	hashmap_insert( map, HASH_SYM_TIME_CURRENT,                   (void*)(uintptr_t)time_current );
+	hashmap_insert( map, HASH_SYM_TIME_DIFF,                      (void*)(uintptr_t)time_diff );
+	hashmap_insert( map, HASH_SYM_TIME_ELAPSED,                   (void*)(uintptr_t)time_elapsed );
+	hashmap_insert( map, HASH_SYM_TIME_ELAPSED_TICKS,             (void*)(uintptr_t)time_elapsed_ticks );
+	hashmap_insert( map, HASH_SYM_TIME_TICKS_PER_SECOND,          (void*)(uintptr_t)time_ticks_per_second );
+	hashmap_insert( map, HASH_SYM_TIME_TICKS_TO_SECONDS,          (void*)(uintptr_t)time_ticks_to_seconds );
+	hashmap_insert( map, HASH_SYM_TIME_STARTUP,                   (void*)(uintptr_t)time_startup );
+	hashmap_insert( map, HASH_SYM_TIME_SYSTEM,                    (void*)(uintptr_t)time_system );
 }
 
 
