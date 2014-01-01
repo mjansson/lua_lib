@@ -260,7 +260,7 @@ static NOINLINE int lua_panic( lua_State* state )
 
 lua_t* lua_allocate( void )
 {
-	lua_t* env = memory_allocate_context_zero( HASH_LUA, sizeof( lua_t ), 0, MEMORY_32BIT_ADDRESS );
+	lua_t* env = memory_allocate_zero_context( HASH_LUA, sizeof( lua_t ), 0, MEMORY_32BIT_ADDRESS );
 
 	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
 	lua_State* state = lua_newstate( lua_allocator, env );

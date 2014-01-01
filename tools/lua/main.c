@@ -75,7 +75,7 @@ static void* event_thread( object_t thread, void* arg )
 
 		while( ( event = event_next( block, event ) ) )
 		{
-			if( event->system == SYSTEM_FOUNDATION ) switch( event->id )
+			switch( event->id )
 			{
 				case FOUNDATIONEVENT_TERMINATE:
 					//process_exit( LUA_RESULT_ABORTED );
