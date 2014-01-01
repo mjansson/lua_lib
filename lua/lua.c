@@ -241,7 +241,7 @@ static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_
 	if( !nsize && osize )
 		memory_deallocate( block );
 	else if( !block )
-		block = memory_allocate( nsize, 0, MEMORY_32BIT_ADDRESS );
+		block = memory_allocate_context( HASH_LUA, nsize, 0, MEMORY_32BIT_ADDRESS );
 	else if( nsize )
 		block = memory_reallocate( block, nsize, 0, osize );
 	if( block == 0 && nsize > 0 && env && ((lua_t*)env)->state )
@@ -260,7 +260,7 @@ static NOINLINE int lua_panic( lua_State* state )
 
 lua_t* lua_allocate( void )
 {
-	lua_t* env = memory_allocate_zero( sizeof( lua_t ), 0, MEMORY_32BIT_ADDRESS );
+	lua_t* env = memory_allocate_context_zero( HASH_LUA, sizeof( lua_t ), 0, MEMORY_32BIT_ADDRESS );
 
 	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
 	lua_State* state = lua_newstate( lua_allocator, env );

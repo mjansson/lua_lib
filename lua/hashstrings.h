@@ -7,6 +7,7 @@
     the foundation hashify tool to update this file */
 
 #define HASH_LUA static_hash_string( "lua", 0x7da58d38bd2b23e6ULL )
+#define HASH_SCRIPT static_hash_string( "script", 0x973d2f1f36e019e1ULL )
 #define HASH_SYM_HASH static_hash_string( "hash", 0xe2c5d32edd2079b8ULL )
 #define HASH_SYM_LOG_DEBUGF static_hash_string( "log_debugf", 0x80d642ef9f6407b0ULL )
 #define HASH_SYM_LOG_INFOF static_hash_string( "log_infof", 0xbf8f17ebe9b7ec7eULL )

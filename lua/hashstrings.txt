@@ -1,5 +1,6 @@
 
 HASH_LUA                                lua
+HASH_SCRIPT                             script
 
 HASH_SYM_HASH                           hash
 
