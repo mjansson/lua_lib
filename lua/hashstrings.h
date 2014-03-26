@@ -121,7 +121,6 @@
 #define HASH_SYM_BLOWFISH_ALLOCATE static_hash_string( "blowfish_allocate", 0x34abc8e5c2624f2fULL )
 #define HASH_SYM_BLOWFISH_DEALLOCATE static_hash_string( "blowfish_deallocate", 0x268c29f6d91152b5ULL )
 #define HASH_SYM_BLOWFISH_INITIALIZE static_hash_string( "blowfish_initialize", 0x8143b9721d8cad67ULL )
-#define HASH_SYM_BLOWFISH_RESET static_hash_string( "blowfish_reset", 0xbe43315c49c654e6ULL )
 #define HASH_SYM_BLOWFISH_ENCRYPT static_hash_string( "blowfish_encrypt", 0x2c84666ba30bfb4bULL )
 #define HASH_SYM_BLOWFISH_DECRYPT static_hash_string( "blowfish_decrypt", 0x433759018c287aa9ULL )
 #define HASH_SYM_CONFIG_BOOL static_hash_string( "config_bool", 0x19f3dcb92db2c7c2ULL )

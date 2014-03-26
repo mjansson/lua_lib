@@ -90,7 +90,7 @@ struct _lua
 	uint32_t                          queue_head;
 
 	//! Queue tail
-	volatile ALIGN(16) uint32_t       queue_tail;
+	atomic32_t                        queue_tail;
 
 	//! Execution right
 	semaphore_t                       execution_right;
@@ -165,11 +165,11 @@ static void lua_push_op( lua_t* env, lua_op_t* op )
 	unsigned int ofs, old;
 	do
 	{
-		old = env->queue_tail;
+		old = atomic_load32( &env->queue_tail );
 		ofs = old+1;
 		if( ofs >= LUA_CALL_QUEUE_SIZE )
 			ofs = 0;
-	} while( !atomic_cas32( (volatile int*)&env->queue_tail, ofs, old ) );
+	} while( !atomic_cas32( &env->queue_tail, ofs, old ) );
 
 	//Got slot, copy except command
 	memcpy( &env->queue[ofs].data, &op->data, sizeof( op->data ) + sizeof( lua_arg_t ) );
@@ -284,7 +284,7 @@ lua_t* lua_allocate( void )
 	env->state = state;
 	env->calldepth = 0;
 	env->queue_head = 0;
-	env->queue_tail = 0;
+	atomic_store32( &env->queue_tail, 0 );
 	env->lookup_map = hashmap_allocate( 0, 0 );
 
 	semaphore_initialize( &env->execution_right, 1 );

@@ -124,7 +124,6 @@ HASH_SYM_BASE64_DECODE                  base64_decode
 HASH_SYM_BLOWFISH_ALLOCATE              blowfish_allocate
 HASH_SYM_BLOWFISH_DEALLOCATE            blowfish_deallocate
 HASH_SYM_BLOWFISH_INITIALIZE            blowfish_initialize
-HASH_SYM_BLOWFISH_RESET                 blowfish_reset
 HASH_SYM_BLOWFISH_ENCRYPT               blowfish_encrypt
 HASH_SYM_BLOWFISH_DECRYPT               blowfish_decrypt
 

@@ -196,7 +196,6 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_BLOWFISH_ALLOCATE,              (void*)(uintptr_t)blowfish_allocate );
 	hashmap_insert( map, HASH_SYM_BLOWFISH_DEALLOCATE,            (void*)(uintptr_t)blowfish_deallocate );
 	hashmap_insert( map, HASH_SYM_BLOWFISH_INITIALIZE,            (void*)(uintptr_t)blowfish_initialize );
-	hashmap_insert( map, HASH_SYM_BLOWFISH_RESET,                 (void*)(uintptr_t)blowfish_reset );
 	hashmap_insert( map, HASH_SYM_BLOWFISH_ENCRYPT,               (void*)(uintptr_t)blowfish_encrypt );
 	hashmap_insert( map, HASH_SYM_BLOWFISH_DECRYPT,               (void*)(uintptr_t)blowfish_decrypt );
 

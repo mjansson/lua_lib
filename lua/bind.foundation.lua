@@ -148,7 +148,6 @@ unsigned int           base64_decode( const char* src, void* dst, unsigned int s
 blowfish_t*            blowfish_allocate( void );
 void                   blowfish_deallocate( blowfish_t* blowfish );
 void                   blowfish_initialize( blowfish_t* blowfish, const void* key, const unsigned int len );
-void                   blowfish_reset( blowfish_t* blowfish );
 void                   blowfish_encrypt( const blowfish_t* blowfish, void* data, unsigned int length, const int mode, const uint64_t vec );
 void                   blowfish_decrypt( const blowfish_t* blowfish, void* data, unsigned int length, const int mode, const uint64_t vec );
 
@@ -478,7 +477,6 @@ blowfish.OFB = 3
 blowfish.allocaate = ffi.C.blowfish_allocate
 blowfish.deallocate = ffi.C.blowfish_deallocate
 blowfish.initialize = function ( blowfish, key ) ffi.C.blowfish_initialize( blowfish, key, ffi.C.string_length( key ) ) end
-blowfish.reset = ffi.C.blowfish_reset
 blowfish.encrypt = ffi.C.blowfish_encrypt
 blowfish.decrypt = ffi.C.blowfish_decrypt
 
