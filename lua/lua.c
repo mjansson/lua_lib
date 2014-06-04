@@ -60,7 +60,7 @@ typedef enum _lua_command
 } lua_command_t;
 
 
-#define LUA_CALL_QUEUE_SIZE  1024
+#define LUA_CALL_QUEUE_SIZE  256
 
 
 typedef struct _lua_op
@@ -115,10 +115,10 @@ static lua_result_t lua_do_get( lua_t* env, const char* property );
 static void*        lua_lookup_builtin( lua_State* state, const char* sym );
 
 
-static FORCEINLINE bool lua_has_execution_right( lua_t* env )
+/*static FORCEINLINE bool lua_has_execution_right( lua_t* env )
 {
 	return ( env->executing_thread == thread_id() );
-}
+}*/
 
 
 static NOINLINE bool lua_acquire_execution_right( lua_t* env, bool force )

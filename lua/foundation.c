@@ -41,10 +41,14 @@
 #include "luajit/src/lua.h"
 
 
+#if !BUILD_ENABLE_LOG
 static void  _log_debugf_disabled( uint64_t context, const char* format, ... ) {}
+#endif
 
+#if !BUILD_ENABLE_ERROR_CONTEXT
 static void  _error_context_push_disabled( const char* name, const char* data ) {}
-static void  _error_context_pop_disabled() {} 
+static void  _error_context_pop_disabled() {}
+#endif
 
 static void*        _array_allocate_pointer( int size ) { char** arr = 0; array_grow( arr, size ); return arr; }	
 static void         _array_deallocate( void** arr ) { array_deallocate( arr ); }

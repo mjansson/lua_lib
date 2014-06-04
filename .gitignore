@@ -194,6 +194,7 @@ build/scons/deploy*
 
 #XCode
 xcuserdata
+*.xccheckout
 
 #LuaJIT local build generated files
 lua/luajit/src/host/buildvm
@@ -216,3 +217,5 @@ lua/luajit/src/*.exe
 lua/luajit/src/*.exp
 lua/luajit/src/*.lib
 lua/luajit/src/*.dll
+
+lua/luajit/build/libluajit64.a

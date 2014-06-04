@@ -153,6 +153,7 @@ test_suite_t test_foundation_suite = {
 
 #if FOUNDATION_PLATFORM_ANDROID
 
+int test_foundation_run( void );
 int test_foundation_run( void )
 {
 	test_suite = test_foundation_suite;
@@ -161,6 +162,7 @@ int test_foundation_run( void )
 
 #else
 
+test_suite_t test_suite_define( void );
 test_suite_t test_suite_define( void )
 {
 	return test_foundation_suite;
