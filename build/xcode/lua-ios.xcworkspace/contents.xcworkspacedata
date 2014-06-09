@@ -4,4 +4,7 @@
    <FileRef
       location = "group:ios/lua.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:ios/test.xcodeproj">
+   </FileRef>
 </Workspace>
