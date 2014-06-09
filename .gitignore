@@ -218,4 +218,4 @@ lua/luajit/src/*.exp
 lua/luajit/src/*.lib
 lua/luajit/src/*.dll
 
-lua/luajit/build/libluajit64.a
+lua/luajit/build/*
