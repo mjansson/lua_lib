@@ -1,0 +1,465 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		454170C91A03CCA700CA967E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 454170C81A03CCA700CA967E /* main.c */; };
+		454170CB1A03D15000CA967E /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 454170CA1A03D15000CA967E /* liblua.a */; };
+		454170CE1A03D19900CA967E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454170CC1A03D19900CA967E /* Cocoa.framework */; };
+		454170CF1A03D19900CA967E /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454170CD1A03D19900CA967E /* CoreFoundation.framework */; };
+		454170E11A03D46C00CA967E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 454170DF1A03D46C00CA967E /* main.c */; };
+		454170E21A03D4E900CA967E /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 454170CA1A03D15000CA967E /* liblua.a */; };
+		454170E31A03D4E900CA967E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454170CC1A03D19900CA967E /* Cocoa.framework */; };
+		454170E41A03D4E900CA967E /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 454170CD1A03D19900CA967E /* CoreFoundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		454170BC1A03CC7B00CA967E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		454170D31A03D43B00CA967E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		454170BE1A03CC7B00CA967E /* lua */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lua; sourceTree = BUILT_PRODUCTS_DIR; };
+		454170C71A03CCA700CA967E /* errorcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = errorcodes.h; path = ../../../tools/lua/errorcodes.h; sourceTree = "<group>"; };
+		454170C81A03CCA700CA967E /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../tools/lua/main.c; sourceTree = "<group>"; };
+		454170CA1A03D15000CA967E /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../../../lib/macosx/debug/liblua.a; sourceTree = "<group>"; };
+		454170CC1A03D19900CA967E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		454170CD1A03D19900CA967E /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		454170D51A03D43B00CA967E /* luadump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = luadump; sourceTree = BUILT_PRODUCTS_DIR; };
+		454170DD1A03D46C00CA967E /* bc.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bc.lua; path = ../../../tools/luadump/bc.lua; sourceTree = "<group>"; };
+		454170DE1A03D46C00CA967E /* errorcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = errorcodes.h; path = ../../../tools/luadump/errorcodes.h; sourceTree = "<group>"; };
+		454170DF1A03D46C00CA967E /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../tools/luadump/main.c; sourceTree = "<group>"; };
+		454170E01A03D46C00CA967E /* vmdef.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = vmdef.lua; path = ../../../tools/luadump/vmdef.lua; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		454170BB1A03CC7B00CA967E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454170CB1A03D15000CA967E /* liblua.a in Frameworks */,
+				454170CE1A03D19900CA967E /* Cocoa.framework in Frameworks */,
+				454170CF1A03D19900CA967E /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		454170D21A03D43B00CA967E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454170E21A03D4E900CA967E /* liblua.a in Frameworks */,
+				454170E31A03D4E900CA967E /* Cocoa.framework in Frameworks */,
+				454170E41A03D4E900CA967E /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		454170B31A03CC3A00CA967E = {
+			isa = PBXGroup;
+			children = (
+				454170C61A03CC9100CA967E /* lua */,
+				454170DC1A03D44A00CA967E /* luadump */,
+				454170D01A03D2C100CA967E /* framework */,
+				454170BF1A03CC7B00CA967E /* bin */,
+			);
+			sourceTree = "<group>";
+		};
+		454170BF1A03CC7B00CA967E /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				454170BE1A03CC7B00CA967E /* lua */,
+				454170D51A03D43B00CA967E /* luadump */,
+			);
+			name = bin;
+			sourceTree = "<group>";
+		};
+		454170C61A03CC9100CA967E /* lua */ = {
+			isa = PBXGroup;
+			children = (
+				454170C71A03CCA700CA967E /* errorcodes.h */,
+				454170C81A03CCA700CA967E /* main.c */,
+			);
+			name = lua;
+			sourceTree = "<group>";
+		};
+		454170D01A03D2C100CA967E /* framework */ = {
+			isa = PBXGroup;
+			children = (
+				454170CA1A03D15000CA967E /* liblua.a */,
+				454170CC1A03D19900CA967E /* Cocoa.framework */,
+				454170CD1A03D19900CA967E /* CoreFoundation.framework */,
+			);
+			name = framework;
+			sourceTree = "<group>";
+		};
+		454170DC1A03D44A00CA967E /* luadump */ = {
+			isa = PBXGroup;
+			children = (
+				454170DD1A03D46C00CA967E /* bc.lua */,
+				454170DE1A03D46C00CA967E /* errorcodes.h */,
+				454170DF1A03D46C00CA967E /* main.c */,
+				454170E01A03D46C00CA967E /* vmdef.lua */,
+			);
+			name = luadump;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		454170BD1A03CC7B00CA967E /* lua */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 454170C51A03CC7B00CA967E /* Build configuration list for PBXNativeTarget "lua" */;
+			buildPhases = (
+				454170BA1A03CC7B00CA967E /* Sources */,
+				454170BB1A03CC7B00CA967E /* Frameworks */,
+				454170BC1A03CC7B00CA967E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = lua;
+			productName = lua;
+			productReference = 454170BE1A03CC7B00CA967E /* lua */;
+			productType = "com.apple.product-type.tool";
+		};
+		454170D41A03D43B00CA967E /* luadump */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 454170D91A03D43B00CA967E /* Build configuration list for PBXNativeTarget "luadump" */;
+			buildPhases = (
+				454170D11A03D43B00CA967E /* Sources */,
+				454170D21A03D43B00CA967E /* Frameworks */,
+				454170D31A03D43B00CA967E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = luadump;
+			productName = luadump;
+			productReference = 454170D51A03D43B00CA967E /* luadump */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		454170B41A03CC3A00CA967E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				TargetAttributes = {
+					454170BD1A03CC7B00CA967E = {
+						CreatedOnToolsVersion = 6.1;
+					};
+					454170D41A03D43B00CA967E = {
+						CreatedOnToolsVersion = 6.1;
+					};
+				};
+			};
+			buildConfigurationList = 454170B71A03CC3A00CA967E /* Build configuration list for PBXProject "tools" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 454170B31A03CC3A00CA967E;
+			productRefGroup = 454170BF1A03CC7B00CA967E /* bin */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				454170BD1A03CC7B00CA967E /* lua */,
+				454170D41A03D43B00CA967E /* luadump */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		454170BA1A03CC7B00CA967E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454170C91A03CCA700CA967E /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		454170D11A03D43B00CA967E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				454170E11A03D46C00CA967E /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		454170B81A03CC3A00CA967E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = NO;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/debug;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
+				GCC_FAST_MATH = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "BUILD_DEBUG=1";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					../../..,
+					../../../../foundation_lib,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					../../../lib/macosx,
+					../../../lib/macosx/debug,
+					../../../../foundation_lib/lib/macosx/debug,
+					"$(inherited)",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-lfoundation",
+					"-pagezero_size",
+					10000,
+					"-image_base",
+					100000000,
+				);
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				SDKROOT = macosx;
+				USE_HEADERMAP = NO;
+			};
+			name = Debug;
+		};
+		454170B91A03CC3A00CA967E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = NO;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/release;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = c11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
+				GCC_FAST_MATH = YES;
+				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_PREPROCESSOR_DEFINITIONS = "BUILD_RELEASE=1";
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_UNROLL_LOOPS = YES;
+				HEADER_SEARCH_PATHS = (
+					../../..,
+					../../../../foundation_lib,
+					"$(inherited)",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					../../../lib/macosx,
+					../../../lib/macosx/release,
+					../../../../foundation_lib/lib/macosx/release,
+					"$(inherited)",
+				);
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				OTHER_LDFLAGS = (
+					"-lfoundation",
+					"-pagezero_size",
+					10000,
+					"-image_base",
+					100000000,
+				);
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				SDKROOT = macosx;
+				USE_HEADERMAP = NO;
+			};
+			name = Release;
+		};
+		454170C31A03CC7B00CA967E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/mjansson/projects/lua_lib/lib/macosx/debug,
+				);
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-ltest",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		454170C41A03CC7B00CA967E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/mjansson/projects/lua_lib/lib/macosx/debug,
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-ltest",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		454170DA1A03D43B00CA967E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/mjansson/projects/lua_lib/lib/macosx/debug,
+				);
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-ltest",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		454170DB1A03D43B00CA967E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/mjansson/projects/lua_lib/lib/macosx/debug,
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-ltest",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		454170B71A03CC3A00CA967E /* Build configuration list for PBXProject "tools" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454170B81A03CC3A00CA967E /* Debug */,
+				454170B91A03CC3A00CA967E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		454170C51A03CC7B00CA967E /* Build configuration list for PBXNativeTarget "lua" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454170C31A03CC7B00CA967E /* Debug */,
+				454170C41A03CC7B00CA967E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		454170D91A03D43B00CA967E /* Build configuration list for PBXNativeTarget "luadump" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				454170DA1A03D43B00CA967E /* Debug */,
+				454170DB1A03D43B00CA967E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 454170B41A03CC3A00CA967E /* Project object */;
+}

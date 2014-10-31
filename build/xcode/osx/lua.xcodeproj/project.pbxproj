@@ -122,7 +122,7 @@
 		45138891193DA91600BA2092 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Rampant Pixels AB";
 			};
 			buildConfigurationList = 45138894193DA91600BA2092 /* Build configuration list for PBXProject "lua" */;

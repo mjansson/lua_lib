@@ -202,7 +202,7 @@ void                   md5_deallocate( md5_t* digest );
 void                   md5_initialize( md5_t* digest );
 md5_t*                 md5_digest( md5_t* digest, const char* message );
 md5_t*                 md5_digest_raw( md5_t* digest, const void* buffer, size_t size );
-void                   md5_finalize( md5_t* digest );
+void                   md5_digest_finalize( md5_t* digest );
 char*                  md5_get_digest( const md5_t* digest );
 uint128_t              md5_get_digest_raw( const md5_t* digest );
 
@@ -534,9 +534,9 @@ md5 = {}
 md5.allocate = ffi.C.md5_allocate
 md5.deallocate = ffi.C.md5_deallocate
 md5.initialize = ffi.C.md5_initialize
-md5.digest = ffi.C.md5_digest
+md5.digest_finalize = ffi.C.md5_digest_finalize
 md5.digest_raw = ffi.C.md5_digest_raw
-md5.finalize = ffi.C.md5_finalize
+md5.digest_finalize = ffi.C.md5_digest_finalize
 md5.get_digest = function ( md5 ) return ffi.string( ffi.C.md5_get_digest( digest ) ) end
 md5.get_digest_raw = ffi.C.md5_get_digest_raw
 

@@ -70,14 +70,14 @@ static NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_
 	if( size <= 0 )
 		return 0;
 	
-	dump->bytecode = ( dump->bytecode ? memory_reallocate( dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size ) : memory_allocate( size, 0, MEMORY_PERSISTENT ) );
+	dump->bytecode = ( dump->bytecode ? memory_reallocate( dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size ) : memory_allocate( HASH_LUA, size, 0, MEMORY_PERSISTENT ) );
 
 	memcpy( dump->bytecode + dump->bytecode_size, buffer, size );
 	dump->bytecode_size += size;
 	
 	if( dump->hex )
 	{
-		char* line = memory_allocate( size * 6 + 2, 0, MEMORY_TEMPORARY );
+		char* line = memory_allocate( HASH_LUA, size * 6 + 2, 0, MEMORY_TEMPORARY );
 		for( size_t i = 0; i < size; ++i )
 			string_format_buffer( line + ( i * 6 ), 7, "0x%02x, ", ((const unsigned char*)buffer)[i] );
 		if( dump->output_stream )

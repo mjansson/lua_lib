@@ -170,7 +170,7 @@
 #define HASH_SYM_MD5_INITIALIZE static_hash_string( "md5_initialize", 0xa8c90b136a247a7aULL )
 #define HASH_SYM_MD5_DIGEST static_hash_string( "md5_digest", 0x1dbe5c2d7d184ff0ULL )
 #define HASH_SYM_MD5_DIGEST_RAW static_hash_string( "md5_digest_raw", 0xe09204cc60bd3872ULL )
-#define HASH_SYM_MD5_FINALIZE static_hash_string( "md5_finalize", 0xd1193c485a8f76ceULL )
+#define HASH_SYM_MD5_DIGEST_FINALIZE static_hash_string( "md5_digest_finalize", 0x2e0b24bc544c1cdbULL )
 #define HASH_SYM_MD5_GET_DIGEST static_hash_string( "md5_get_digest", 0xeb3b8a7d6767478ULL )
 #define HASH_SYM_MD5_GET_DIGEST_RAW static_hash_string( "md5_get_digest_raw", 0xb89c01ce13e5b421ULL )
 #define HASH_SYM_PIPE_ALLOCATE static_hash_string( "pipe_allocate", 0x10b30f58c0c0d015ULL )

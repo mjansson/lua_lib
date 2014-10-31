@@ -178,7 +178,7 @@ HASH_SYM_MD5_DEALLOCATE                 md5_deallocate
 HASH_SYM_MD5_INITIALIZE                 md5_initialize
 HASH_SYM_MD5_DIGEST                     md5_digest
 HASH_SYM_MD5_DIGEST_RAW                 md5_digest_raw
-HASH_SYM_MD5_FINALIZE                   md5_finalize
+HASH_SYM_MD5_DIGEST_FINALIZE            md5_digest_finalize
 HASH_SYM_MD5_GET_DIGEST                 md5_get_digest
 HASH_SYM_MD5_GET_DIGEST_RAW             md5_get_digest_raw
 

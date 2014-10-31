@@ -183,7 +183,7 @@
 		451388BB193EE80800BA2092 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0610;
 			};
 			buildConfigurationList = 451388BE193EE80800BA2092 /* Build configuration list for PBXProject "test" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -636,6 +636,7 @@
 				45138951193FBF8200BA2092 /* Deploy */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		451388E4193F85BC00BA2092 /* Build configuration list for PBXNativeTarget "test-foundation" */ = {
 			isa = XCConfigurationList;
@@ -646,6 +647,7 @@
 				45138952193FBF8200BA2092 /* Deploy */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

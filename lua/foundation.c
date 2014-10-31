@@ -254,7 +254,7 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_MD5_INITIALIZE,                 (void*)(uintptr_t)md5_initialize );
 	hashmap_insert( map, HASH_SYM_MD5_DIGEST,                     (void*)(uintptr_t)md5_digest );
 	hashmap_insert( map, HASH_SYM_MD5_DIGEST_RAW,                 (void*)(uintptr_t)md5_digest_raw );
-	hashmap_insert( map, HASH_SYM_MD5_FINALIZE,                   (void*)(uintptr_t)md5_finalize );
+	hashmap_insert( map, HASH_SYM_MD5_DIGEST_FINALIZE,            (void*)(uintptr_t)md5_digest_finalize );
 	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST,                 (void*)(uintptr_t)md5_get_digest );
 	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST_RAW,             (void*)(uintptr_t)md5_get_digest_raw );
 

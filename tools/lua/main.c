@@ -56,7 +56,7 @@ static luainstance_t  _lua_parse_command_line( const char* const* cmdline );
 static void           _lua_print_usage( void );
 static int            _lua_process_file( lua_t* lua, const char* filename );
 static int            _lua_interpreter( lua_t* lua );
-static int            _lua_load_jitbc( lua_t* env );
+//static int            _lua_load_jitbc( lua_t* env );
 
 
 LUA_API int lua_load( lua_State *L, lua_Reader reader, void *dt, const char *chunkname);
