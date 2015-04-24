@@ -1,26 +1,26 @@
 /* foundation.c  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
- * 
+ *
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
- * 
+ *
  * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
- * 
+ *
  * For more information about LuaJIT, see
  * http://luajit.org/
  *
  * The MIT License (MIT)
  * Copyright (c) 2013 Rampant Pixels AB
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -50,18 +50,18 @@ static void  _error_context_push_disabled( const char* name, const char* data ) 
 static void  _error_context_pop_disabled() {}
 #endif
 
-static void*        _array_allocate_pointer( int size ) { char** arr = 0; array_grow( arr, size ); return arr; }	
+static void*        _array_allocate_pointer( int size ) { char** arr = 0; array_grow( arr, size ); return arr; }
 static void         _array_deallocate( void** arr ) { array_deallocate( arr ); }
 static int          _array_size( const void* arr ) { return ( arr ? array_size( arr ) : 0 ); }
 static const void*  _array_element_pointer( const void* arr, int pos ) { return ( arr && ( pos >= 0 ) && ( pos < array_size( arr ) ) ) ? ((const void* const*)arr)[pos] : 0; }
 static void         _array_set_element_pointer( const void** arr, int pos, void* ptr ) { arr[pos] = ptr; }
 
 
-static NOINLINE void lua_load_foundation_builtins( lua_State* state )
+static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 {
 	lua_t* env = lua_from_state( state );
 	hashmap_t* map = lua_lookup_map( env );
-	
+
 	hashmap_insert( map, HASH_SYM_HASH,                   (void*)(uintptr_t)hash );
 
 #if BUILD_ENABLE_DEBUG_LOG
@@ -90,7 +90,7 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_ARRAY_ELEMENT_POINTER,      (void*)(uintptr_t)_array_element_pointer );
 	hashmap_insert( map, HASH_SYM_ARRAY_SET_ELEMENT_POINTER,  (void*)(uintptr_t)_array_set_element_pointer );
 	hashmap_insert( map, HASH_SYM_ARRAY_DEALLOCATE,           (void*)(uintptr_t)_array_deallocate );
-	
+
 	hashmap_insert( map, HASH_SYM_ERROR,                  (void*)(uintptr_t)error );
 	hashmap_insert( map, HASH_SYM_ERROR_REPORT,           (void*)(uintptr_t)error_report );
 #if BUILD_ENABLE_ERROR_CONTEXT
@@ -123,7 +123,7 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_HOME_DIRECTORY,                 (void*)(uintptr_t)environment_home_directory );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY,            (void*)(uintptr_t)environment_temporary_directory );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_ENVIRONMENT_VARIABLE,           (void*)(uintptr_t)environment_variable );
-	
+
 	hashmap_insert( map, HASH_SYM_STREAM_OPEN,                    (void*)(uintptr_t)stream_open );
 	hashmap_insert( map, HASH_SYM_STREAM_CLONE,                   (void*)(uintptr_t)stream_clone );
 	hashmap_insert( map, HASH_SYM_STREAM_DEALLOCATE,              (void*)(uintptr_t)stream_deallocate );
@@ -196,7 +196,7 @@ static NOINLINE void lua_load_foundation_builtins( lua_State* state )
 
 	hashmap_insert( map, HASH_SYM_BASE64_ENCODE,                  (void*)(uintptr_t)base64_encode );
 	hashmap_insert( map, HASH_SYM_BASE64_DECODE,                  (void*)(uintptr_t)base64_decode );
- 
+
 	hashmap_insert( map, HASH_SYM_BLOWFISH_ALLOCATE,              (void*)(uintptr_t)blowfish_allocate );
 	hashmap_insert( map, HASH_SYM_BLOWFISH_DEALLOCATE,            (void*)(uintptr_t)blowfish_deallocate );
 	hashmap_insert( map, HASH_SYM_BLOWFISH_INITIALIZE,            (void*)(uintptr_t)blowfish_initialize );
@@ -325,7 +325,7 @@ int lua_load_foundation( lua_State* state )
 	log_debugf( HASH_LUA, "Loading foundation built-ins (%u bytes of bytecode)", read_buffer.size );
 
 	lua_load_foundation_builtins( state );
-	
+
 	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
 	{
 		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
@@ -339,8 +339,8 @@ int lua_load_foundation( lua_State* state )
 		lua_pop( state, 1 );
 		return 0;
 	}
-	
+
 	return 0;
 }
 
-	
+

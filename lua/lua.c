@@ -1,26 +1,26 @@
 /* lua.c  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
- * 
+ *
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
- * 
+ *
  * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
- * 
+ *
  * For more information about LuaJIT, see
  * http://luajit.org/
  *
  * The MIT License (MIT)
  * Copyright (c) 2013 Rampant Pixels AB
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -66,7 +66,7 @@ typedef enum _lua_command
 typedef struct _lua_op
 {
 	lua_command_t         cmd;
-	union 
+	union
 	{
 		const char*       name;
 		void*             ptr;
@@ -85,7 +85,7 @@ struct _lua
 
 	//! Call queue
 	lua_op_t                          queue[LUA_CALL_QUEUE_SIZE];
-	
+
 	//! Queue head (protected by execute semaphore)
 	uint32_t                          queue_head;
 
@@ -94,7 +94,7 @@ struct _lua
 
 	//! Execution right
 	semaphore_t                       execution_right;
-	
+
 	//! Currently executing thread
 	uint64_t                          executing_thread;
 
@@ -115,13 +115,13 @@ static lua_result_t lua_do_get( lua_t* env, const char* property );
 static void*        lua_lookup_builtin( lua_State* state, const char* sym );
 
 
-/*static FORCEINLINE bool lua_has_execution_right( lua_t* env )
+/*static FOUNDATION_FORCEINLINE bool lua_has_execution_right( lua_t* env )
 {
 	return ( env->executing_thread == thread_id() );
 }*/
 
 
-static NOINLINE bool lua_acquire_execution_right( lua_t* env, bool force )
+static FOUNDATION_NOINLINE bool lua_acquire_execution_right( lua_t* env, bool force )
 {
 	uint64_t self = thread_id();
 	if( env->executing_thread == self )
@@ -199,13 +199,13 @@ static void lua_execute_pending( lua_t* env )
 				lua_do_eval_string( env, env->queue[head].data.name );
 				break;
 			}
-			
+
 			case LUACMD_CALL:
 			{
 				lua_do_call_custom( env, env->queue[head].data.name, &env->queue[head].arg );
-				break;				
+				break;
 			}
-			
+
 			case LUACMD_BIND:
 			case LUACMD_BIND_INT:
 			case LUACMD_BIND_VAL:
@@ -220,7 +220,7 @@ static void lua_execute_pending( lua_t* env )
 
 		//Mark as executed
 		env->queue[head].cmd = LUACMD_WAIT;
-		
+
 		if( ++head == LUA_CALL_QUEUE_SIZE )
 			head = 0;
 	}
@@ -230,13 +230,13 @@ static void lua_execute_pending( lua_t* env )
 }
 
 
-static FORCEINLINE void lua_run_gc( lua_t* env, int milliseconds )
+static FOUNDATION_FORCEINLINE void lua_run_gc( lua_t* env, int milliseconds )
 {
 	lua_gc( env->state, LUA_GCSTEP, milliseconds );
 }
 
 
-static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_t nsize )
+static FOUNDATION_NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_t nsize )
 {
 	if( !nsize && osize )
 		memory_deallocate( block );
@@ -250,7 +250,7 @@ static NOINLINE void* lua_allocator( void* env, void* block, size_t osize, size_
 }
 
 
-static NOINLINE int lua_panic( lua_State* state )
+static FOUNDATION_NOINLINE int lua_panic( lua_State* state )
 {
 	FOUNDATION_ASSERT_FAILFORMAT( "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
 	log_errorf( HASH_LUA, ERROR_EXCEPTION, "unprotected error in call to Lua API (%s)", lua_tostring( state, -1 ) );
@@ -274,7 +274,7 @@ lua_t* lua_allocate( void )
 	lua_atpanic( state, lua_panic );
 
 	lj_clib_getsym_builtin = lua_lookup_builtin;
-	
+
 	//Disable automagic gc
 	lua_gc( state, LUA_GCCOLLECT, 0 );
 
@@ -318,7 +318,7 @@ void lua_deallocate( lua_t* env )
 	semaphore_finalize( &env->execution_right );
 
 	hashmap_deallocate( env->lookup_map );
-	
+
 	memory_deallocate( env );
 }
 
@@ -354,7 +354,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 	state = env->state;
 	stacksize = lua_gettop( state );
 	result = LUA_OK;
-	
+
 	++env->calldepth;
 
 	char* next = strpbrk( method, ".:" );
@@ -362,10 +362,10 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 	{
 		char* buffer = string_clone( method );
 		char* cstr = buffer;
-		
+
 		next = cstr + (unsigned int)( next - method );
 		*next = 0;
-		
+
 		lua_getglobal( state, cstr );
 		if( lua_isnil( state, -1 ) )
 		{
@@ -471,7 +471,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 				case LUADATA_BOOL:
 					lua_pushboolean( state, arg->value[i].flag );
 					break;
-					
+
 				case LUADATA_INTARR:
 				{
 					const int* values = arg->value[i].ptr;
@@ -484,7 +484,7 @@ static lua_result_t lua_do_call_custom( lua_t* env, const char* method, lua_arg_
 					}
 					break;
 				}
-					
+
 				case LUADATA_REALARR:
 				{
 					const real* values = arg->value[i].ptr;
@@ -730,7 +730,7 @@ lua_result_t lua_bind_value( lua_t* env, const char* property, real value )
 }
 
 
-static NOINLINE void lua_push_integer( lua_State* state, const char* name, int value )
+static FOUNDATION_NOINLINE void lua_push_integer( lua_State* state, const char* name, int value )
 {
 	lua_pushstring( state, name );
 	lua_pushinteger( state, value );
@@ -738,14 +738,14 @@ static NOINLINE void lua_push_integer( lua_State* state, const char* name, int v
 }
 
 
-static NOINLINE void lua_push_integer_global( lua_State* state, const char* name, int value )
+static FOUNDATION_NOINLINE void lua_push_integer_global( lua_State* state, const char* name, int value )
 {
 	lua_pushinteger( state, value );
 	lua_setglobal( state, name );
 }
 
 
-static NOINLINE void lua_push_number( lua_State* state, const char* name, real value )
+static FOUNDATION_NOINLINE void lua_push_number( lua_State* state, const char* name, real value )
 {
 	lua_pushstring( state, name );
 	lua_pushnumber( state, value );
@@ -753,14 +753,14 @@ static NOINLINE void lua_push_number( lua_State* state, const char* name, real v
 }
 
 
-static NOINLINE void lua_push_number_global( lua_State* state, const char* name, real value )
+static FOUNDATION_NOINLINE void lua_push_number_global( lua_State* state, const char* name, real value )
 {
 	lua_pushnumber( state, value );
 	lua_setglobal( state, name );
 }
 
 
-static NOINLINE void lua_push_method( lua_State* state, const char* name, lua_CFunction fn )
+static FOUNDATION_NOINLINE void lua_push_method( lua_State* state, const char* name, lua_CFunction fn )
 {
 	lua_pushstring( state, name );
 	lua_pushcclosure( state, fn, 0 );
@@ -768,7 +768,7 @@ static NOINLINE void lua_push_method( lua_State* state, const char* name, lua_CF
 }
 
 
-static NOINLINE void lua_push_method_global( lua_State* state, const char* name, lua_CFunction fn )
+static FOUNDATION_NOINLINE void lua_push_method_global( lua_State* state, const char* name, lua_CFunction fn )
 {
 	lua_pushcclosure( state, fn, 0 );
 	lua_setglobal( state, name );
@@ -794,10 +794,10 @@ static lua_result_t lua_do_bind( lua_t* env, const char* property, lua_command_t
 		unsigned int numtables = 0;
 		char* buffer = string_clone( property );
 		char* cstr = buffer;
-		
+
 		next = cstr + (unsigned int)( next - property );
 		*next = 0;
-		
+
 		lua_getglobal( state, cstr );
 		if( lua_isnil( state, -1 ) )
 		{
@@ -904,7 +904,7 @@ const char* lua_get_string( lua_t* env, const char* property )
 		return value;
 
 	int stacksize = lua_gettop( env->state );
-	
+
 	if( lua_do_get( env, property ) == LUA_OK )
 		value = lua_tostring( state, -1 );
 
@@ -925,7 +925,7 @@ int lua_get_int( lua_t* env, const char* property )
 		return value;
 
 	int stacksize = lua_gettop( env->state );
-	
+
 	if( lua_do_get( env, property ) == LUA_OK )
 		value = (int)lua_tointeger( state, -1 );
 
@@ -944,16 +944,16 @@ static lua_result_t lua_do_get( lua_t* env, const char* property )
 
 	state = env->state;
 	result = LUA_OK;
-	
+
 	char* next = strpbrk( property, ".:" );
 	if( next )
 	{
 		char* buffer = string_clone( property );
 		char* cstr = buffer;
-		
+
 		next = cstr + (unsigned int)( next - property );
 		*next = 0;
-		
+
 		lua_getglobal( state, cstr );
 		if( lua_isnil( state, -1 ) )
 		{
