@@ -1,6 +1,6 @@
 /*
 ** LuaJIT common internal definitions.
-** Copyright (C) 2005-2013 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2014 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_DEF_H
@@ -250,8 +250,8 @@ static LJ_AINLINE uint32_t lj_fls(uint32_t x)
   return _CountLeadingZeros(x) ^ 31;
 }
 #else
-unsigned char _BitScanForward(unsigned long *, unsigned long);
-unsigned char _BitScanReverse(unsigned long *, unsigned long);
+unsigned char _BitScanForward(uint32_t *, unsigned long);
+unsigned char _BitScanReverse(uint32_t *, unsigned long);
 #pragma intrinsic(_BitScanForward)
 #pragma intrinsic(_BitScanReverse)
 

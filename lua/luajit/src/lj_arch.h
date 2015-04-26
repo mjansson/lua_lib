@@ -1,6 +1,6 @@
 /*
 ** Target architecture selection.
-** Copyright (C) 2005-2013 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2014 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #ifndef _LJ_ARCH_H
@@ -66,8 +66,8 @@
 #define LUAJIT_OS	LUAJIT_OS_LINUX
 #elif defined(__MACH__) && defined(__APPLE__)
 #define LUAJIT_OS	LUAJIT_OS_OSX
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
-      defined(__NetBSD__) || defined(__OpenBSD__)
+#elif (defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
+       defined(__NetBSD__) || defined(__OpenBSD__)) && !defined(__ORBIS__)
 #define LUAJIT_OS	LUAJIT_OS_BSD
 #elif (defined(__sun__) && defined(__svr4__)) || defined(__CYGWIN__)
 #define LUAJIT_OS	LUAJIT_OS_POSIX
@@ -102,6 +102,13 @@
 #ifdef __CELLOS_LV2__
 #define LJ_TARGET_PS3		1
 #define LJ_TARGET_CONSOLE	1
+#endif
+
+#ifdef __ORBIS__
+#define LJ_TARGET_PS4		1
+#define LJ_TARGET_CONSOLE	1
+#undef NULL
+#define NULL ((void*)0)
 #endif
 
 #if _XBOX_VER >= 200
@@ -151,11 +158,7 @@
 #elif LUAJIT_TARGET == LUAJIT_ARCH_ARM
 
 #define LJ_ARCH_NAME		"arm"
-#if defined(__arm64__) || defined(__aarch64__)
-#define LJ_ARCH_BITS        64
-#else
 #define LJ_ARCH_BITS		32
-#endif
 #define LJ_ARCH_ENDIAN		LUAJIT_LE
 #if !defined(LJ_ARCH_HASFPU) && __SOFTFP__
 #define LJ_ARCH_HASFPU		0
@@ -172,9 +175,7 @@
 #define LJ_TARGET_UNIFYROT	2	/* Want only IR_BROR. */
 #define LJ_ARCH_NUMMODE		LJ_NUMMODE_DUAL
 
-#if defined(__arm64__) || defined(__aarch64__)
-#define LJ_ARCH_VERSION		80
-#elif __ARM_ARCH_7__ || __ARM_ARCH_7A__ || __ARM_ARCH_7R__ || __ARM_ARCH_7S__
+#if __ARM_ARCH_7__ || __ARM_ARCH_7A__ || __ARM_ARCH_7R__ || __ARM_ARCH_7S__
 #define LJ_ARCH_VERSION		70
 #elif __ARM_ARCH_6T2__
 #define LJ_ARCH_VERSION		61
@@ -259,11 +260,7 @@
 #define LJ_ARCH_NAME		"mips"
 #define LJ_ARCH_ENDIAN		LUAJIT_BE
 #endif
-#if defined(__mips64)
-#define LJ_ARCH_BITS        64
-#else
 #define LJ_ARCH_BITS		32
-#endif
 #define LJ_TARGET_MIPS		1
 #define LJ_TARGET_EHRETREG	4
 #define LJ_TARGET_JUMPRANGE	27	/* 2*2^27 = 256MB-aligned region */
@@ -301,7 +298,7 @@
 #error "Need at least GCC 4.2 or newer"
 #endif
 #elif !LJ_TARGET_PS3
-#if (__GNUC__ < 4) || ((__GNUC__ == 4) && __GNUC_MINOR__ < 0)
+#if (__GNUC__ < 4) || ((__GNUC__ == 4) && __GNUC_MINOR__ < 3)
 #error "Need at least GCC 4.3 or newer"
 #endif
 #endif
@@ -320,9 +317,9 @@
 #if __ARM_ARCH_6M__ || __ARM_ARCH_7M__ || __ARM_ARCH_7EM__
 #error "No support for Cortex-M CPUs"
 #endif
-//#if !(__ARM_EABI__ || LJ_TARGET_IOS)
-//#error "Only ARM EABI or iOS 3.0+ ABI is supported"
-//#endif
+#if !(__ARM_EABI__ || LJ_TARGET_IOS)
+#error "Only ARM EABI or iOS 3.0+ ABI is supported"
+#endif
 #elif LJ_TARGET_PPC || LJ_TARGET_PPCSPE
 #if defined(_SOFT_FLOAT) || defined(_SOFT_DOUBLE)
 #error "No support for PowerPC CPUs without double-precision FPU"

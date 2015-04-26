@@ -1,6 +1,6 @@
 /*
 ** FFI C library loader.
-** Copyright (C) 2005-2013 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2014 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #include "lj_obj.h"
@@ -230,7 +230,7 @@ static void clib_unloadlib(CLibrary *cl)
 	FreeLibrary((HINSTANCE)h);
       }
     }
-  } else if (!cl->handle) {
+  } else if (cl->handle) {
     FreeLibrary((HINSTANCE)cl->handle);
   }
 }
@@ -276,12 +276,12 @@ static void *clib_getsym(CLibrary *cl, const char *name)
 LJ_NORET LJ_NOINLINE static void clib_error(lua_State *L, const char *fmt,
 					    const char *name)
 {
-  lj_err_callermsg(L, lj_str_pushf(L, fmt, name, "no support for dynamic libraries"));
+  lj_err_callermsg(L, lj_str_pushf(L, fmt, name, "no support for this OS"));
 }
 
 static void *clib_loadlib(lua_State *L, const char *name, int global)
 {
-  lj_err_callermsg(L, "no support for loading dynamic libraries");
+  lj_err_callermsg(L, "no support for loading dynamic libraries for this OS");
   UNUSED(name); UNUSED(global);
   return NULL;
 }
