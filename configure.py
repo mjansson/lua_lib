@@ -19,6 +19,12 @@ toolchain = generator.toolchain
 lua_lib = generator.lib( module = 'lua', sources = [
   'foundation.c', 'lua.c', 'read.c', 'version.c' ] )
 
+if not target.is_ios() and not target.is_android():
+  configs = [ config for config in toolchain.configs if config not in [ 'profile', 'deploy' ] ]
+  if not configs == []:
+    generator.bin( 'lua', [ 'main.c' ], 'lua', basepath = 'tools', implicit_deps = [ lua_lib ], libs = [ 'lua', 'foundation', 'luajit' ], configs = configs )
+    generator.bin( 'luadump', [ 'main.c' ], 'luadump', basepath = 'tools', implicit_deps = [ lua_lib ], libs = [ 'lua', 'foundation', 'luajit' ], configs = configs )
+
 includepaths = generator.test_includepaths()
 
 test_cases = [

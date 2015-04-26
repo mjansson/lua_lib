@@ -41,12 +41,12 @@
 #include "luajit/src/lua.h"
 
 
-#if !BUILD_ENABLE_LOG
-static void  _log_debugf_disabled( uint64_t context, const char* format, ... ) {}
+#if !BUILD_ENABLE_LOG || !BUILD_ENABLE_DEBUG_LOG
+static void  _log_debugf_disabled( uint64_t context, const char* format, ... ) { FOUNDATION_UNUSED( context ); FOUNDATION_UNUSED( format ); }
 #endif
 
 #if !BUILD_ENABLE_ERROR_CONTEXT
-static void  _error_context_push_disabled( const char* name, const char* data ) {}
+static void  _error_context_push_disabled( const char* name, const char* data ) { FOUNDATION_UNUSED( name ); FOUNDATION_UNUSED( data ); }
 static void  _error_context_pop_disabled() {}
 #endif
 

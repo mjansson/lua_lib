@@ -1,26 +1,26 @@
 /* main.c  -  Lua interpreter for lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
- * 
+ *
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
- * 
+ *
  * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
- * 
+ *
  * For more information about LuaJIT, see
  * http://luajit.org/
  *
  * The MIT License (MIT)
  * Copyright (c) 2013 Rampant Pixels AB
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -50,7 +50,7 @@ typedef struct
 } luainstance_t;
 
 static bool           _lua_terminate = false;
-	
+
 
 static luainstance_t  _lua_parse_command_line( const char* const* cmdline );
 static void           _lua_print_usage( void );
@@ -67,6 +67,8 @@ static void* event_thread( object_t thread, void* arg )
 {
 	event_block_t* block;
 	event_t* event = 0;
+
+	FOUNDATION_UNUSED( arg );
 
 	while( !thread_should_terminate( thread ) )
 	{
@@ -101,8 +103,9 @@ int main_initialize( void )
 	log_enable_prefix( false );
 	log_set_suppress( 0, ERRORLEVEL_DEBUG );
 	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
-	
-	application_t application = {0};
+
+	application_t application;
+	memset( &application, 0, sizeof( application ) );
 	application.name = "lua";
 	application.short_name = "lua";
 	application.config_dir = "lua";
@@ -118,33 +121,32 @@ int main_initialize( void )
 
 
 int main_run( void* main_arg )
-{	
+{
 	int result = LUA_RESULT_OK;
-	luainstance_t instance = _lua_parse_command_line( environment_command_line() );
-	
 	lua_State* state = 0;
-	
+	luainstance_t instance = _lua_parse_command_line( environment_command_line() );
+
 	object_t eventthread = thread_create( event_thread, "event_thread", THREAD_PRIORITY_NORMAL, 0 );
 	thread_start( eventthread, 0 );
 
 	instance.env = lua_allocate();
 	state = lua_state( instance.env );
-	
+
 	if( instance.input_file )
 		result = _lua_process_file( instance.env, instance.input_file );
 	else
 		result = _lua_interpreter( instance.env );
-	
-exit:
 
 	thread_terminate( eventthread );
 	thread_destroy( eventthread );
 
 	lua_deallocate( instance.env );
 	string_deallocate( instance.input_file );
-	
+
 	while( thread_is_running( eventthread ) )
 		thread_sleep( 10 );
+
+	FOUNDATION_UNUSED( main_arg );
 
 	return result;
 }
@@ -163,12 +165,14 @@ static int _lua_interpreter( lua_t* lua )
 
 	char* entry = 0;
 	char* collated = 0;
-	lua_readstring_t read_string = {0};
+	lua_readstring_t read_string;
 	lua_State* state = lua_state( lua );
 
 	int status;
 
 	log_enable_prefix( false );
+
+	memset( &read_string, 0, sizeof( read_string ) );
 
 	do
 	{
@@ -252,7 +256,7 @@ static int _lua_process_file( lua_t* lua, const char* filename )
 		result = LUA_RESULT_UNABLE_TO_OPEN_INPUT_FILE;
 		goto exit;
 	}
-	
+
 	lua_readstream_t read_stream = {
 		.stream = stream
 	};
@@ -290,10 +294,10 @@ static luainstance_t _lua_parse_command_line( const char* const* cmdline )
 	int arg, asize;
 	bool display_help = false;
 
-	luainstance_t instance = {0};
-
+	luainstance_t instance;
+	memset( &instance, 0, sizeof( instance ) );
 	instance.suppress_level = ERRORLEVEL_INFO;
-	
+
 	error_context_push( "parsing command line", "" );
 	for( arg = 1, asize = array_size( cmdline ); arg < asize; ++arg )
 	{

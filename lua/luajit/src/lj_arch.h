@@ -41,7 +41,7 @@
 #define LUAJIT_TARGET	LUAJIT_ARCH_X86
 #elif defined(__x86_64__) || defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64)
 #define LUAJIT_TARGET	LUAJIT_ARCH_X64
-#elif defined(__arm__) || defined(__arm) || defined(__ARM__) || defined(__ARM) || defined(__arm64__)
+#elif defined(__arm__) || defined(__arm) || defined(__ARM__) || defined(__ARM) || defined(__arm64__) || defined(__aarch64__)
 #define LUAJIT_TARGET	LUAJIT_ARCH_ARM
 #elif defined(__ppc__) || defined(__ppc) || defined(__PPC__) || defined(__PPC) || defined(__powerpc__) || defined(__powerpc) || defined(__POWERPC__) || defined(__POWERPC) || defined(_M_PPC)
 #ifdef __NO_FPRS__
@@ -151,7 +151,7 @@
 #elif LUAJIT_TARGET == LUAJIT_ARCH_ARM
 
 #define LJ_ARCH_NAME		"arm"
-#if defined(__arm64__)
+#if defined(__arm64__) || defined(__aarch64__)
 #define LJ_ARCH_BITS        64
 #else
 #define LJ_ARCH_BITS		32
@@ -172,7 +172,7 @@
 #define LJ_TARGET_UNIFYROT	2	/* Want only IR_BROR. */
 #define LJ_ARCH_NUMMODE		LJ_NUMMODE_DUAL
 
-#if defined(__arm64__)
+#if defined(__arm64__) || defined(__aarch64__)
 #define LJ_ARCH_VERSION		80
 #elif __ARM_ARCH_7__ || __ARM_ARCH_7A__ || __ARM_ARCH_7R__ || __ARM_ARCH_7S__
 #define LJ_ARCH_VERSION		70
@@ -259,7 +259,11 @@
 #define LJ_ARCH_NAME		"mips"
 #define LJ_ARCH_ENDIAN		LUAJIT_BE
 #endif
+#if defined(__mips64)
+#define LJ_ARCH_BITS        64
+#else
 #define LJ_ARCH_BITS		32
+#endif
 #define LJ_TARGET_MIPS		1
 #define LJ_TARGET_EHRETREG	4
 #define LJ_TARGET_JUMPRANGE	27	/* 2*2^27 = 256MB-aligned region */
@@ -297,7 +301,7 @@
 #error "Need at least GCC 4.2 or newer"
 #endif
 #elif !LJ_TARGET_PS3
-#if (__GNUC__ < 4) || ((__GNUC__ == 4) && __GNUC_MINOR__ < 3)
+#if (__GNUC__ < 4) || ((__GNUC__ == 4) && __GNUC_MINOR__ < 0)
 #error "Need at least GCC 4.3 or newer"
 #endif
 #endif
@@ -316,9 +320,9 @@
 #if __ARM_ARCH_6M__ || __ARM_ARCH_7M__ || __ARM_ARCH_7EM__
 #error "No support for Cortex-M CPUs"
 #endif
-#if !(__ARM_EABI__ || LJ_TARGET_IOS)
-#error "Only ARM EABI or iOS 3.0+ ABI is supported"
-#endif
+//#if !(__ARM_EABI__ || LJ_TARGET_IOS)
+//#error "Only ARM EABI or iOS 3.0+ ABI is supported"
+//#endif
 #elif LJ_TARGET_PPC || LJ_TARGET_PPCSPE
 #if defined(_SOFT_FLOAT) || defined(_SOFT_DOUBLE)
 #error "No support for PowerPC CPUs without double-precision FPU"

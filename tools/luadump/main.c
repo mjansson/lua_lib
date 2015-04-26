@@ -1,26 +1,26 @@
 /* main.c  -  Lua dump tool for lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
- * 
+ *
  * This library provides a fork of the LuaJIT library with custom modifications for projects
  * based on our foundation library.
- * 
+ *
  * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
- * 
+ *
  * For more information about LuaJIT, see
  * http://luajit.org/
  *
  * The MIT License (MIT)
  * Copyright (c) 2013 Rampant Pixels AB
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
  * including without limitation the rights to use, copy, modify, merge, publish, distribute,
  * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in all copies or
  * substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
  * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
  * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
@@ -46,7 +46,7 @@ typedef struct
 
 	stream_t*           input_stream;
 	stream_t*           output_stream;
-	
+
 	lua_t*              env;
 
 	bool                hex;
@@ -56,25 +56,27 @@ typedef struct
 
 	error_level_t       suppress_level;
 } luadump_t;
-	
+
 
 static luadump_t  luadump_parse_command_line( const char* const* cmdline );
 static void       luadump_print_usage( void );
-static int        luadump_load_jitbc( lua_t* env );
+//static int        luadump_load_jitbc( lua_t* env );
 
 
-static NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_t size, void* user_data )
+static FOUNDATION_NOINLINE int lua_dump_writer( lua_State* state, const void* buffer, size_t size, void* user_data )
 {
 	luadump_t* dump = user_data;
 
+	FOUNDATION_UNUSED( state );
+
 	if( size <= 0 )
 		return 0;
-	
+
 	dump->bytecode = ( dump->bytecode ? memory_reallocate( dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size ) : memory_allocate( HASH_LUA, size, 0, MEMORY_PERSISTENT ) );
 
 	memcpy( dump->bytecode + dump->bytecode_size, buffer, size );
 	dump->bytecode_size += size;
-	
+
 	if( dump->hex )
 	{
 		char* line = memory_allocate( HASH_LUA, size * 6 + 2, 0, MEMORY_TEMPORARY );
@@ -115,8 +117,9 @@ int main_initialize( void )
 	log_enable_prefix( false );
 	log_set_suppress( 0, ERRORLEVEL_INFO );
 	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
-	
-	application_t application = {0};
+
+	application_t application;
+	memset( &application, 0, sizeof( application ) );
 	application.name = "luadump";
 	application.short_name = "luadump";
 	application.config_dir = "luadump";
@@ -132,18 +135,20 @@ int main_initialize( void )
 
 
 int main_run( void* main_arg )
-{	
+{
 	int result = LUADUMP_RESULT_OK;
 	luadump_t dump = luadump_parse_command_line( environment_command_line() );
-	
+
 	lua_State* state = 0;
-	
+
+	FOUNDATION_UNUSED( main_arg );
+
 	if( !string_length( dump.input_file ) )
 		return LUADUMP_RESULT_OK;
-	
+
 	dump.env = lua_allocate();
 	state = lua_state( dump.env );
-	
+
 	/*if( ( result = luadump_load_jitbc( dump.env ) ) != LUADUMP_RESULT_OK )
 		goto exit;
 
@@ -165,7 +170,7 @@ int main_run( void* main_arg )
 			goto exit;
 		}
 	}
-	
+
 	lua_readstream_t read_stream = {
 		.stream = dump.input_stream,
 	};
@@ -189,19 +194,19 @@ int main_run( void* main_arg )
 	{
 		log_info( HASH_LUA, "Lua bytecode dump successful" );
 	}
-	
+
 exit:
 
 	memory_deallocate( dump.bytecode );
-	
+
 	stream_deallocate( dump.input_stream );
 	stream_deallocate( dump.output_stream );
-	
+
 	lua_deallocate( dump.env );
 
 	string_deallocate( dump.input_file );
 	string_deallocate( dump.output_file );
-	
+
 	return result;
 }
 
@@ -217,10 +222,10 @@ static luadump_t luadump_parse_command_line( const char* const* cmdline )
 	int arg, asize;
 	bool display_help = false;
 
-	luadump_t dump = {0};
-
+	luadump_t dump;
+	memset( &dump, 0, sizeof( dump ) );
 	dump.suppress_level = ERRORLEVEL_INFO;
-	
+
 	error_context_push( "parsing command line", "" );
 	for( arg = 1, asize = array_size( cmdline ); arg < asize; ++arg )
 	{
@@ -251,7 +256,7 @@ static luadump_t luadump_parse_command_line( const char* const* cmdline )
 
 	if( !string_length( dump.input_file ) )
 		display_help = true;
-	
+
 	if( display_help )
 		luadump_print_usage();
 
@@ -302,10 +307,11 @@ static int luadump_load_jitbc( lua_t* env )
 
 #else
 
-static int luadump_load_jitbc( lua_t* env )
+/*static int luadump_load_jitbc( lua_t* env )
 {
+	FOUNDATION_UNUSED( env );
 	return LUADUMP_RESULT_OK;
-}
+}*/
 
 #endif
 
