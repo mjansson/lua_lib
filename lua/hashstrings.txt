@@ -3,19 +3,26 @@ HASH_LUA                                lua
 HASH_SCRIPT                             script
 
 HASH_SYM_HASH                           hash
+HASH_SYM_HASH_TO_STRING                 hash_to_string
 
 HASH_SYM_LOG_DEBUGF                     log_debugf
 HASH_SYM_LOG_INFOF                      log_infof
 HASH_SYM_LOG_WARNF                      log_warnf
 HASH_SYM_LOG_ERRORF                     log_errorf
 HASH_SYM_LOG_PANICF                     log_panicf
+HASH_SYM_LOG_ERROR_CONTEXT              log_error_context
+HASH_SYM_LOG_CALLBACK                   log_callback
+HASH_SYM_LOG_SET_CALLBACK               log_set_callback
 HASH_SYM_LOG_ENABLE_STDOUT              log_enable_stdout
 HASH_SYM_LOG_ENABLE_PREFIX              log_enable_prefix
 HASH_SYM_LOG_SET_SUPPRESS               log_set_suppress
 HASH_SYM_LOG_SUPPRESS                   log_suppress
+HASH_SYM_LOG_SUPPRESS_CLEAR             log_suppress_clear
 
 HASH_SYM_ERROR                          error
 HASH_SYM_ERROR_REPORT                   error_report
+HASH_SYM_ERROR_CALLBACK                 error_callback
+HASH_SYM_ERROR_SET_CALLBACK             error_set_callback
 HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
 HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
 
@@ -46,7 +53,7 @@ HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY      environment_current_working_
 HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY  environment_set_current_working_directory
 HASH_SYM_ENVIRONMENT_HOME_DIRECTORY                 environment_home_directory
 HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY            environment_temporary_directory
-HASH_SYM_ENVIRONMENT_ENVIRONMENT_VARIABLE           environment_variable
+HASH_SYM_ENVIRONMENT_VARIABLE                       environment_variable
 
 HASH_SYM_STREAM_OPEN                    stream_open
 HASH_SYM_STREAM_CLONE                   stream_clone

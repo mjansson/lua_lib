@@ -270,6 +270,8 @@ tick_t                 time_system( void );
 
 ]]
 
+-- Helper functions
+
 function hash( str ) return C.hash( str, C.string_length( str ) ) end
 
 function string_array_to_table( arr )
@@ -290,6 +292,8 @@ function string_table_to_array( tab )
       end
       return arr, num
 end
+
+-- Constants
 
 PLATFORM_WINDOWS = 1
 PLATFORM_LINUX = 2
@@ -397,6 +401,8 @@ PROCESS_STILL_ACTIVE = 0x7FFFFFFF
 -- full 64bit hex numbers (numbers > 0xc000000000000000 are truncated)
 HASH_LUA = hash( "lua" )
 
+-- Convenience wrappers
+
 function log_debug( message ) C.log_debugf( HASH_LUA, "%s", message ) end
 function log_info( message ) C.log_infof( HASH_LUA, "%s", message ) end
 function log_warn( message ) C.log_warnf( HASH_LUA, 8, "%s", message ) end -- 8 = WARNING_SCRIPT
@@ -415,4 +421,4 @@ function fs_matching_files( path, pattern, recurse ) local arr = C.fs_matching_f
 function fs_files( path ) local arr = C.fs_files( path ); local table = string_array_to_table( arr ); C.array_deallocate( arr ); return table end
 function fs_subdirs( path ) local arr = C.fs_subdirs( path ); local table = string_array_to_table( arr ); C.array_deallocate( arr ); return table end
 
---process.set_arguments = void                   process_set_arguments( process_t* proc, const char** args, unsigned int num );
+function process_set_arguments( proc, args ) local arr, num = string_table_to_array( args ); C.process_set_arguments( proc, arr, num ); C.array_deallocate( arr ); end

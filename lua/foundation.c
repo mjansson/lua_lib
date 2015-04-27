@@ -82,8 +82,11 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 #endif
 	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,      (void*)(uintptr_t)log_enable_prefix );
 	hashmap_insert( map, HASH_SYM_LOG_ENABLE_STDOUT,      (void*)(uintptr_t)log_enable_stdout );
+	hashmap_insert( map, HASH_SYM_LOG_CALLBACK,           (void*)(uintptr_t)log_callback );
+	hashmap_insert( map, HASH_SYM_LOG_SET_CALLBACK,       (void*)(uintptr_t)log_set_callback );
 	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,       (void*)(uintptr_t)log_set_suppress );
 	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,           (void*)(uintptr_t)log_suppress );
+	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS_CLEAR,     (void*)(uintptr_t)log_suppress_clear );
 
 	hashmap_insert( map, HASH_SYM_ARRAY_ALLOCATE_POINTER,     (void*)(uintptr_t)_array_allocate_pointer );
 	hashmap_insert( map, HASH_SYM_ARRAY_SIZE,                 (void*)(uintptr_t)_array_size );
@@ -93,6 +96,8 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 
 	hashmap_insert( map, HASH_SYM_ERROR,                  (void*)(uintptr_t)error );
 	hashmap_insert( map, HASH_SYM_ERROR_REPORT,           (void*)(uintptr_t)error_report );
+	hashmap_insert( map, HASH_SYM_ERROR_CALLBACK,         (void*)(uintptr_t)error_callback );
+	hashmap_insert( map, HASH_SYM_ERROR_SET_CALLBACK,     (void*)(uintptr_t)error_set_callback );
 #if BUILD_ENABLE_ERROR_CONTEXT
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,     (void*)(uintptr_t)_error_context_push );
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,      (void*)(uintptr_t)_error_context_pop );
@@ -122,7 +127,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY,  (void*)(uintptr_t)environment_set_current_working_directory );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_HOME_DIRECTORY,                 (void*)(uintptr_t)environment_home_directory );
 	hashmap_insert( map, HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY,            (void*)(uintptr_t)environment_temporary_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_ENVIRONMENT_VARIABLE,           (void*)(uintptr_t)environment_variable );
+	hashmap_insert( map, HASH_SYM_ENVIRONMENT_VARIABLE,                       (void*)(uintptr_t)environment_variable );
 
 	hashmap_insert( map, HASH_SYM_STREAM_OPEN,                    (void*)(uintptr_t)stream_open );
 	hashmap_insert( map, HASH_SYM_STREAM_CLONE,                   (void*)(uintptr_t)stream_clone );
