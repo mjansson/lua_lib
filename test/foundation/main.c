@@ -71,20 +71,19 @@ DECLARE_TEST( foundation, log )
 	EXPECT_NE( env, 0 );
 
 	const char* testcode =
-	"local foundation = require(\"foundation\")\n"
-	"local log = foundation.log\n"
-	"local error = foundation.error\n"
-	"log.set_suppress( \"lua\", error.LEVEL_NONE )\n"
-	"log.debug( \"Testing log debug output\" )\n"
-	"log.info( \"Testing log info output\" )\n"
-	"log.warn( \"Testing log warning output\" )\n"
-	"log.enable_prefix( false )\n"
-	"log.error( \"Testing log error output without prefix\" )\n"
-	"log.enable_stdout( false )\n"
-	"log.debug( \"Invisible on stdout\" )\n"
-	"log.enable_stdout( true )\n"
-	"log.enable_prefix( true )\n"
-	"log.set_suppress( \"lua\", error.LEVEL_INFO )\n";
+	"local ffi = require( \"ffi\" )\n"
+	"local C = ffi.C\n"
+	"C.log_set_suppress( HASH_LUA, ERRORLEVEL_NONE )\n"
+	"log_debug( \"Testing log debug output\" )\n"
+	"log_info( \"Testing log info output\" )\n"
+	"log_warn( \"Testing log warning output\" )\n"
+	"C.log_enable_prefix( false )\n"
+	"log_error( \"Testing log error output without prefix\" )\n"
+	"C.log_enable_stdout( false )\n"
+	"log_debug( \"Invisible on stdout\" )\n"
+	"C.log_enable_stdout( true )\n"
+	"C.log_enable_prefix( true )\n"
+	"C.log_set_suppress( HASH_LUA, ERRORLEVEL_INFO )\n";
 
 	EXPECT_EQ( lua_eval_string( env, testcode ), LUA_OK );
 
@@ -106,24 +105,21 @@ DECLARE_TEST( foundation, environment )
 	EXPECT_NE( env, 0 );
 
 	const char* testcode =
-	"local foundation = require( \"foundation\" )\n"
 	"local ffi = require( \"ffi\" )\n"
-	"local log = foundation.log\n"
-	"local error = foundation.error\n"
-	"local env = foundation.environment\n"
-	"log.set_suppress( \"lua\", error.LEVEL_DEBUG )\n"
-	"log.enable_prefix( false )\n"
-	"log.info( \"Executable name: \" .. ffi.string( env.executable_name() ) )\n"
+	"local C = ffi.C\n"
+	"C.log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG )\n"
+	"C.log_enable_prefix( false )\n"
+	"log_info( \"Executable name: \" .. ffi.string( C.environment_executable_name() ) )\n"
 	"local cmdline = \"\"\n"
-	"local cmdline_tab = env.command_line()\n"
+	"local cmdline_tab = environment_command_line()\n"
 	"local i = 1\n"
 	"while cmdline_tab[i] ~= nil do\n"
 	"  cmdline = cmdline .. \" \" .. cmdline_tab[i]\n"
 	"  i = i + 1\n"
 	"end\n"
-	"log.info( \"Command line:\" .. cmdline )\n"
-	"log.enable_prefix( true )\n"
-	"log.set_suppress( \"lua\", error.LEVEL_INFO )\n";
+	"log_info( \"Command line:\" .. cmdline )\n"
+	"C.log_enable_prefix( true )\n"
+	"C.log_set_suppress( HASH_LUA, ERRORLEVEL_INFO )\n";
 
 	EXPECT_EQ( lua_eval_string( env, testcode ), LUA_OK );
 

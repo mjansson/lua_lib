@@ -116,7 +116,7 @@ int main_initialize( void )
 
 	log_enable_prefix( false );
 	log_set_suppress( 0, ERRORLEVEL_INFO );
-	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
+	log_set_suppress( HASH_LUA, ERRORLEVEL_INFO );
 
 	application_t application;
 	memset( &application, 0, sizeof( application ) );
@@ -163,7 +163,7 @@ int main_run( void* main_arg )
 
 	if( dump.output_file )
 	{
-		dump.output_stream = stream_open( dump.output_file, STREAM_OUT | ( !dump.hex ? STREAM_BINARY : 0 ) );
+		dump.output_stream = stream_open( dump.output_file, STREAM_OUT | STREAM_CREATE | STREAM_TRUNCATE | ( !dump.hex ? STREAM_BINARY : 0 ) );
 		if( !dump.output_stream )
 		{
 			result = LUADUMP_RESULT_UNABLE_TO_OPEN_OUTPUT_FILE;
@@ -318,6 +318,7 @@ static int luadump_load_jitbc( lua_t* env )
 
 static void luadump_print_usage( void )
 {
+	error_level_t level = log_suppress( HASH_LUA );
 	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
 	log_info( HASH_LUA,
 		"luadump usage:\n"
@@ -327,6 +328,6 @@ static void luadump_print_usage( void )
 		"      --hex                        Output in hex format\n"
 		"      --help                       Show this message"
 	);
-	log_set_suppress( HASH_LUA, ERRORLEVEL_INFO );
+	log_set_suppress( HASH_LUA, level );
 }
 

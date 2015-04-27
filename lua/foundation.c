@@ -312,6 +312,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 
 int lua_load_foundation( lua_State* state )
 {
+	//TODO: When implemented lua compiled bytecode libraries, load from library resource instaed
 	static unsigned char bytecode[] = {
 		#include "bind.foundation.hex"
 	};
