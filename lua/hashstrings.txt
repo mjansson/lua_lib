@@ -2,137 +2,64 @@
 HASH_LUA                                lua
 HASH_SCRIPT                             script
 
-HASH_SYM_HASH                           hash
-HASH_SYM_HASH_TO_STRING                 hash_to_string
-
-HASH_SYM_LOG_DEBUGF                     log_debugf
-HASH_SYM_LOG_INFOF                      log_infof
-HASH_SYM_LOG_WARNF                      log_warnf
-HASH_SYM_LOG_ERRORF                     log_errorf
-HASH_SYM_LOG_PANICF                     log_panicf
-HASH_SYM_LOG_ERROR_CONTEXT              log_error_context
-HASH_SYM_LOG_CALLBACK                   log_callback
-HASH_SYM_LOG_SET_CALLBACK               log_set_callback
-HASH_SYM_LOG_ENABLE_STDOUT              log_enable_stdout
-HASH_SYM_LOG_ENABLE_PREFIX              log_enable_prefix
-HASH_SYM_LOG_SET_SUPPRESS               log_set_suppress
-HASH_SYM_LOG_SUPPRESS                   log_suppress
-HASH_SYM_LOG_SUPPRESS_CLEAR             log_suppress_clear
-
-HASH_SYM_ERROR                          error
-HASH_SYM_ERROR_REPORT                   error_report
-HASH_SYM_ERROR_CALLBACK                 error_callback
-HASH_SYM_ERROR_SET_CALLBACK             error_set_callback
-HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
-HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
-
 HASH_SYM_ARRAY_ALLOCATE_POINTER         array_allocate_pointer
 HASH_SYM_ARRAY_SIZE                     array_size
 HASH_SYM_ARRAY_ELEMENT_POINTER          array_element_pointer
 HASH_SYM_ARRAY_SET_ELEMENT_POINTER      array_set_element_pointer
 HASH_SYM_ARRAY_DEALLOCATE               array_deallocate
 
-HASH_SYM_STRING_DEALLOCATE                          string_deallocate
-HASH_SYM_STRING_LENGTH                              string_length
-HASH_SYM_STRING_GLYPHS                              string_glyphs
-HASH_SYM_STRING_MERGE                               string_merge
-HASH_SYM_STRING_EXPLODE                             string_explode
-HASH_SYM_STRING_FROM_UINT128_STATIC                 string_from_uint128_static
-HASH_SYM_STRING_FROM_TIME_STATIC                    string_from_time_static
-HASH_SYM_STRING_FROM_UUID_STATIC                    string_from_uuid_static
-HASH_SYM_STRING_TO_UINT64                           string_to_uint64
-HASH_SYM_STRING_TO_UINT128                          string_to_uint128
-HASH_SYM_STRING_TO_UUID                             string_to_uuid
-HASH_SYM_STRING_IS_VALID_EMAIL_ADDRESS              string_is_valid_email_address
+HASH_SYM_ASSERT_HANDLER                 assert_handler
+HASH_SYM_ASSERT_SET_HANDLER             assert_set_handler
+HASH_SYM_ASSERT_REPORT                  assert_report
 
-HASH_SYM_ENVIRONMENT_COMMAND_LINE                   environment_command_line
-HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME                environment_executable_name
-HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY           environment_executable_directory
-HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY      environment_initial_working_directory
-HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY      environment_current_working_directory
-HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY  environment_set_current_working_directory
-HASH_SYM_ENVIRONMENT_HOME_DIRECTORY                 environment_home_directory
-HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY            environment_temporary_directory
-HASH_SYM_ENVIRONMENT_VARIABLE                       environment_variable
-
-HASH_SYM_STREAM_OPEN                    stream_open
-HASH_SYM_STREAM_CLONE                   stream_clone
-HASH_SYM_STREAM_DEALLOCATE              stream_deallocate
-HASH_SYM_STREAM_TELL                    stream_tell
-HASH_SYM_STREAM_SEEK                    stream_seek
-HASH_SYM_STREAM_EOS                     stream_eos
-HASH_SYM_STREAM_SET_BYTEORDER           stream_set_byteorder
-HASH_SYM_STREAM_SET_BINARY              stream_set_binary
-HASH_SYM_STREAM_IS_SEQUENTIAL           stream_is_sequential
-HASH_SYM_STREAM_IS_RELIABLE             stream_is_reliable
-HASH_SYM_STREAM_IS_INORDER              stream_is_inorder
-HASH_SYM_STREAM_IS_SWAPPED              stream_is_swapped
-HASH_SYM_STREAM_BYTEORDER               stream_byteorder
-HASH_SYM_STREAM_LAST_MODIFIED           stream_last_modified
-HASH_SYM_STREAM_READ                    stream_read
-HASH_SYM_STREAM_READ_LINE               stream_read_line
-HASH_SYM_STREAM_SIZE                    stream_size
-HASH_SYM_STREAM_DETERMINE_BINARY_MODE   stream_determine_binary_mode
-HASH_SYM_STREAM_READ_BOOL               stream_read_bool
-HASH_SYM_STREAM_READ_INT8               stream_read_int8
-HASH_SYM_STREAM_READ_UINT8              stream_read_uint8
-HASH_SYM_STREAM_READ_INT16              stream_read_int16
-HASH_SYM_STREAM_READ_UINT16             stream_read_uint16
-HASH_SYM_STREAM_READ_INT32              stream_read_int32
-HASH_SYM_STREAM_READ_UINT32             stream_read_uint32
-HASH_SYM_STREAM_READ_INT64              stream_read_int64
-HASH_SYM_STREAM_READ_UINT64             stream_read_uint64
-HASH_SYM_STREAM_READ_FLOAT32            stream_read_float32
-HASH_SYM_STREAM_READ_FLOAT64            stream_read_float64
-HASH_SYM_STREAM_READ_STRING             stream_read_string
-HASH_SYM_STREAM_BUFFER_READ             stream_buffer_read
-HASH_SYM_STREAM_AVAILABLE_READ          stream_available_read
-HASH_SYM_STREAM_WRITE_BOOL              stream_write_bool
-HASH_SYM_STREAM_WRITE_INT8              stream_write_int8
-HASH_SYM_STREAM_WRITE_UINT8             stream_write_uint8
-HASH_SYM_STREAM_WRITE_INT16             stream_write_int16
-HASH_SYM_STREAM_WRITE_UINT16            stream_write_uint16
-HASH_SYM_STREAM_WRITE_INT32             stream_write_int32
-HASH_SYM_STREAM_WRITE_UINT32            stream_write_uint32
-HASH_SYM_STREAM_WRITE_INT64             stream_write_int64
-HASH_SYM_STREAM_WRITE_UINT64            stream_write_uint64
-HASH_SYM_STREAM_WRITE_FLOAT32           stream_write_float32
-HASH_SYM_STREAM_WRITE_FLOAT64           stream_write_float64
-HASH_SYM_STREAM_WRITE_STRING            stream_write_string
-HASH_SYM_STREAM_WRITE_ENDL              stream_write_endl
-HASH_SYM_STREAM_TRUNCATE                stream_truncate
-HASH_SYM_STREAM_FLUSH                   stream_flush
-HASH_SYM_STREAM_OPEN_STDOUT             stream_open_stdout
-HASH_SYM_STREAM_OPEN_STDERR             stream_open_stderr
-HASH_SYM_STREAM_OPEN_STDIN              stream_open_stdin
-
-HASH_SYM_SYSTEM_ERROR_MESSAGE           system_error_message
-HASH_SYM_SYSTEM_PLATFORM                system_platform
-HASH_SYM_SYSTEM_ARCHITECTURE            system_architecture
-HASH_SYM_SYSTEM_BYTEORDER               system_byteorder
-HASH_SYM_SYSTEM_HARDWARE_THREADS        system_hardware_threads
-HASH_SYM_SYSTEM_HOSTNAME                system_hostname
-HASH_SYM_SYSTEM_HOSTID                  system_hostid
-HASH_SYM_SYSTEM_USERNAME                system_username
-HASH_SYM_SYSTEM_DEBUGGER_ATTACHED       system_debugger_attached
-HASH_SYM_SYSTEM_PAUSE                   system_pause
-HASH_SYM_SYSTEM_LANGUAGE                system_language
-HASH_SYM_SYSTEM_COUNTRY                 system_country
-HASH_SYM_SYSTEM_LOCALE                  system_locale
-HASH_SYM_SYSTEM_LOCALE_STRING           system_locale_string
-HASH_SYM_SYSTEM_PROCESS_EVENTS          system_process_events
-HASH_SYM_SYSTEM_MESSAGE_BOX             system_message_box
-HASH_SYM_SYSTEM_EVENT_STREAM            system_event_stream
-HASH_SYM_SYSTEM_POST_EVENT              system_post_event
+HASH_SYM_ASSET_STREAM_OPEN              asset_stream_open
 
 HASH_SYM_BASE64_ENCODE                  base64_encode
 HASH_SYM_BASE64_DECODE                  base64_decode
 
+HASH_SYM_BITBUFFER_ALLOCATE_BUFFER      bitbuffer_allocate_buffer
+HASH_SYM_BITBUFFER_ALLOCATE_STREAM      bitbuffer_allocate_stream
+HASH_SYM_BITBUFFER_DEALLOCATE           bitbuffer_deallocate
+HASH_SYM_BITBUFFER_INITIALIZE_BUFFER    bitbuffer_initialize_buffer
+HASH_SYM_BITBUFFER_INITIALIZE_STREAM    bitbuffer_initialize_stream
+HASH_SYM_BITBUFFER_FINALIZE             bitbuffer_finalize
+HASH_SYM_BITBUFFER_READ32               bitbuffer_read32
+HASH_SYM_BITBUFFER_READ64               bitbuffer_read64
+HASH_SYM_BITBUFFER_READ128              bitbuffer_read128
+HASH_SYM_BITBUFFER_READ_FLOAT32         bitbuffer_read_float32
+HASH_SYM_BITBUFFER_READ_FLOAT64         bitbuffer_read_float64
+HASH_SYM_BITBUFFER_WRITE32              bitbuffer_write32
+HASH_SYM_BITBUFFER_WRITE64              bitbuffer_write64
+HASH_SYM_BITBUFFER_WRITE128             bitbuffer_write128
+HASH_SYM_BITBUFFER_WRITE_FLOAT32        bitbuffer_write_float32
+HASH_SYM_BITBUFFER_WRITE_FLOAT64        bitbuffer_write_float64
+HASH_SYM_BITBUFFER_ALIGN_READ           bitbuffer_align_read
+HASH_SYM_BITBUFFER_ALIGN_WRITE          bitbuffer_align_write
+HASH_SYM_BITBUFFER_DISCARD_READ         bitbuffer_discard_read
+HASH_SYM_BITBUFFER_DISCARD_WRITE        bitbuffer_discard_write
+
+HASH_SYM_BYTEORDER_SWAP16               byteorder_swap16( uint16_t );
+HASH_SYM_BYTEORDER_SWAP32               byteorder_swap32( uint32_t );
+HASH_SYM_BYTEORDER_SWAP64               byteorder_swap64( uint64_t );
+HASH_SYM_BYTEORDER_SWAP                 byteorder_swap( void*, const int );
+HASH_SYM_BYTEORDER_BIGENDIAN16          byteorder_bigendian16( uint16_t );
+HASH_SYM_BYTEORDER_BIGENDIAN32          byteorder_bigendian32( uint32_t );
+HASH_SYM_BYTEORDER_BIGENDIAN64          byteorder_bigendian64( uint64_t );
+HASH_SYM_BYTEORDER_BIGENDIAN            byteorder_bigendian( void*, const int );
+HASH_SYM_BYTEORDER_LITTLEENDIAN16       byteorder_littleendian16( uint16_t );
+HASH_SYM_BYTEORDER_LITTLEENDIAN32       byteorder_littleendian32( uint32_t );
+HASH_SYM_BYTEORDER_LITTLEENDIAN64       byteorder_littleendian64( uint64_t );
+HASH_SYM_BYTEORDER_LITTLEENDIAN         byteorder_littleendian( void*, const int );
+
 HASH_SYM_BLOWFISH_ALLOCATE              blowfish_allocate
 HASH_SYM_BLOWFISH_DEALLOCATE            blowfish_deallocate
 HASH_SYM_BLOWFISH_INITIALIZE            blowfish_initialize
+HASH_SYM_BLOWFISH_FINALIZE              blowfish_finalize
 HASH_SYM_BLOWFISH_ENCRYPT               blowfish_encrypt
 HASH_SYM_BLOWFISH_DECRYPT               blowfish_decrypt
+
+HASH_SYM_BUFFER_STREAM_ALLOCATE         buffer_stream_allocate
+HASH_SYM_BUFFER_STREAM_INITIALIZE       buffer_stream_initialize
 
 HASH_SYM_CONFIG_BOOL                    config_bool
 HASH_SYM_CONFIG_INT                     config_int
@@ -148,11 +75,31 @@ HASH_SYM_CONFIG_PARSE                   config_parse
 HASH_SYM_CONFIG_WRITE                   config_write
 HASH_SYM_CONFIG_PARSE_COMMANDLINE       config_parse_commandline
 
+HASH_SYM_ENVIRONMENT_COMMAND_LINE                   environment_command_line
+HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME                environment_executable_name
+HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY           environment_executable_directory
+HASH_SYM_ENVIRONMENT_EXECUTABLE_PATH                environment_executable_path
+HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY      environment_initial_working_directory
+HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY      environment_current_working_directory
+HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY  environment_set_current_working_directory
+HASH_SYM_ENVIRONMENT_HOME_DIRECTORY                 environment_home_directory
+HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY            environment_temporary_directory
+HASH_SYM_ENVIRONMENT_VARIABLE                       environment_variable
+
+HASH_SYM_ERROR                          error
+HASH_SYM_ERROR_REPORT                   error_report
+HASH_SYM_ERROR_CALLBACK                 error_callback
+HASH_SYM_ERROR_SET_CALLBACK             error_set_callback
+HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
+HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
+
 HASH_SYM_EVENT_POST                     event_post
 HASH_SYM_EVENT_NEXT                     event_next
 HASH_SYM_EVENT_PAYLOAD_SIZE             event_payload_size
 HASH_SYM_EVENT_STREAM_ALLOCATE          event_stream_allocate
 HASH_SYM_EVENT_STREAM_DEALLOCATE        event_stream_deallocate
+HASH_SYM_EVENT_STREAM_INITIALIZE        event_stream_initialize
+HASH_SYM_EVENT_STREAM_FINALIZE          event_stream_finalize
 HASH_SYM_EVENT_STREAM_PROCESS           event_stream_process
 
 HASH_SYM_FS_OPEN_FILE                   fs_open_file
@@ -174,39 +121,161 @@ HASH_SYM_FS_TEMPORARY_FILE              fs_temporary_file
 HASH_SYM_FS_POST_EVENT                  fs_post_event
 HASH_SYM_FS_EVENT_STREAM                fs_event_stream
 
+HASH_SYM_FOUNDATION_VERSION             foundation_version
+
+HASH_SYM_HASH                           hash
+HASH_SYM_HASH_TO_STRING                 hash_to_string
+
+HASH_SYM_HASHMAP_ALLOCATE               hashmap_allocate
+HASH_SYM_HASHMAP_DEALLOCATE             hashmap_deallocate
+HASH_SYM_HASHMAP_INITIALIZE             hashmap_initialize
+HASH_SYM_HASHMAP_FINALIZE               hashmap_finalize
+HASH_SYM_HASHMAP_INSERT                 hashmap_insert
+HASH_SYM_HASHMAP_ERASE                  hashmap_erase
+HASH_SYM_HASHMAP_LOOKUP                 hashmap_lookup
+HASH_SYM_HASHMAP_HAS_KEY                hashmap_has_key
+HASH_SYM_HASHMAP_SIZE                   hashmap_size
+HASH_SYM_HASHMAP_CLEAR                  hashmap_clear
+
+HASH_SYM_HASHTABLE_ALLOCATE             hashtable_allocate
+HASH_SYM_HASHTABLE_DEALLOCATE           hashtable_deallocate
+HASH_SYM_HASHTABLE_INITIALIZE           hashtable_initialize
+HASH_SYM_HASHTABLE_FINALIZE             hashtable_finalize
+HASH_SYM_HASHTABLE_SET                  hashtable_set
+HASH_SYM_HASHTABLE_ERASE                hashtable_erase
+HASH_SYM_HASHTABLE_GET                  hashtable_get
+HASH_SYM_HASHTABLE_SIZE                 hashtable_size
+HASH_SYM_HASHTABLE_CLEAR                hashtable_clear
+HASH_SYM_HASHTABLE32_ALLOCATE           hashtable32_allocate
+HASH_SYM_HASHTABLE32_DEALLOCATE         hashtable32_deallocate
+HASH_SYM_HASHTABLE32_INITIALIZE         hashtable32_initialize
+HASH_SYM_HASHTABLE32_FINALIZE           hashtable32_finalize
+HASH_SYM_HASHTABLE32_SET                hashtable32_set
+HASH_SYM_HASHTABLE32_ERASE              hashtable32_erase
+HASH_SYM_HASHTABLE32_GET                hashtable32_get
+HASH_SYM_HASHTABLE32_CLEAR              hashtable32_size
+HASH_SYM_HASHTABLE32_SIZE               hashtable32_clear
+HASH_SYM_HASHTABLE64_ALLOCATE           hashtable64_allocate
+HASH_SYM_HASHTABLE64_DEALLOCATE         hashtable64_deallocate
+HASH_SYM_HASHTABLE64_INITIALIZE         hashtable64_initialize
+HASH_SYM_HASHTABLE64_FINALIZE           hashtable64_finalize
+HASH_SYM_HASHTABLE64_SET                hashtable64_set
+HASH_SYM_HASHTABLE64_ERASE              hashtable64_erase
+HASH_SYM_HASHTABLE64_GET                hashtable64_get
+HASH_SYM_HASHTABLE64_SIZE               hashtable64_size
+HASH_SYM_HASHTABLE64_CLEAR              hashtable64_clear
+
 HASH_SYM_LIBRARY_LOAD                   library_load
+HASH_SYM_LIBRARY_REF                    library_ref
 HASH_SYM_LIBRARY_UNLOAD                 library_unload
 HASH_SYM_LIBRARY_SYMBOL                 library_symbol
 HASH_SYM_LIBRARY_NAME                   library_name
 HASH_SYM_LIBRARY_VALID                  library_valid
 
+HASH_SYM_LOG_DEBUGF                     log_debugf
+HASH_SYM_LOG_INFOF                      log_infof
+HASH_SYM_LOG_WARNF                      log_warnf
+HASH_SYM_LOG_ERRORF                     log_errorf
+HASH_SYM_LOG_PANICF                     log_panicf
+HASH_SYM_LOG_ERROR_CONTEXT              log_error_context
+HASH_SYM_LOG_CALLBACK                   log_callback
+HASH_SYM_LOG_SET_CALLBACK               log_set_callback
+HASH_SYM_LOG_ENABLE_STDOUT              log_enable_stdout
+HASH_SYM_LOG_ENABLE_PREFIX              log_enable_prefix
+HASH_SYM_LOG_SET_SUPPRESS               log_set_suppress
+HASH_SYM_LOG_SUPPRESS                   log_suppress
+HASH_SYM_LOG_SUPPRESS_CLEAR             log_suppress_clear
+
 HASH_SYM_MD5_ALLOCATE                   md5_allocate
 HASH_SYM_MD5_DEALLOCATE                 md5_deallocate
 HASH_SYM_MD5_INITIALIZE                 md5_initialize
+HASH_SYM_MD5_FINALIZE                   md5_finalize
 HASH_SYM_MD5_DIGEST                     md5_digest
 HASH_SYM_MD5_DIGEST_RAW                 md5_digest_raw
 HASH_SYM_MD5_DIGEST_FINALIZE            md5_digest_finalize
 HASH_SYM_MD5_GET_DIGEST                 md5_get_digest
 HASH_SYM_MD5_GET_DIGEST_RAW             md5_get_digest_raw
 
+HASH_SYM_MEMORY_ALLOCATE                memory_allocate
+HASH_SYM_MEMORY_REALLOCATE              memory_reallocate
+HASH_SYM_MEMORY_DEALLOCATE              memory_deallocate
+HASH_SYM_MEMORY_CONTEXT_PUSH            memory_context_push
+HASH_SYM_MEMORY_CONTEXT_POP             memory_context_pop
+HASH_SYM_MEMORY_CONTEXT                 memory_context
+
+HASH_SYM_MUTEX_ALLOCATE                 mutex_allocate
+HASH_SYM_MUTEX_DEALLOCATE               mutex_deallocate
+HASH_SYM_MUTEX_NAME                     mutex_name
+HASH_SYM_MUTEX_TRY_LOCK                 mutex_try_lock
+HASH_SYM_MUTEX_LOCK                     mutex_lock
+HASH_SYM_MUTEX_UNLOCK                   mutex_unlock
+HASH_SYM_MUTEX_WAIT                     mutex_wait
+HASH_SYM_MUTEX_SIGNAL                   mutex_signal
+
+HASH_SYM_OBJECTMAP_ALLOCATE             objectmap_allocate
+HASH_SYM_OBJECTMAP_DEALLOCATE           objectmap_deallocate
+HASH_SYM_OBJECTMAP_INITIALIZE           objectmap_initialize
+HASH_SYM_OBJECTMAP_FINALIZE             objectmap_finalize
+HASH_SYM_OBJECTMAP_SIZE                 objectmap_size
+HASH_SYM_OBJECTMAP_RESERVE              objectmap_reserve
+HASH_SYM_OBJECTMAP_FREE                 objectmap_free
+HASH_SYM_OBJECTMAP_SET                  objectmap_set
+HASH_SYM_OBJECTMAP_RAW_LOOKUP           objectmap_raw_lookup
+HASH_SYM_OBJECTMAP_LOOKUP_REF           objectmap_lookup_ref
+HASH_SYM_OBJECTMAP_LOOKUP_UNREF         objectmap_lookup_unref
+HASH_SYM_OBJECTMAP_LOOKUP               objectmap_lookup
+
+HASH_SYM_PATH_MERGE                     path_merge
+HASH_SYM_PATH_APPEND                    path_append
+HASH_SYM_PATH_PREPEND                   path_prepend
+HASH_SYM_PATH_CLEAN                     path_clean
+HASH_SYM_PATH_IS_ABSOLUTE               path_is_absolute
+HASH_SYM_PATH_MAKE_ABSOLUTE             path_make_absolute
+HASH_SYM_PATH_MAKE_TEMPORARY            path_make_temporary
+
 HASH_SYM_PIPE_ALLOCATE                  pipe_allocate
+HASH_SYM_PIPE_INITIALIZE                pipe_initialize
 HASH_SYM_PIPE_CLOSE_READ                pipe_close_read
 HASH_SYM_PIPE_CLOSE_WRITE               pipe_close_write
 
 HASH_SYM_PROCESS_ALLOCATE               process_allocate
 HASH_SYM_PROCESS_DEALLOCATE             process_deallocate
+HASH_SYM_PROCESS_INITIALIZE             process_initialize
+HASH_SYM_PROCESS_FINALIZE               process_finalize
 HASH_SYM_PROCESS_SET_WORKING_DIRECTORY  process_set_working_directory
 HASH_SYM_PROCESS_SET_EXECUTABLE_PATH    process_set_executable_path
 HASH_SYM_PROCESS_SET_ARGUMENTS          process_set_arguments
 HASH_SYM_PROCESS_SET_FLAGS              process_set_flags
+HASH_SYM_PROCESS_SET_VERB               process_set_verb
+HASH_SYM_PROCESS_SET_EXIT_CODE          process_set_exit_code
 HASH_SYM_PROCESS_SPAWN                  process_spawn
 HASH_SYM_PROCESS_STDOUT                 process_stdout
 HASH_SYM_PROCESS_STDIN                  process_stdin
 HASH_SYM_PROCESS_WAIT                   process_wait
-HASH_SYM_PROCESS_SET_VERB               process_set_verb
 HASH_SYM_PROCESS_EXIT_CODE              process_exit_code
-HASH_SYM_SET_EXIT_CODE                  process_set_exit_code
 HASH_SYM_PROCESS_EXIT                   process_exit
+
+HASH_SYM_PROFILE_INITIALIZE             profile_initialize
+HASH_SYM_PROFILE_SHUTDOWN               profile_shutdown
+HASH_SYM_PROFILE_ENABLE                 profile_enable
+HASH_SYM_PROFILE_SET_OUTPUT             profile_set_output
+HASH_SYM_PROFILE_SET_OUTPUT_WAIT        profile_set_output_wait
+HASH_SYM_PROFILE_END_FRAME              profile_end_frame
+HASH_SYM_PROFILE_BEGIN_BLOCK            profile_begin_block
+HASH_SYM_PROFILE_UPDATE_BLOCK           profile_update_block
+HASH_SYM_PROFILE_END_BLOCK              profile_end_block
+HASH_SYM_PROFILE_LOG                    profile_log
+HASH_SYM_PROFILE_TRYLOCK                profile_trylock
+HASH_SYM_PROFILE_LOCK                   profile_lock
+HASH_SYM_PROFILE_UNLOCK                 profile_unlock
+HASH_SYM_PROFILE_WAIT                   profile_wait
+HASH_SYM_PROFILE_SIGNAL                 profile_signal
+
+HASH_SYM_RADIXSORT_ALLOCATE             radixsort_allocate
+HASH_SYM_RADIXSORT_DEALLOCATE           radixsort_deallocate
+HASH_SYM_RADIXSORT_INITIALIZE           radixsort_initialize
+HASH_SYM_RADIXSORT_FINALIZE             radixsort_finalize
+HASH_SYM_RADIXSORT_RADIXSORT            radixsort
 
 HASH_SYM_RANDOM32                       random32
 HASH_SYM_RANDOM32_RANGE                 random32_range
@@ -220,8 +289,14 @@ HASH_SYM_RANDOM32_TRIANGLE_RANGE        random32_triangle_range
 HASH_SYM_RANDOM_TRIANGLE_RANGE          random_triangle_range
 HASH_SYM_RANDOM32_WEIGHTED              random32_weighted
 
+HASH_SYM_REGEX_COMPILE                  regex_compile
+HASH_SYM_REGEX_MATCH                    regex_match
+HASH_SYM_REGEX_DEALLOCATE               regex_deallocate
+
 HASH_SYM_RINGBUFFER_ALLOCATE            ringbuffer_allocate
 HASH_SYM_RINGBUFFER_DEALLOCATE          ringbuffer_deallocate
+HASH_SYM_RINGBUFFER_INITIALIZE          ringbuffer_initialize
+HASH_SYM_RINGBUFFER_FINALIZE            ringbuffer_finalize
 HASH_SYM_RINGBUFFER_SIZE                ringbuffer_size
 HASH_SYM_RINGBUFFER_RESET               ringbuffer_reset
 HASH_SYM_RINGBUFFER_READ                ringbuffer_read
@@ -229,6 +304,209 @@ HASH_SYM_RINGBUFFER_WRITE               ringbuffer_write
 HASH_SYM_RINGBUFFER_TOTAL_READ          ringbuffer_total_read
 HASH_SYM_RINGBUFFER_TOTAL_WRITTEN       ringbuffer_total_written
 HASH_SYM_RINGBUFFER_STREAM_ALLOCATE     ringbuffer_stream_allocate
+HASH_SYM_RINGBUFFER_STREAM_INITIALIZE   ringbuffer_stream_initialize
+
+HASH_SYM_SEMAPHORE_INITIALIZE           semaphore_initialize
+HASH_SYM_SEMAPHORE_INITIALIZE_NAMED     semaphore_initialize_named
+HASH_SYM_SEMAPHORE_FINALIZE             semaphore_finalize
+HASH_SYM_SEMAPHORE_WAIT                 semaphore_wait
+HASH_SYM_SEMAPHORE_TRY_WAIT             semaphore_try_wait
+HASH_SYM_SEMAPHORE_POST                 semaphore_post
+
+HASH_SYM_STACKTRACE_CAPTURE             stacktrace_capture
+HASH_SYM_STACKTRACE_RESOLVE             stacktrace_resolve
+
+HASH_SYM_STREAM_OPEN                    stream_open
+HASH_SYM_STREAM_CLONE                   stream_clone
+HASH_SYM_STREAM_DEALLOCATE              stream_deallocate
+HASH_SYM_STREAM_INITIALIZE              stream_initialize
+HASH_SYM_STREAM_FINALIZE                stream_finalize
+HASH_SYM_STREAM_TELL                    stream_tell
+HASH_SYM_STREAM_SEEK                    stream_seek
+HASH_SYM_STREAM_EOS                     stream_eos
+HASH_SYM_STREAM_SIZE                    stream_size
+HASH_SYM_STREAM_SET_BYTEORDER           stream_set_byteorder
+HASH_SYM_STREAM_SET_BINARY              stream_set_binary
+HASH_SYM_STREAM_DETERMINE_BINARY_MODE   stream_determine_binary_mode
+HASH_SYM_STREAM_IS_BINARY               stream_is_binary
+HASH_SYM_STREAM_IS_SEQUENTIAL           stream_is_sequential
+HASH_SYM_STREAM_IS_RELIABLE             stream_is_reliable
+HASH_SYM_STREAM_IS_INORDER              stream_is_inorder
+HASH_SYM_STREAM_IS_SWAPPED              stream_is_swapped
+HASH_SYM_STREAM_BYTEORDER               stream_byteorder
+HASH_SYM_STREAM_PATH                    stream_path
+HASH_SYM_STREAM_LAST_MODIFIED           stream_last_modified
+HASH_SYM_STREAM_READ                    stream_read
+HASH_SYM_STREAM_READ_LINE_BUFFER        stream_read_line_buffer
+HASH_SYM_STREAM_READ_LINE               stream_read_line
+HASH_SYM_STREAM_READ_BOOL               stream_read_bool
+HASH_SYM_STREAM_READ_INT8               stream_read_int8
+HASH_SYM_STREAM_READ_UINT8              stream_read_uint8
+HASH_SYM_STREAM_READ_INT16              stream_read_int16
+HASH_SYM_STREAM_READ_UINT16             stream_read_uint16
+HASH_SYM_STREAM_READ_INT32              stream_read_int32
+HASH_SYM_STREAM_READ_UINT32             stream_read_uint32
+HASH_SYM_STREAM_READ_INT64              stream_read_int64
+HASH_SYM_STREAM_READ_UINT64             stream_read_uint64
+HASH_SYM_STREAM_READ_FLOAT32            stream_read_float32
+HASH_SYM_STREAM_READ_FLOAT64            stream_read_float64
+HASH_SYM_STREAM_READ_STRING             stream_read_string
+HASH_SYM_STREAM_READ_STRING_BUFFER      stream_read_string_buffer
+HASH_SYM_STREAM_WRITE                   stream_write
+HASH_SYM_STREAM_WRITE_BOOL              stream_write_bool
+HASH_SYM_STREAM_WRITE_INT8              stream_write_int8
+HASH_SYM_STREAM_WRITE_UINT8             stream_write_uint8
+HASH_SYM_STREAM_WRITE_INT16             stream_write_int16
+HASH_SYM_STREAM_WRITE_UINT16            stream_write_uint16
+HASH_SYM_STREAM_WRITE_INT32             stream_write_int32
+HASH_SYM_STREAM_WRITE_UINT32            stream_write_uint32
+HASH_SYM_STREAM_WRITE_INT64             stream_write_int64
+HASH_SYM_STREAM_WRITE_UINT64            stream_write_uint64
+HASH_SYM_STREAM_WRITE_FLOAT32           stream_write_float32
+HASH_SYM_STREAM_WRITE_FLOAT64           stream_write_float64
+HASH_SYM_STREAM_WRITE_STRING            stream_write_string
+HASH_SYM_STREAM_WRITE_ENDL              stream_write_endl
+HASH_SYM_STREAM_WRITE_FORMAT            stream_write_format
+HASH_SYM_STREAM_BUFFER_READ             stream_buffer_read
+HASH_SYM_STREAM_AVAILABLE_READ          stream_available_read
+HASH_SYM_STREAM_MD5                     stream_md5
+HASH_SYM_STREAM_TRUNCATE                stream_truncate
+HASH_SYM_STREAM_FLUSH                   stream_flush
+HASH_SYM_STREAM_OPEN_STDOUT             stream_open_stdout
+HASH_SYM_STREAM_OPEN_STDERR             stream_open_stderr
+HASH_SYM_STREAM_OPEN_STDIN              stream_open_stdin
+HASH_SYM_STREAM_SET_PROTOCOL_HANDLER    stream_set_protocol_handler
+HASH_SYM_STREAM_PROTOCOL_HANDLER        stream_protocol_handler
+
+HASH_SYM_STRING_ALLOCATE                string_allocate
+HASH_SYM_STRING_DEALLOCATE              string_deallocate
+HASH_SYM_STRING_CLONE                   string_clone
+HASH_SYM_STRING_FORMAT                  string_format
+HASH_SYM_STRING_FORMAT_BUFFER           string_format_buffer
+HASH_SYM_STRING_LENGTH                  string_length
+HASH_SYM_STRING_GLYPHS                  string_glyphs
+HASH_SYM_STRING_HASH                    string_hash
+HASH_SYM_STRING_RESIZE                  string_resize
+HASH_SYM_STRING_COPY                    string_copy
+HASH_SYM_STRING_STRIP                   string_strip
+HASH_SYM_STRING_STRIP_SUBSTR            string_strip_substr
+HASH_SYM_STRING_REPLACE                 string_replace
+HASH_SYM_STRING_APPEND                  string_append
+HASH_SYM_STRING_PREPEND                 string_prepend
+HASH_SYM_STRING_CONCAT                  string_concat
+HASH_SYM_STRING_SPLIT                   string_split
+HASH_SYM_STRING_SUBSTR                  string_substr
+HASH_SYM_STRING_FIND                    string_find
+HASH_SYM_STRING_FIND_STRING             string_find_string
+HASH_SYM_STRING_RFIND                   string_rfind
+HASH_SYM_STRING_RFIND_STRING            string_rfind_string
+HASH_SYM_STRING_FIND_FIRST_OF           string_find_first_of
+HASH_SYM_STRING_FIND_LAST_OF            string_find_last_of
+HASH_SYM_STRING_FIND_FIRST_NOT_OF       string_find_first_not_of
+HASH_SYM_STRING_FIND_LAST_NOT_OF        string_find_last_not_of
+HASH_SYM_STRING_RFIND_FIRST_OF          string_rfind_first_of
+HASH_SYM_STRING_RFIND_FIRST_NOT_OF      string_rfind_first_not_of
+HASH_SYM_STRING_ENDS_WITH               string_ends_with
+HASH_SYM_STRING_EQUAL                   string_equal
+HASH_SYM_STRING_EQUAL_SUBSTR            string_equal_substr
+HASH_SYM_STRING_MATCH_PATTERN           string_match_pattern
+HASH_SYM_STRING_EXPLODE                 string_explode
+HASH_SYM_STRING_MERGE                   string_merge
+HASH_SYM_STRING_GLYPH                   string_glyph
+HASH_SYM_STRING_ARRAY_FIND              string_array_find
+HASH_SYM_STRING_ARRAY_DEALLOCATE_ELEMENTS string_array_deallocate_elements
+HASH_SYM_STRING_ARRAY_DEALLOCATE        string_array_deallocate
+HASH_SYM_WSTRING_ALLOCATE_FROM_STRING   wstring_allocate_from_string
+HASH_SYM_WSTRING_FROM_STRING            wstring_from_string
+HASH_SYM_WSTRING_DEALLOCATE             wstring_deallocate
+HASH_SYM_WSTRING_LENGTH                 wstring_length
+HASH_SYM_WSTRING_EQUAL                  wstring_equal
+HASH_SYM_STRING_ALLOCATE_FROM_WSTRING   string_allocate_from_wstring
+HASH_SYM_STRING_ALLOCATE_FROM_UTF16     string_allocate_from_utf16
+HASH_SYM_STRING_ALLOCATE_FROM_UTF32     string_allocate_from_utf32
+HASH_SYM_STRING_CONVERT_UTF16           string_convert_utf16
+HASH_SYM_STRING_CONVERT_UTF32           string_convert_utf32
+HASH_SYM_STRING_FROM_INT                string_from_int
+HASH_SYM_STRING_FROM_UINT               string_from_uint
+HASH_SYM_STRING_FROM_UINT128            string_from_uint128
+HASH_SYM_STRING_FROM_REAL               string_from_real
+HASH_SYM_STRING_FROM_TIME               string_from_time
+HASH_SYM_STRING_FROM_UUID               string_from_uuid
+HASH_SYM_STRING_FROM_VERSION            string_from_version
+HASH_SYM_STRING_FROM_INT_BUFFER         string_from_int_buffer
+HASH_SYM_STRING_FROM_UINT_BUFFER        string_from_uint_buffer
+HASH_SYM_STRING_FROM_UINT128_BUFFER     string_from_uint128_buffer
+HASH_SYM_STRING_FROM_REAL_BUFFER        string_from_real_buffer
+HASH_SYM_STRING_FROM_TIME_BUFFER        string_from_time_buffer
+HASH_SYM_STRING_FROM_UUID_BUFFER        string_from_uuid_buffer
+HASH_SYM_STRING_FROM_VERSION_BUFFER     string_from_version_buffer
+HASH_SYM_STRING_FROM_INT_STATIC         string_from_int_static
+HASH_SYM_STRING_FROM_UINT_STATIC        string_from_uint_static
+HASH_SYM_STRING_FROM_UINT128_STATIC     string_from_uint128_static
+HASH_SYM_STRING_FROM_REAL_STATIC        string_from_real_static
+HASH_SYM_STRING_FROM_TIME_STATIC        string_from_time_static
+HASH_SYM_STRING_FROM_UUID_STATIC        string_from_uuid_static
+HASH_SYM_STRING_FROM_VERSION_STATIC     string_from_version_static
+HASH_SYM_STRING_TO_INT                  string_to_int
+HASH_SYM_STRING_TO_UINT                 string_to_uint
+HASH_SYM_STRING_TO_INT64                string_to_int64
+HASH_SYM_STRING_TO_UINT64               string_to_uint64
+HASH_SYM_STRING_TO_UINT128              string_to_uint128
+HASH_SYM_STRING_TO_FLOAT32              string_to_float32
+HASH_SYM_STRING_TO_FLOAT64              string_to_float64
+HASH_SYM_STRING_TO_REAL                 string_to_real
+HASH_SYM_STRING_TO_UUID                 string_to_uuid
+HASH_SYM_STRING_TO_VERSION              string_to_version
+
+HASH_SYM_SYSTEM_ERROR                   system_error
+HASH_SYM_SYSTEM_ERROR_RESET             system_error_reset
+HASH_SYM_SYSTEM_ERROR_MESSAGE           system_error_message
+HASH_SYM_SYSTEM_PLATFORM                system_platform
+HASH_SYM_SYSTEM_ARCHITECTURE            system_architecture
+HASH_SYM_SYSTEM_BYTEORDER               system_byteorder
+HASH_SYM_SYSTEM_HARDWARE_THREADS        system_hardware_threads
+HASH_SYM_SYSTEM_HOSTNAME                system_hostname
+HASH_SYM_SYSTEM_HOSTID                  system_hostid
+HASH_SYM_SYSTEM_USERNAME                system_username
+HASH_SYM_SYSTEM_DEBUGGER_ATTACHED       system_debugger_attached
+HASH_SYM_SYSTEM_PAUSE                   system_pause
+HASH_SYM_SYSTEM_LANGUAGE                system_language
+HASH_SYM_SYSTEM_COUNTRY                 system_country
+HASH_SYM_SYSTEM_LOCALE                  system_locale
+HASH_SYM_SYSTEM_LOCALE_STRING           system_locale_string
+HASH_SYM_SYSTEM_SET_DEVICE_ORIENTATION  system_set_device_orientation
+HASH_SYM_SYSTEM_DEVICE_ORIENTATION      system_device_orientation
+HASH_SYM_SYSTEM_PROCESS_EVENTS          system_process_events
+HASH_SYM_SYSTEM_MESSAGE_BOX             system_message_box
+HASH_SYM_SYSTEM_EVENT_STREAM            system_event_stream
+HASH_SYM_SYSTEM_POST_EVENT              system_post_event
+HASH_SYM_SYSTEM_SIZE_REAL               system_size_real
+HASH_SYM_SYSTEM_SIZE_POINTER            system_size_pointer
+HASH_SYM_SYSTEM_SIZE_WCHAR              system_size_wchar
+
+HASH_SYM_THREAD_CREATE                  thread_create
+HASH_SYM_THREAD_REF                     thread_ref
+HASH_SYM_THREAD_DESTROY                 thread_destroy
+HASH_SYM_THREAD_START                   thread_start
+HASH_SYM_THREAD_TERMINATE               thread_terminate
+HASH_SYM_THREAD_IS_STARTED              thread_is_started
+HASH_SYM_THREAD_IS_RUNNING              thread_is_running
+HASH_SYM_THREAD_IS_THREAD               thread_is_thread
+HASH_SYM_THREAD_IS_MAIN                 thread_is_main
+HASH_SYM_THREAD_SHOULD_TERMINATE        thread_should_terminate
+HASH_SYM_THREAD_SET_MAIN                thread_set_main
+HASH_SYM_THREAD_SET_NAME                thread_set_name
+HASH_SYM_THREAD_SET_HARDWARE            thread_set_hardware
+HASH_SYM_THREAD_RESULT                  thread_result
+HASH_SYM_THREAD_SELF                    thread_self
+HASH_SYM_THREAD_NAME                    thread_name
+HASH_SYM_THREAD_ID                      thread_id
+HASH_SYM_THREAD_HARDWARE                thread_hardware
+HASH_SYM_THREAD_SLEEP                   thread_sleep
+HASH_SYM_THREAD_YIELD                   thread_yield
+HASH_SYM_THREAD_FINALIZE                thread_finalize
+HASH_SYM_THREAD_ATTACH_JVM              thread_attach_jvm
+HASH_SYM_THREAD_DETACH_JVM              thread_detach_jvm
 
 HASH_SYM_TIME_CURRENT                   time_current
 HASH_SYM_TIME_DIFF                      time_diff
@@ -238,3 +516,11 @@ HASH_SYM_TIME_TICKS_PER_SECOND          time_ticks_per_second
 HASH_SYM_TIME_TICKS_TO_SECONDS          time_ticks_to_seconds
 HASH_SYM_TIME_STARTUP                   time_startup
 HASH_SYM_TIME_SYSTEM                    time_system
+
+HASH_SYM_UUID_GENERATE_TIME             uuid_generate_time
+HASH_SYM_UUID_GENERATE_NAME             uuid_generate_name
+HASH_SYM_UUID_GENERATE_RANDOM           uuid_generate_random
+HASH_SYM_UUID_GENERATE_EQUAL            uuid_equal
+HASH_SYM_UUID_NULL                      uuid_null
+HASH_SYM_UUID_IS_NULL                   uuid_is_null
+HASH_SYM_UUID_DNS                       uuid_dns
