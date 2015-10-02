@@ -39,31 +39,41 @@
 
 #include <stdio.h>
 
+typedef struct lua_instance_t lua_instance_t;
 
-typedef struct
+struct lua_instance_t
 {
-	char*               input_file;
+	char*          input_file;
+	lua_t*         env;
+	error_level_t  suppress_level;
+};
 
-	lua_t*              env;
-
-	error_level_t       suppress_level;
-} luainstance_t;
-
-static bool           _lua_terminate = false;
+static bool _lua_terminate = false;
 
 
-static luainstance_t  _lua_parse_command_line( const char* const* cmdline );
-static void           _lua_print_usage( void );
-static int            _lua_process_file( lua_t* lua, const char* filename );
-static int            _lua_interpreter( lua_t* lua );
-//static int            _lua_load_jitbc( lua_t* env );
+static luainstance_t  
+_lua_parse_command_line( const char* const* cmdline );
 
+static void           
+_lua_print_usage( void );
 
-LUA_API int lua_load( lua_State *L, lua_Reader reader, void *dt, const char *chunkname);
-LUA_API int lua_pcall( lua_State *L, int nargs, int nresults, int errfunc );
+static int            
+_lua_process_file( lua_t* lua, const char* filename );
 
+static int            
+_lua_interpreter( lua_t* lua );
 
-static void* event_thread( object_t thread, void* arg )
+//static int            
+//_lua_load_jitbc( lua_t* env );
+
+LUA_API int 
+lua_load( lua_State *L, lua_Reader reader, void *dt, const char *chunkname);
+
+LUA_API int 
+lua_pcall( lua_State *L, int nargs, int nresults, int errfunc );
+
+static void* 
+event_thread( object_t thread, void* arg )
 {
 	event_block_t* block;
 	event_t* event = 0;
@@ -95,14 +105,17 @@ static void* event_thread( object_t thread, void* arg )
 	return 0;
 }
 
-
-int main_initialize( void )
+int 
+main_initialize( void )
 {
 	int ret = 0;
 
 	log_enable_prefix( false );
 	log_set_suppress( 0, ERRORLEVEL_DEBUG );
 	log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG );
+
+	foundation_config_t config;
+	memset(&config, 0, sizeof(config));
 
 	application_t application;
 	memset( &application, 0, sizeof( application ) );
@@ -113,8 +126,6 @@ int main_initialize( void )
 
 	if( ( ret = foundation_initialize( memory_system_malloc(), application ) ) < 0 )
 		return ret;
-
-	config_set_int( HASH_FOUNDATION, HASH_TEMPORARY_MEMORY, 1024 * 1024 );
 
 	return 0;
 }

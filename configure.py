@@ -43,9 +43,15 @@ if target.is_ios() or target.is_android():
       os.path.join( 'drawable-ldpi', 'icon.png' ), os.path.join( 'drawable-mdpi', 'icon.png' ), os.path.join( 'drawable-hdpi', 'icon.png' ),
       os.path.join( 'drawable-xhdpi', 'icon.png' ), os.path.join( 'drawable-xxhdpi', 'icon.png' ), os.path.join( 'drawable-xxxhdpi', 'icon.png' )
     ] ]
-  generator.app( module = '', sources = [ os.path.join( module, 'main.c' ) for module in test_cases ] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [ lua_lib ], libs = [ 'test', 'lua', 'foundation', 'luajit' ], resources = test_resources, includepaths = includepaths )
+    test_extrasources = [ os.path.join( 'all', 'android', 'java', 'com', 'rampantpixels', 'foundation', 'test', item ) for item in [
+      'TestActivity.java'
+    ] ]
+  if target.is_pnacl():
+    generator.bin( module = '', sources = [ os.path.join( module, 'main.c' ) for module in test_cases ] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [ network_lib ], libs = [ 'test', 'lua', 'foundation', 'luajit' ], resources = test_resources, includepaths = includepaths )
+  else:
+    generator.app( module = '', sources = [ os.path.join( module, 'main.c' ) for module in test_cases ] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [ network_lib ], libs = [ 'test', 'lua', 'foundation', 'luajit' ], resources = test_resources, includepaths = includepaths )
 else:
   #Build one binary per test case
-  generator.bin( module = 'all', sources = [ 'main.c' ], binname = 'test-all', basepath = 'test', implicit_deps = [ lua_lib ], libs = [ 'lua' ], includepaths = includepaths )
+  generator.bin( module = 'all', sources = [ 'main.c' ], binname = 'test-all', basepath = 'test', implicit_deps = [ lua_lib ], libs = [ 'lua', 'foundation' ], includepaths = includepaths )
   for test in test_cases:
-    generator.bin( module = test, sources = [ 'main.c' ], binname = 'test-' + test, basepath = 'test', implicit_deps = [ lua_lib ], libs = [ 'test', 'lua', 'luajit' ], includepaths = includepaths )
+    generator.bin( module = test, sources = [ 'main.c' ], binname = 'test-' + test, basepath = 'test', implicit_deps = [ lua_lib ], libs = [ 'test', 'lua', 'foundation', 'luajit' ], includepaths = includepaths )

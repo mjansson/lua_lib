@@ -40,48 +40,182 @@
 
 #include "luajit/src/lua.h"
 
+#if !BUILD_ENABLE_DEBUG_LOG
 
-#if !BUILD_ENABLE_LOG || !BUILD_ENABLE_DEBUG_LOG
-static void  _log_debugf_disabled( uint64_t context, const char* format, ... ) { FOUNDATION_UNUSED( context ); FOUNDATION_UNUSED( format ); }
+static void  
+_log_debugf_disabled( uint64_t context, const char* format, size_t format_size, ... ) {
+	FOUNDATION_UNUSED( context );
+	FOUNDATION_UNUSED( format );
+	FOUNDATION_UNUSED( format_size );
+}
+
+#endif
+
+#if !BUILD_ENABLE_LOG
+
+static log_callback_fn
+_log_callback(void) {
+	return (log_callback_fn)nullptr;
+}
+
+static void
+_log_set_callback(log_callback_fn callback) {
+	FOUNDATION_UNUSED(callback);
+}
+
+static void
+_log_enable(bool enable) {
+	FOUNDATION_UNUSED(enable);
+}
+
+static void
+_log_set_suppress(hash_t context, error_level_t level) {
+	FOUNDATION_UNUSED(context);
+	FOUNDATION_UNUSED(level);
+}
+
+static error_level_t
+_log_suppress(hash_t context) {
+	FOUNDATION_UNUSED(context);
+	return ERRORLEVEL_NONE;
+}
+
+static void
+_log_suppress_clear(void) {
+}
+
 #endif
 
 #if !BUILD_ENABLE_ERROR_CONTEXT
-static void  _error_context_push_disabled( const char* name, const char* data ) { FOUNDATION_UNUSED( name ); FOUNDATION_UNUSED( data ); }
-static void  _error_context_pop_disabled() {}
+
+static void _error_context_push_disabled( const char* name, size_t name_length, const char* data, size_t data_length ) {
+	FOUNDATION_UNUSED( name );
+	FOUNDATION_UNUSED( name_length );
+	FOUNDATION_UNUSED( data );
+	FOUNDATION_UNUSED( data_length );
+}
+
+static void _error_context_pop_disabled() {
+}
+
 #endif
 
-static void*        _array_allocate_pointer( int size ) { void** arr = 0; array_grow( arr, size ); return arr; }
-static void         _array_deallocate( void** arr ) { array_deallocate( arr ); }
-static int          _array_size( const void* arr ) { return ( arr ? array_size( arr ) : 0 ); }
-static const void*  _array_element_pointer( const void* arr, int pos ) { return ( arr && ( pos >= 0 ) && ( pos < array_size( arr ) ) ) ? ((const void* const*)arr)[pos] : 0; }
-static void         _array_set_element_pointer( const void** arr, int pos, void* ptr ) { arr[pos] = ptr; }
+static void*        
+_array_allocate_pointer( int size ) {
+	void** arr = 0;
+	array_grow( arr, size );
+	return arr;
+}
+
+static void         
+_array_deallocate( void** arr ) {
+	array_deallocate( arr );
+}
+
+static int          
+_array_size( const void* arr ) { 
+	return ( arr ? array_size( arr ) : 0 );
+}
+
+static const void*  
+_array_element_pointer( const void* arr, int pos ) { 
+	return ( arr && ( pos >= 0 ) && ( pos < (int)array_size( arr ) ) ) ?
+		((const void* const*)arr)[pos] :
+		0;
+}
+
+static void         
+_array_set_element_pointer( const void** arr, int pos, void* ptr ) {
+	arr[pos] = ptr;
+}
 
 #if !FOUNDATION_PLATFORM_ANDROID
-static stream_t* asset_stream_open( const char* path, unsigned int mode ) { FOUNDATION_UNUSED( path ); FOUNDATION_UNUSED( mode ); return 0; }
-static void      thread_attach_jvm( void ) {}
-static void      thread_detach_jvm( void ) {}
+static stream_t* 
+asset_stream_open( const char* path, size_t path_length, unsigned int mode ) {
+	FOUNDATION_UNUSED( path ); 
+	FOUNDATION_UNUSED( path_length ); 
+	FOUNDATION_UNUSED( mode );
+	return 0;
+}
+
+static void      
+thread_attach_jvm( void ) {
+}
+
+static void      
+thread_detach_jvm( void ) {
+}
+
 #endif
 
-static int       system_size_real( void ) { return FOUNDATION_SIZE_REAL; }
-static int       system_size_pointer( void ) { return FOUNDATION_SIZE_POINTER; }
-static int       system_size_wchar( void ) { return FOUNDATION_SIZE_WCHAR; }
+static int 
+system_size_real( void ) { 
+	return FOUNDATION_SIZE_REAL;
+}
+
+static int 
+system_size_pointer( void ) { 
+	return FOUNDATION_SIZE_POINTER;
+}
+
+static int       
+system_size_wchar( void ) { 
+	return FOUNDATION_SIZE_WCHAR;
+}
 
 #if !BUILD_ENABLE_PROFILE
-void _profile_initialize( const char* str, void* ptr, uint64_t val ) { FOUNDATION_UNUSED( str ); FOUNDATION_UNUSED( ptr ); FOUNDATION_UNUSED( val ); }
-void _profile_void( void ) {}
-void _profile_bool( bool flag ) { FOUNDATION_UNUSED( flag ); }
-void _profile_fn( profile_write_fn fn ) { FOUNDATION_UNUSED( fn ); }
-void _profile_int( int val ) { FOUNDATION_UNUSED( val ); }
-void _profile_uint64( uint64_t val ) { FOUNDATION_UNUSED( val ); }
-void _profile_str( const char* str ) { FOUNDATION_UNUSED( str ); }
+
+void 
+_profile_initialize( const char* str, size_t length, void* ptr, uint64_t val ) { 
+	FOUNDATION_UNUSED( str ); 
+	FOUNDATION_UNUSED( length );
+	FOUNDATION_UNUSED( ptr ); 
+	FOUNDATION_UNUSED( val );
+}
+
+void 
+_profile_void( void ) {
+}
+
+void 
+_profile_bool( bool flag ) { 
+	FOUNDATION_UNUSED( flag );
+}
+
+void 
+_profile_fn( profile_write_fn fn ) { 
+	FOUNDATION_UNUSED( fn );
+}
+
+void 
+_profile_int( int val ) { 
+	FOUNDATION_UNUSED( val );
+}
+
+void 
+_profile_uint64( uint64_t val ) { 
+	FOUNDATION_UNUSED( val );
+}
+
+void 
+_profile_str( const char* str, size_t length ) { 
+	FOUNDATION_UNUSED( str );
+	FOUNDATION_UNUSED( length );
+}
+
 #endif
 
-static void _string_array_deallocate( char** array ) { string_array_deallocate( array ); }
+static void 
+_string_array_deallocate( string_t* array ) { 
+	string_array_deallocate( array );
+}
 
-static uuid_t uuid_dns( void ) { return UUID_DNS; }
+static uuid_t uuid_dns( void ) { 
+	return UUID_DNS;
+}
 
-
-static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
+static FOUNDATION_NOINLINE void 
+lua_load_foundation_builtins( lua_State* state )
 {
 	lua_t* env = lua_from_state( state );
 	hashmap_t* map = lua_lookup_map( env );
@@ -149,7 +283,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_CONFIG_INT,                     (void*)(uintptr_t)config_int );
 	hashmap_insert( map, HASH_SYM_CONFIG_REAL,                    (void*)(uintptr_t)config_real );
 	hashmap_insert( map, HASH_SYM_CONFIG_STRING,                  (void*)(uintptr_t)config_string );
-	hashmap_insert( map, HASH_SYM_CONFIG_STRING_HASH,             (void*)(uintptr_t)config_string_hash );
+	hashmap_insert( map, HASH_SYM_CONFIG_HASH,                    (void*)(uintptr_t)config_hash );
 	hashmap_insert( map, HASH_SYM_CONFIG_SET_BOOL,                (void*)(uintptr_t)config_set_bool );
 	hashmap_insert( map, HASH_SYM_CONFIG_SET_INT,                 (void*)(uintptr_t)config_set_int );
 	hashmap_insert( map, HASH_SYM_CONFIG_SET_REAL,                (void*)(uintptr_t)config_set_real );
@@ -202,6 +336,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_FS_TOUCH,                       (void*)(uintptr_t)fs_touch );
 	hashmap_insert( map, HASH_SYM_FS_MD5,                         (void*)(uintptr_t)fs_md5 );
 	hashmap_insert( map, HASH_SYM_FS_MATCHING_FILES,              (void*)(uintptr_t)fs_matching_files );
+	hashmap_insert( map, HASH_SYM_FS_MATCHING_FILES_REGEX,        (void*)(uintptr_t)fs_matching_files_regex );
 	hashmap_insert( map, HASH_SYM_FS_FILES,                       (void*)(uintptr_t)fs_files );
 	hashmap_insert( map, HASH_SYM_FS_SUBDIRS,                     (void*)(uintptr_t)fs_subdirs );
 	hashmap_insert( map, HASH_SYM_FS_MONITOR,                     (void*)(uintptr_t)fs_monitor );
@@ -283,12 +418,6 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_LOG_WARNF,                      (void*)(uintptr_t)log_warnf );
 	hashmap_insert( map, HASH_SYM_LOG_ERRORF,                     (void*)(uintptr_t)log_errorf );
 	hashmap_insert( map, HASH_SYM_LOG_PANICF,                     (void*)(uintptr_t)log_panicf );
-#else
-	hashmap_insert( map, HASH_SYM_LOG_INFOF,                      (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_WARNF,                      (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_ERRORF,                     (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_PANICF,                     (void*)(uintptr_t)_log_debugf_disabled );
-#endif
 	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,              (void*)(uintptr_t)log_enable_prefix );
 	hashmap_insert( map, HASH_SYM_LOG_ENABLE_STDOUT,              (void*)(uintptr_t)log_enable_stdout );
 	hashmap_insert( map, HASH_SYM_LOG_CALLBACK,                   (void*)(uintptr_t)log_callback );
@@ -296,13 +425,25 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,               (void*)(uintptr_t)log_set_suppress );
 	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,                   (void*)(uintptr_t)log_suppress );
 	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS_CLEAR,             (void*)(uintptr_t)log_suppress_clear );
+#else
+	hashmap_insert( map, HASH_SYM_LOG_INFOF,                      (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_WARNF,                      (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_ERRORF,                     (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_PANICF,                     (void*)(uintptr_t)_log_debugf_disabled );
+	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,              (void*)(uintptr_t)_log_enable );
+	hashmap_insert( map, HASH_SYM_LOG_ENABLE_STDOUT,              (void*)(uintptr_t)_log_enable );
+	hashmap_insert( map, HASH_SYM_LOG_CALLBACK,                   (void*)(uintptr_t)_log_callback );
+	hashmap_insert( map, HASH_SYM_LOG_SET_CALLBACK,               (void*)(uintptr_t)_log_set_callback );
+	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,               (void*)(uintptr_t)_log_set_suppress );
+	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,                   (void*)(uintptr_t)_log_suppress );
+	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS_CLEAR,             (void*)(uintptr_t)_log_suppress_clear );
+#endif
 
 	hashmap_insert( map, HASH_SYM_MD5_ALLOCATE,                   (void*)(uintptr_t)md5_allocate );
 	hashmap_insert( map, HASH_SYM_MD5_DEALLOCATE,                 (void*)(uintptr_t)md5_deallocate );
 	hashmap_insert( map, HASH_SYM_MD5_INITIALIZE,                 (void*)(uintptr_t)md5_initialize );
 	hashmap_insert( map, HASH_SYM_MD5_FINALIZE,                   (void*)(uintptr_t)md5_finalize );
 	hashmap_insert( map, HASH_SYM_MD5_DIGEST,                     (void*)(uintptr_t)md5_digest );
-	hashmap_insert( map, HASH_SYM_MD5_DIGEST_RAW,                 (void*)(uintptr_t)md5_digest_raw );
 	hashmap_insert( map, HASH_SYM_MD5_DIGEST_FINALIZE,            (void*)(uintptr_t)md5_digest_finalize );
 	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST,                 (void*)(uintptr_t)md5_get_digest );
 	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST_RAW,             (void*)(uintptr_t)md5_get_digest_raw );
@@ -336,13 +477,22 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_OBJECTMAP_LOOKUP_UNREF,         (void*)(uintptr_t)objectmap_lookup_unref );
 	hashmap_insert( map, HASH_SYM_OBJECTMAP_LOOKUP,               (void*)(uintptr_t)objectmap_lookup );
 
-	hashmap_insert( map, HASH_SYM_PATH_MERGE,                     (void*)(uintptr_t)path_merge );
-	hashmap_insert( map, HASH_SYM_PATH_APPEND,                    (void*)(uintptr_t)path_append );
-	hashmap_insert( map, HASH_SYM_PATH_PREPEND,                   (void*)(uintptr_t)path_prepend );
-	hashmap_insert( map, HASH_SYM_PATH_CLEAN,                     (void*)(uintptr_t)path_clean );
-	hashmap_insert( map, HASH_SYM_PATH_IS_ABSOLUTE,               (void*)(uintptr_t)path_is_absolute );
-	hashmap_insert( map, HASH_SYM_PATH_MAKE_ABSOLUTE,             (void*)(uintptr_t)path_make_absolute );
-	hashmap_insert( map, HASH_SYM_PATH_MAKE_TEMPORARY,            (void*)(uintptr_t)path_make_temporary );
+	hashmap_insert( map, HASH_SYM_PATH_BASE_FILE_NAME,            (void*)(uintptr_t)path_base_file_name);
+	hashmap_insert( map, HASH_SYM_PATH_BASE_FILE_NAME_WITH_DIRECTORY, (void*)(uintptr_t)path_base_file_name_with_directory);
+	hashmap_insert( map, HASH_SYM_PATH_FILE_EXTENSION,            (void*)(uintptr_t)path_file_extension);
+	hashmap_insert( map, HASH_SYM_PATH_FILE_NAME,                 (void*)(uintptr_t)path_file_name);
+	hashmap_insert( map, HASH_SYM_PATH_DIRECTORY_NAME,            (void*)(uintptr_t)path_directory_name);
+	hashmap_insert( map, HASH_SYM_PATH_SUBDIRECTORY_NAME,         (void*)(uintptr_t)path_subdirectory_name);
+	hashmap_insert( map, HASH_SYM_PATH_PROTOCOL,                  (void*)(uintptr_t)path_protocol);
+	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_CONCAT,           (void*)(uintptr_t)path_allocate_concat);
+	hashmap_insert( map, HASH_SYM_PATH_CONCAT,                    (void*)(uintptr_t)path_concat);
+	hashmap_insert( map, HASH_SYM_PATH_APPEND,                    (void*)(uintptr_t)path_append);
+	hashmap_insert( map, HASH_SYM_PATH_PREPEND,                   (void*)(uintptr_t)path_prepend);
+	hashmap_insert( map, HASH_SYM_PATH_ABSOLUTE,                  (void*)(uintptr_t)path_absolute);
+	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_ABSOLUTE,         (void*)(uintptr_t)path_allocate_absolute);
+	hashmap_insert( map, HASH_SYM_PATH_CLEAN,                     (void*)(uintptr_t)path_clean);
+	hashmap_insert( map, HASH_SYM_PATH_IS_ABSOLUTE,               (void*)(uintptr_t)path_is_absolute);
+	hashmap_insert( map, HASH_SYM_PATH_MAKE_TEMPORARY,            (void*)(uintptr_t)path_make_temporary);
 
 	hashmap_insert( map, HASH_SYM_PIPE_ALLOCATE,                  (void*)(uintptr_t)pipe_allocate );
 	hashmap_insert( map, HASH_SYM_PIPE_INITIALIZE,                (void*)(uintptr_t)pipe_initialize );
@@ -368,7 +518,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 
 #if BUILD_ENABLE_PROFILE
 	hashmap_insert( map, HASH_SYM_PROFILE_INITIALIZE,             (void*)(uintptr_t)profile_initialize );
-	hashmap_insert( map, HASH_SYM_PROFILE_SHUTDOWN,               (void*)(uintptr_t)profile_shutdown );
+	hashmap_insert( map, HASH_SYM_PROFILE_FINALIZE,               (void*)(uintptr_t)profile_finalize );
 	hashmap_insert( map, HASH_SYM_PROFILE_ENABLE,                 (void*)(uintptr_t)profile_enable );
 	hashmap_insert( map, HASH_SYM_PROFILE_SET_OUTPUT,             (void*)(uintptr_t)profile_set_output );
 	hashmap_insert( map, HASH_SYM_PROFILE_SET_OUTPUT_WAIT,        (void*)(uintptr_t)profile_set_output_wait );
@@ -404,7 +554,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_RADIXSORT_DEALLOCATE,           (void*)(uintptr_t)radixsort_deallocate );
 	hashmap_insert( map, HASH_SYM_RADIXSORT_INITIALIZE,           (void*)(uintptr_t)radixsort_initialize );
 	hashmap_insert( map, HASH_SYM_RADIXSORT_FINALIZE,             (void*)(uintptr_t)radixsort_finalize );
-	hashmap_insert( map, HASH_SYM_RADIXSORT_RADIXSORT,            (void*)(uintptr_t)radixsort );
+	hashmap_insert( map, HASH_SYM_RADIXSORT_SORT,                 (void*)(uintptr_t)radixsort_sort );
 
 	hashmap_insert( map, HASH_SYM_RANDOM32,                       (void*)(uintptr_t)random32 );
 	hashmap_insert( map, HASH_SYM_RANDOM32_RANGE,                 (void*)(uintptr_t)random32_range );
@@ -510,21 +660,26 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE,                (void*)(uintptr_t)string_allocate );
 	hashmap_insert( map, HASH_SYM_STRING_DEALLOCATE,              (void*)(uintptr_t)string_deallocate );
 	hashmap_insert( map, HASH_SYM_STRING_CLONE,                   (void*)(uintptr_t)string_clone );
+	hashmap_insert( map, HASH_SYM_STRING_CLONE_STRING,            (void*)(uintptr_t)string_clone_string );
+	hashmap_insert( map, HASH_SYM_STRING_NULL,                    (void*)(uintptr_t)string_null );
+	hashmap_insert( map, HASH_SYM_STRING_EMPTY,                   (void*)(uintptr_t)string_empty );
+	hashmap_insert( map, HASH_SYM_STRING,                         (void*)(uintptr_t)string );
+	hashmap_insert( map, HASH_SYM_STRING_CONST,                   (void*)(uintptr_t)string_const );
+	hashmap_insert( map, HASH_SYM_STRING_TO_CONST,                (void*)(uintptr_t)string_to_const );
+	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_FORMAT,         (void*)(uintptr_t)string_allocate_format );
 	hashmap_insert( map, HASH_SYM_STRING_FORMAT,                  (void*)(uintptr_t)string_format );
-	hashmap_insert( map, HASH_SYM_STRING_FORMAT_BUFFER,           (void*)(uintptr_t)string_format_buffer );
 	hashmap_insert( map, HASH_SYM_STRING_LENGTH,                  (void*)(uintptr_t)string_length );
 	hashmap_insert( map, HASH_SYM_STRING_GLYPHS,                  (void*)(uintptr_t)string_glyphs );
 	hashmap_insert( map, HASH_SYM_STRING_HASH,                    (void*)(uintptr_t)string_hash );
-	hashmap_insert( map, HASH_SYM_STRING_RESIZE,                  (void*)(uintptr_t)string_resize );
 	hashmap_insert( map, HASH_SYM_STRING_COPY,                    (void*)(uintptr_t)string_copy );
-	hashmap_insert( map, HASH_SYM_STRING_STRIP,                   (void*)(uintptr_t)string_strip );
-	hashmap_insert( map, HASH_SYM_STRING_STRIP_SUBSTR,            (void*)(uintptr_t)string_strip_substr );
+	hashmap_insert( map, HASH_SYM_STRING_RESIZE,                  (void*)(uintptr_t)string_resize );
 	hashmap_insert( map, HASH_SYM_STRING_REPLACE,                 (void*)(uintptr_t)string_replace );
+	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_CONCAT,         (void*)(uintptr_t)string_allocate_concat );
+	hashmap_insert( map, HASH_SYM_STRING_CONCAT,                  (void*)(uintptr_t)string_concat );
 	hashmap_insert( map, HASH_SYM_STRING_APPEND,                  (void*)(uintptr_t)string_append );
 	hashmap_insert( map, HASH_SYM_STRING_PREPEND,                 (void*)(uintptr_t)string_prepend );
-	hashmap_insert( map, HASH_SYM_STRING_CONCAT,                  (void*)(uintptr_t)string_concat );
-	hashmap_insert( map, HASH_SYM_STRING_SPLIT,                   (void*)(uintptr_t)string_split );
 	hashmap_insert( map, HASH_SYM_STRING_SUBSTR,                  (void*)(uintptr_t)string_substr );
+	hashmap_insert( map, HASH_SYM_STRING_STRIP,                   (void*)(uintptr_t)string_strip );
 	hashmap_insert( map, HASH_SYM_STRING_FIND,                    (void*)(uintptr_t)string_find );
 	hashmap_insert( map, HASH_SYM_STRING_FIND_STRING,             (void*)(uintptr_t)string_find_string );
 	hashmap_insert( map, HASH_SYM_STRING_RFIND,                   (void*)(uintptr_t)string_rfind );
@@ -533,12 +688,13 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_STRING_FIND_LAST_OF,            (void*)(uintptr_t)string_find_last_of );
 	hashmap_insert( map, HASH_SYM_STRING_FIND_FIRST_NOT_OF,       (void*)(uintptr_t)string_find_first_not_of );
 	hashmap_insert( map, HASH_SYM_STRING_FIND_LAST_NOT_OF,        (void*)(uintptr_t)string_find_last_not_of );
-	hashmap_insert( map, HASH_SYM_STRING_RFIND_FIRST_OF,          (void*)(uintptr_t)string_rfind_first_of );
-	hashmap_insert( map, HASH_SYM_STRING_RFIND_FIRST_NOT_OF,      (void*)(uintptr_t)string_rfind_first_not_of );
 	hashmap_insert( map, HASH_SYM_STRING_ENDS_WITH,               (void*)(uintptr_t)string_ends_with );
 	hashmap_insert( map, HASH_SYM_STRING_EQUAL,                   (void*)(uintptr_t)string_equal );
+	hashmap_insert( map, HASH_SYM_STRING_EQUAL_NOCASE,            (void*)(uintptr_t)string_equal_nocase );
 	hashmap_insert( map, HASH_SYM_STRING_EQUAL_SUBSTR,            (void*)(uintptr_t)string_equal_substr );
+	hashmap_insert( map, HASH_SYM_STRING_EQUAL_SUBSTR_NOCASE,     (void*)(uintptr_t)string_equal_substr_nocase );
 	hashmap_insert( map, HASH_SYM_STRING_MATCH_PATTERN,           (void*)(uintptr_t)string_match_pattern );
+	hashmap_insert( map, HASH_SYM_STRING_SPLIT,                   (void*)(uintptr_t)string_split );
 	hashmap_insert( map, HASH_SYM_STRING_EXPLODE,                 (void*)(uintptr_t)string_explode );
 	hashmap_insert( map, HASH_SYM_STRING_MERGE,                   (void*)(uintptr_t)string_merge );
 	hashmap_insert( map, HASH_SYM_STRING_GLYPH,                   (void*)(uintptr_t)string_glyph );
@@ -562,13 +718,6 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_STRING_FROM_TIME,               (void*)(uintptr_t)string_from_time );
 	hashmap_insert( map, HASH_SYM_STRING_FROM_UUID,               (void*)(uintptr_t)string_from_uuid );
 	hashmap_insert( map, HASH_SYM_STRING_FROM_VERSION,            (void*)(uintptr_t)string_from_version );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_INT_BUFFER,         (void*)(uintptr_t)string_from_int_buffer );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT_BUFFER,        (void*)(uintptr_t)string_from_uint_buffer );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT128_BUFFER,     (void*)(uintptr_t)string_from_uint128_buffer );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_REAL_BUFFER,        (void*)(uintptr_t)string_from_real_buffer );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_TIME_BUFFER,        (void*)(uintptr_t)string_from_time_buffer );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UUID_BUFFER,        (void*)(uintptr_t)string_from_uuid_buffer );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_VERSION_BUFFER,     (void*)(uintptr_t)string_from_version_buffer );
 	hashmap_insert( map, HASH_SYM_STRING_FROM_INT_STATIC,         (void*)(uintptr_t)string_from_int_static );
 	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT_STATIC,        (void*)(uintptr_t)string_from_uint_static );
 	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT128_STATIC,     (void*)(uintptr_t)string_from_uint128_static );
@@ -586,6 +735,7 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_STRING_TO_REAL,                 (void*)(uintptr_t)string_to_real );
 	hashmap_insert( map, HASH_SYM_STRING_TO_UUID,                 (void*)(uintptr_t)string_to_uuid );
 	hashmap_insert( map, HASH_SYM_STRING_TO_VERSION,              (void*)(uintptr_t)string_to_version );
+	hashmap_insert( map, HASH_SYM_STRING_THREAD_BUFFER,           (void*)(uintptr_t)string_thread_buffer );
 
 	hashmap_insert( map, HASH_SYM_SYSTEM_ERROR,                   (void*)(uintptr_t)system_error );
 	hashmap_insert( map, HASH_SYM_SYSTEM_ERROR_RESET,             (void*)(uintptr_t)system_error_reset );
@@ -655,8 +805,8 @@ static FOUNDATION_NOINLINE void lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_UUID_DNS,                       (void*)(uintptr_t)uuid_dns );
 }
 
-
-int lua_load_foundation( lua_State* state )
+int 
+lua_load_foundation( lua_State* state )
 {
 	//TODO: When implemented lua compiled bytecode libraries, load from library resource instaed
 	static unsigned char bytecode[] = {
@@ -669,20 +819,20 @@ int lua_load_foundation( lua_State* state )
 		.offset = 0
 	};
 
-	log_debugf( HASH_LUA, "Loading foundation built-ins (%u bytes of bytecode)", read_buffer.size );
+	log_debugf( HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"), read_buffer.size );
 
 	lua_load_foundation_builtins( state );
 
 	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
 	{
-		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua load failed (foundation): %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %s"), lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return 0;
 	}
 
 	if( lua_pcall( state, 0, 0, 0 ) != 0 )
 	{
-		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, "Lua pcall failed (foundation): %s", lua_tostring( state, -1 ) );
+		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %s"), lua_tostring( state, -1 ) );
 		lua_pop( state, 1 );
 		return 0;
 	}

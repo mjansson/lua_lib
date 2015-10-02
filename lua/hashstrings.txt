@@ -65,7 +65,7 @@ HASH_SYM_CONFIG_BOOL                    config_bool
 HASH_SYM_CONFIG_INT                     config_int
 HASH_SYM_CONFIG_REAL                    config_real
 HASH_SYM_CONFIG_STRING                  config_string
-HASH_SYM_CONFIG_STRING_HASH             config_string_hash
+HASH_SYM_CONFIG_HASH                    config_hash
 HASH_SYM_CONFIG_SET_BOOL                config_set_bool
 HASH_SYM_CONFIG_SET_INT                 config_set_int
 HASH_SYM_CONFIG_SET_REAL                config_set_real
@@ -113,6 +113,7 @@ HASH_SYM_FS_LAST_MODIFIED               fs_last_modified
 HASH_SYM_FS_TOUCH                       fs_touch
 HASH_SYM_FS_MD5                         fs_md5
 HASH_SYM_FS_MATCHING_FILES              fs_matching_files
+HASH_SYM_FS_MATCHING_FILES_REGEX        fs_matching_files_regex
 HASH_SYM_FS_FILES                       fs_files
 HASH_SYM_FS_SUBDIRS                     fs_subdirs
 HASH_SYM_FS_MONITOR                     fs_monitor
@@ -191,7 +192,6 @@ HASH_SYM_MD5_DEALLOCATE                 md5_deallocate
 HASH_SYM_MD5_INITIALIZE                 md5_initialize
 HASH_SYM_MD5_FINALIZE                   md5_finalize
 HASH_SYM_MD5_DIGEST                     md5_digest
-HASH_SYM_MD5_DIGEST_RAW                 md5_digest_raw
 HASH_SYM_MD5_DIGEST_FINALIZE            md5_digest_finalize
 HASH_SYM_MD5_GET_DIGEST                 md5_get_digest
 HASH_SYM_MD5_GET_DIGEST_RAW             md5_get_digest_raw
@@ -225,12 +225,21 @@ HASH_SYM_OBJECTMAP_LOOKUP_REF           objectmap_lookup_ref
 HASH_SYM_OBJECTMAP_LOOKUP_UNREF         objectmap_lookup_unref
 HASH_SYM_OBJECTMAP_LOOKUP               objectmap_lookup
 
-HASH_SYM_PATH_MERGE                     path_merge
+HASH_SYM_PATH_BASE_FILE_NAME            path_base_file_name
+HASH_SYM_PATH_BASE_FILE_NAME_WITH_DIRECTORY path_base_file_name_with_directory
+HASH_SYM_PATH_FILE_EXTENSION            path_file_extension
+HASH_SYM_PATH_FILE_NAME                 path_file_name
+HASH_SYM_PATH_DIRECTORY_NAME            path_directory_name
+HASH_SYM_PATH_SUBDIRECTORY_NAME         path_subdirectory_name
+HASH_SYM_PATH_PROTOCOL                  path_protocol
+HASH_SYM_PATH_ALLOCATE_CONCAT           path_allocate_concat
+HASH_SYM_PATH_CONCAT                    path_concat
 HASH_SYM_PATH_APPEND                    path_append
 HASH_SYM_PATH_PREPEND                   path_prepend
+HASH_SYM_PATH_ABSOLUTE                  path_absolute
+HASH_SYM_PATH_ALLOCATE_ABSOLUTE         path_allocate_absolute
 HASH_SYM_PATH_CLEAN                     path_clean
 HASH_SYM_PATH_IS_ABSOLUTE               path_is_absolute
-HASH_SYM_PATH_MAKE_ABSOLUTE             path_make_absolute
 HASH_SYM_PATH_MAKE_TEMPORARY            path_make_temporary
 
 HASH_SYM_PIPE_ALLOCATE                  pipe_allocate
@@ -256,7 +265,7 @@ HASH_SYM_PROCESS_EXIT_CODE              process_exit_code
 HASH_SYM_PROCESS_EXIT                   process_exit
 
 HASH_SYM_PROFILE_INITIALIZE             profile_initialize
-HASH_SYM_PROFILE_SHUTDOWN               profile_shutdown
+HASH_SYM_PROFILE_FINALIZE               profile_finalize
 HASH_SYM_PROFILE_ENABLE                 profile_enable
 HASH_SYM_PROFILE_SET_OUTPUT             profile_set_output
 HASH_SYM_PROFILE_SET_OUTPUT_WAIT        profile_set_output_wait
@@ -275,7 +284,7 @@ HASH_SYM_RADIXSORT_ALLOCATE             radixsort_allocate
 HASH_SYM_RADIXSORT_DEALLOCATE           radixsort_deallocate
 HASH_SYM_RADIXSORT_INITIALIZE           radixsort_initialize
 HASH_SYM_RADIXSORT_FINALIZE             radixsort_finalize
-HASH_SYM_RADIXSORT_RADIXSORT            radixsort
+HASH_SYM_RADIXSORT_SORT                 radixsort_sort
 
 HASH_SYM_RANDOM32                       random32
 HASH_SYM_RANDOM32_RANGE                 random32_range
@@ -381,21 +390,26 @@ HASH_SYM_STREAM_PROTOCOL_HANDLER        stream_protocol_handler
 HASH_SYM_STRING_ALLOCATE                string_allocate
 HASH_SYM_STRING_DEALLOCATE              string_deallocate
 HASH_SYM_STRING_CLONE                   string_clone
+HASH_SYM_STRING_CLONE_STRING            string_clone_string
+HASH_SYM_STRING_NULL                    string_null
+HASH_SYM_STRING_EMPTY                   string_empty
+HASH_SYM_STRING                         string
+HASH_SYM_STRING_CONST                   string_const
+HASH_SYM_STRING_TO_CONST                string_to_const
+HASH_SYM_STRING_ALLOCATE_FORMAT         string_allocate_format
 HASH_SYM_STRING_FORMAT                  string_format
-HASH_SYM_STRING_FORMAT_BUFFER           string_format_buffer
 HASH_SYM_STRING_LENGTH                  string_length
 HASH_SYM_STRING_GLYPHS                  string_glyphs
 HASH_SYM_STRING_HASH                    string_hash
-HASH_SYM_STRING_RESIZE                  string_resize
 HASH_SYM_STRING_COPY                    string_copy
-HASH_SYM_STRING_STRIP                   string_strip
-HASH_SYM_STRING_STRIP_SUBSTR            string_strip_substr
+HASH_SYM_STRING_RESIZE                  string_resize
 HASH_SYM_STRING_REPLACE                 string_replace
+HASH_SYM_STRING_ALLOCATE_CONCAT         string_allocate_concat
+HASH_SYM_STRING_CONCAT                  string_concat
 HASH_SYM_STRING_APPEND                  string_append
 HASH_SYM_STRING_PREPEND                 string_prepend
-HASH_SYM_STRING_CONCAT                  string_concat
-HASH_SYM_STRING_SPLIT                   string_split
 HASH_SYM_STRING_SUBSTR                  string_substr
+HASH_SYM_STRING_STRIP                   string_strip
 HASH_SYM_STRING_FIND                    string_find
 HASH_SYM_STRING_FIND_STRING             string_find_string
 HASH_SYM_STRING_RFIND                   string_rfind
@@ -404,12 +418,13 @@ HASH_SYM_STRING_FIND_FIRST_OF           string_find_first_of
 HASH_SYM_STRING_FIND_LAST_OF            string_find_last_of
 HASH_SYM_STRING_FIND_FIRST_NOT_OF       string_find_first_not_of
 HASH_SYM_STRING_FIND_LAST_NOT_OF        string_find_last_not_of
-HASH_SYM_STRING_RFIND_FIRST_OF          string_rfind_first_of
-HASH_SYM_STRING_RFIND_FIRST_NOT_OF      string_rfind_first_not_of
 HASH_SYM_STRING_ENDS_WITH               string_ends_with
 HASH_SYM_STRING_EQUAL                   string_equal
+HASH_SYM_STRING_EQUAL_NOCASE            string_equal_nocase
 HASH_SYM_STRING_EQUAL_SUBSTR            string_equal_substr
+HASH_SYM_STRING_EQUAL_SUBSTR_NOCASE     string_equal_substr_nocase
 HASH_SYM_STRING_MATCH_PATTERN           string_match_pattern
+HASH_SYM_STRING_SPLIT                   string_split
 HASH_SYM_STRING_EXPLODE                 string_explode
 HASH_SYM_STRING_MERGE                   string_merge
 HASH_SYM_STRING_GLYPH                   string_glyph
@@ -433,13 +448,6 @@ HASH_SYM_STRING_FROM_REAL               string_from_real
 HASH_SYM_STRING_FROM_TIME               string_from_time
 HASH_SYM_STRING_FROM_UUID               string_from_uuid
 HASH_SYM_STRING_FROM_VERSION            string_from_version
-HASH_SYM_STRING_FROM_INT_BUFFER         string_from_int_buffer
-HASH_SYM_STRING_FROM_UINT_BUFFER        string_from_uint_buffer
-HASH_SYM_STRING_FROM_UINT128_BUFFER     string_from_uint128_buffer
-HASH_SYM_STRING_FROM_REAL_BUFFER        string_from_real_buffer
-HASH_SYM_STRING_FROM_TIME_BUFFER        string_from_time_buffer
-HASH_SYM_STRING_FROM_UUID_BUFFER        string_from_uuid_buffer
-HASH_SYM_STRING_FROM_VERSION_BUFFER     string_from_version_buffer
 HASH_SYM_STRING_FROM_INT_STATIC         string_from_int_static
 HASH_SYM_STRING_FROM_UINT_STATIC        string_from_uint_static
 HASH_SYM_STRING_FROM_UINT128_STATIC     string_from_uint128_static
@@ -457,6 +465,7 @@ HASH_SYM_STRING_TO_FLOAT64              string_to_float64
 HASH_SYM_STRING_TO_REAL                 string_to_real
 HASH_SYM_STRING_TO_UUID                 string_to_uuid
 HASH_SYM_STRING_TO_VERSION              string_to_version
+HASH_SYM_STRING_THREAD_BUFFER           string_thread_buffer
 
 HASH_SYM_SYSTEM_ERROR                   system_error
 HASH_SYM_SYSTEM_ERROR_RESET             system_error_reset

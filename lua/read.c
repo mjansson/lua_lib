@@ -32,93 +32,85 @@
 
 #include <foundation/stream.h>
 
-
-const char* lua_read_stream( lua_State* state, void* user_data, size_t* size )
-{
+const char*
+lua_read_stream(lua_State* state, void* user_data, size_t* size) {
 	lua_readstream_t* read = (lua_readstream_t*)user_data;
 
-	FOUNDATION_UNUSED( state );
+	FOUNDATION_UNUSED(state);
 
-	if( stream_eos( read->stream ) )
-	{
-		if( *size )
+	if (stream_eos(read->stream)) {
+		if (*size)
 			*size = 0;
 		return 0;
 	}
 
-	uint64_t num_read = stream_read( read->stream, read->chunk, 512 );
+	uint64_t num_read = stream_read(read->stream, read->chunk, 512);
 
-	if( size )
+	if (size)
 		*size = (size_t)num_read;
 
 	return num_read ? read->chunk : 0;
 }
 
-
-const char* lua_read_chunked_buffer( lua_State* state, void* user_data, size_t* size )
-{
+const char*
+lua_read_chunked_buffer(lua_State* state, void* user_data, size_t* size) {
 	lua_readbuffer_t* read = (lua_readbuffer_t*)user_data;
 
-	FOUNDATION_UNUSED( state );
+	FOUNDATION_UNUSED(state);
 
-	if( read->offset >= read->size )
-	{
-		if( *size )
+	if (read->offset >= read->size) {
+		if (*size)
 			*size = 0;
 		return 0;
 	}
 
-	const void* current_chunk = pointer_offset_const( read->buffer, read->offset );
+	const void* current_chunk = pointer_offset_const(read->buffer, read->offset);
 	unsigned int chunk_size = *(const unsigned int*)current_chunk;
 
-	read->offset += chunk_size + sizeof( unsigned int );
-	if( size )
+	read->offset += chunk_size + sizeof(unsigned int);
+	if (size)
 		*size = (size_t)chunk_size;
 
-	//log_debugf( "Read Lua chunk:\n%s", pointer_offset_const( current_chunk, sizeof( unsigned int ) ) );
+	//log_debugf(HASH_LUA, STRING_CONST("Read Lua chunk:\n%s"), pointer_offset_const(current_chunk, sizeof(unsigned int)));
 
-	return pointer_offset_const( current_chunk, sizeof( unsigned int ) );
+	return pointer_offset_const(current_chunk, sizeof(unsigned int));
 }
 
-
-const char* lua_read_buffer( lua_State* state, void* user_data, size_t* size )
-{
+const char*
+lua_read_buffer(lua_State* state, void* user_data, size_t* size) {
 	lua_readbuffer_t* read = (lua_readbuffer_t*)user_data;
 
-	FOUNDATION_UNUSED( state );
+	FOUNDATION_UNUSED(state);
 
-	if( read->offset >= read->size )
-	{
-		if( *size )
+	if (read->offset >= read->size) {
+		if (*size)
 			*size = 0;
 		return 0;
 	}
 
-	const void* current_chunk = pointer_offset_const( read->buffer, read->offset );
-	unsigned int chunk_size = read->size - read->offset;
+	const void* current_chunk = pointer_offset_const(read->buffer, read->offset);
+	size_t chunk_size = (read->size - read->offset);
 
 	read->offset += chunk_size;
-	if( size )
-		*size = (size_t)chunk_size;
+	if (size)
+		*size = chunk_size;
 
 	return current_chunk;
 }
 
-
-const char* lua_read_string( lua_State* state, void* user_data, size_t* size )
-{
+const char*
+lua_read_string(lua_State* state, void* user_data, size_t* size) {
 	lua_readstring_t* read = (lua_readstring_t*)user_data;
 
-	FOUNDATION_UNUSED( state );
+	FOUNDATION_UNUSED(state);
 
-	if( !read->size )
-	{
-		if( size )
+	if (!read->size) {
+		if (size)
 			*size = 0;
 		return 0;
 	}
 
-	if( size )
+	if (size)
 		*size = read->size;
 	read->size = 0;
 
