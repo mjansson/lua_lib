@@ -38,18 +38,18 @@ HASH_SYM_BITBUFFER_ALIGN_WRITE          bitbuffer_align_write
 HASH_SYM_BITBUFFER_DISCARD_READ         bitbuffer_discard_read
 HASH_SYM_BITBUFFER_DISCARD_WRITE        bitbuffer_discard_write
 
-HASH_SYM_BYTEORDER_SWAP16               byteorder_swap16( uint16_t );
-HASH_SYM_BYTEORDER_SWAP32               byteorder_swap32( uint32_t );
-HASH_SYM_BYTEORDER_SWAP64               byteorder_swap64( uint64_t );
-HASH_SYM_BYTEORDER_SWAP                 byteorder_swap( void*, const int );
-HASH_SYM_BYTEORDER_BIGENDIAN16          byteorder_bigendian16( uint16_t );
-HASH_SYM_BYTEORDER_BIGENDIAN32          byteorder_bigendian32( uint32_t );
-HASH_SYM_BYTEORDER_BIGENDIAN64          byteorder_bigendian64( uint64_t );
-HASH_SYM_BYTEORDER_BIGENDIAN            byteorder_bigendian( void*, const int );
-HASH_SYM_BYTEORDER_LITTLEENDIAN16       byteorder_littleendian16( uint16_t );
-HASH_SYM_BYTEORDER_LITTLEENDIAN32       byteorder_littleendian32( uint32_t );
-HASH_SYM_BYTEORDER_LITTLEENDIAN64       byteorder_littleendian64( uint64_t );
-HASH_SYM_BYTEORDER_LITTLEENDIAN         byteorder_littleendian( void*, const int );
+HASH_SYM_BYTEORDER_SWAP16               byteorder_swap16
+HASH_SYM_BYTEORDER_SWAP32               byteorder_swap32
+HASH_SYM_BYTEORDER_SWAP64               byteorder_swap64
+HASH_SYM_BYTEORDER_SWAP                 byteorder_swap
+HASH_SYM_BYTEORDER_BIGENDIAN16          byteorder_bigendian16
+HASH_SYM_BYTEORDER_BIGENDIAN32          byteorder_bigendian32
+HASH_SYM_BYTEORDER_BIGENDIAN64          byteorder_bigendian64
+HASH_SYM_BYTEORDER_BIGENDIAN            byteorder_bigendian
+HASH_SYM_BYTEORDER_LITTLEENDIAN16       byteorder_littleendian16
+HASH_SYM_BYTEORDER_LITTLEENDIAN32       byteorder_littleendian32
+HASH_SYM_BYTEORDER_LITTLEENDIAN64       byteorder_littleendian64
+HASH_SYM_BYTEORDER_LITTLEENDIAN         byteorder_littleendian
 
 HASH_SYM_BLOWFISH_ALLOCATE              blowfish_allocate
 HASH_SYM_BLOWFISH_DEALLOCATE            blowfish_deallocate
@@ -92,6 +92,9 @@ HASH_SYM_ERROR_CALLBACK                 error_callback
 HASH_SYM_ERROR_SET_CALLBACK             error_set_callback
 HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
 HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
+HASH_SYM_ERROR_CONTEXT_CLEAR            error_context_clear
+HASH_SYM_ERROR_CONTEXT_BUFFER           error_context_buffer
+HASH_SYM_ERROR_CONTEXT                  error_context
 
 HASH_SYM_EVENT_POST                     event_post
 HASH_SYM_EVENT_NEXT                     event_next

@@ -98,6 +98,15 @@ static void _error_context_push_disabled( const char* name, size_t name_length, 
 static void _error_context_pop_disabled() {
 }
 
+static error_context_t* _error_context_disabled() {
+	return 0;
+}
+
+static string_t
+_error_context_buffer_disabled(char* str, size_t length) {
+	return string_copy(str, length, 0, 0);
+}
+
 #endif
 
 static void*        
@@ -311,12 +320,18 @@ lua_load_foundation_builtins( lua_State* state )
 #if BUILD_ENABLE_ERROR_CONTEXT
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,             (void*)(uintptr_t)_error_context_push );
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,              (void*)(uintptr_t)_error_context_pop );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_CLEAR,            (void*)(uintptr_t)_error_context_clear );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_BUFFER,           (void*)(uintptr_t)_error_context_buffer );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT,                  (void*)(uintptr_t)_error_context );
 #else
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,             (void*)(uintptr_t)_error_context_push_disabled );
 	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,              (void*)(uintptr_t)_error_context_pop_disabled );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_CLEAR,            (void*)(uintptr_t)_error_context_pop_disabled );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_BUFFER,           (void*)(uintptr_t)_error_context_buffer_disabled );
+	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT,                  (void*)(uintptr_t)_error_context_disabled );
 #endif
 
-	hashmap_insert( map, HASH_SYM_EVENT_POST,                     (void*)(uintptr_t)event_post );
+	hashmap_insert( map, HASH_SYM_EVENT_POST,                     (void*)(uintptr_t)event_post_varg );
 	hashmap_insert( map, HASH_SYM_EVENT_NEXT,                     (void*)(uintptr_t)event_next );
 	hashmap_insert( map, HASH_SYM_EVENT_PAYLOAD_SIZE,             (void*)(uintptr_t)event_payload_size );
 	hashmap_insert( map, HASH_SYM_EVENT_STREAM_ALLOCATE,          (void*)(uintptr_t)event_stream_allocate );
@@ -484,10 +499,10 @@ lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_PATH_DIRECTORY_NAME,            (void*)(uintptr_t)path_directory_name);
 	hashmap_insert( map, HASH_SYM_PATH_SUBDIRECTORY_NAME,         (void*)(uintptr_t)path_subdirectory_name);
 	hashmap_insert( map, HASH_SYM_PATH_PROTOCOL,                  (void*)(uintptr_t)path_protocol);
-	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_CONCAT,           (void*)(uintptr_t)path_allocate_concat);
-	hashmap_insert( map, HASH_SYM_PATH_CONCAT,                    (void*)(uintptr_t)path_concat);
-	hashmap_insert( map, HASH_SYM_PATH_APPEND,                    (void*)(uintptr_t)path_append);
-	hashmap_insert( map, HASH_SYM_PATH_PREPEND,                   (void*)(uintptr_t)path_prepend);
+	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_CONCAT,           (void*)(uintptr_t)path_allocate_concat_varg);
+	hashmap_insert( map, HASH_SYM_PATH_CONCAT,                    (void*)(uintptr_t)path_concat_varg);
+	hashmap_insert( map, HASH_SYM_PATH_APPEND,                    (void*)(uintptr_t)path_append_varg);
+	hashmap_insert( map, HASH_SYM_PATH_PREPEND,                   (void*)(uintptr_t)path_prepend_varg);
 	hashmap_insert( map, HASH_SYM_PATH_ABSOLUTE,                  (void*)(uintptr_t)path_absolute);
 	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_ABSOLUTE,         (void*)(uintptr_t)path_allocate_absolute);
 	hashmap_insert( map, HASH_SYM_PATH_CLEAN,                     (void*)(uintptr_t)path_clean);
@@ -674,10 +689,10 @@ lua_load_foundation_builtins( lua_State* state )
 	hashmap_insert( map, HASH_SYM_STRING_COPY,                    (void*)(uintptr_t)string_copy );
 	hashmap_insert( map, HASH_SYM_STRING_RESIZE,                  (void*)(uintptr_t)string_resize );
 	hashmap_insert( map, HASH_SYM_STRING_REPLACE,                 (void*)(uintptr_t)string_replace );
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_CONCAT,         (void*)(uintptr_t)string_allocate_concat );
-	hashmap_insert( map, HASH_SYM_STRING_CONCAT,                  (void*)(uintptr_t)string_concat );
-	hashmap_insert( map, HASH_SYM_STRING_APPEND,                  (void*)(uintptr_t)string_append );
-	hashmap_insert( map, HASH_SYM_STRING_PREPEND,                 (void*)(uintptr_t)string_prepend );
+	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_CONCAT,         (void*)(uintptr_t)string_allocate_concat_varg );
+	hashmap_insert( map, HASH_SYM_STRING_CONCAT,                  (void*)(uintptr_t)string_concat_varg );
+	hashmap_insert( map, HASH_SYM_STRING_APPEND,                  (void*)(uintptr_t)string_append_varg );
+	hashmap_insert( map, HASH_SYM_STRING_PREPEND,                 (void*)(uintptr_t)string_prepend_varg );
 	hashmap_insert( map, HASH_SYM_STRING_SUBSTR,                  (void*)(uintptr_t)string_substr );
 	hashmap_insert( map, HASH_SYM_STRING_STRIP,                   (void*)(uintptr_t)string_strip );
 	hashmap_insert( map, HASH_SYM_STRING_FIND,                    (void*)(uintptr_t)string_find );
