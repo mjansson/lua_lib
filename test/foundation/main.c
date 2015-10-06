@@ -76,19 +76,19 @@ DECLARE_TEST(foundation, log) {
 	lua_load_foundation(lua_state(env));
 
 	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require( \"ffi\" )\n"
+	    "local ffi = require(\"ffi\")\n"
 	    "local C = ffi.C\n"
-	    "C.log_set_suppress( HASH_LUA, ERRORLEVEL_NONE )\n"
-	    "log_debug( \"Testing log debug output\" )\n"
-	    "log_info( \"Testing log info output\" )\n"
-	    "log_warn( \"Testing log warning output\" )\n"
-	    "C.log_enable_prefix( false )\n"
-	    "log_error( \"Testing log error output without prefix\" )\n"
-	    "C.log_enable_stdout( false )\n"
-	    "log_debug( \"Invisible on stdout\" )\n"
-	    "C.log_enable_stdout( true )\n"
-	    "C.log_enable_prefix( true )\n"
-	    "C.log_set_suppress( HASH_LUA, ERRORLEVEL_INFO )\n"
+	    "C.log_set_suppress(HASH_LUA, ERRORLEVEL_NONE)\n"
+	    "log_debug(\"Testing log debug output\")\n"
+	    "log_info(\"Testing log info output\")\n"
+	    "log_warn(\"Testing log warning output\")\n"
+	    "C.log_enable_prefix(false)\n"
+	    "log_error(\"Testing log error output without prefix\")\n"
+	    "C.log_enable_stdout(false)\n"
+	    "log_debug(\"Invisible on stdout\")\n"
+	    "C.log_enable_stdout(true)\n"
+	    "C.log_enable_prefix(true)\n"
+	    "C.log_set_suppress(HASH_LUA, ERRORLEVEL_INFO)\n"
 	));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);

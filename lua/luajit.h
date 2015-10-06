@@ -38,7 +38,6 @@
 
 #include <lua/lua.h>
 
-
 #define LUA_NUMBER         double
 #define LUA_INTEGER        uintptr_t
 
@@ -111,7 +110,6 @@ LUA_EXTERN void            (lua_rawseti) (lua_State *L, int idx, int n);
 LUA_EXTERN int             (lua_setmetatable) (lua_State *L, int objindex);
 LUA_EXTERN int             (lua_setfenv) (lua_State *L, int idx);
 
-
 #define LUA_REGISTRYINDEX	(-10000)
 #define LUA_ENVIRONINDEX	(-10001)
 #define LUA_GLOBALSINDEX	(-10002)
@@ -161,7 +159,6 @@ LUA_EXTERN int             (lua_setfenv) (lua_State *L, int idx);
 #define lua_getglobal(L,s)        lua_getfield(L, LUA_GLOBALSINDEX, (s))
 
 #define lua_tostring(L,i)         lua_tolstring(L, (i), 0)
-
 
 /******************************************************************************
 * Copyright (C) 1994-2008 Lua.org, PUC-Rio.  All rights reserved.

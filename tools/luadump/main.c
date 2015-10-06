@@ -153,7 +153,7 @@ main_run(void* main_arg) {
 	dump.env = lua_allocate();
 	state = lua_state(dump.env);
 
-	if (lua_load_foundation(state) < 0) {
+	if (lua_load_foundation_builtins(state) < 0) {
 		result = LUADUMP_RESULT_UNABLE_TO_LOAD_FOUNDATION;
 		goto exit;
 	}

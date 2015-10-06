@@ -537,3 +537,6 @@ HASH_SYM_UUID_GENERATE_EQUAL            uuid_equal
 HASH_SYM_UUID_NULL                      uuid_null
 HASH_SYM_UUID_IS_NULL                   uuid_is_null
 HASH_SYM_UUID_DNS                       uuid_dns
+
+HASH_SYM_TYPE_SIZE_T                    type_size_t
+HASH_SYM_TYPE_SSIZE_T                   type_ssize_t

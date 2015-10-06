@@ -229,7 +229,17 @@ static uuid_t uuid_dns(void) {
 	return UUID_DNS;
 }
 
-static FOUNDATION_NOINLINE void
+static size_t
+type_size_t(unsigned int val) {
+	return val;
+}
+
+static ssize_t
+type_ssize_t(int val) {
+	return val;
+}
+
+int
 lua_load_foundation_builtins(lua_State* state) {
 	lua_t* env = lua_from_state(state);
 	hashmap_t* map = lua_lookup_map(env);
@@ -315,7 +325,8 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(environment_executable_path, ENVIRONMENT_EXECUTABLE_PATH);
 	FOUNDATION_SYM(environment_initial_working_directory, ENVIRONMENT_INITIAL_WORKING_DIRECTORY);
 	FOUNDATION_SYM(environment_current_working_directory, ENVIRONMENT_CURRENT_WORKING_DIRECTORY);
-	FOUNDATION_SYM(environment_set_current_working_directory, ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
+	FOUNDATION_SYM(environment_set_current_working_directory,
+	               ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
 	FOUNDATION_SYM(environment_home_directory, ENVIRONMENT_HOME_DIRECTORY);
 	FOUNDATION_SYM(environment_temporary_directory, ENVIRONMENT_TEMPORARY_DIRECTORY);
 	FOUNDATION_SYM(environment_variable, ENVIRONMENT_VARIABLE);
@@ -826,6 +837,11 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(uuid_null, UUID_NULL);
 	FOUNDATION_SYM(uuid_is_null, UUID_IS_NULL);
 	FOUNDATION_SYM(uuid_dns, UUID_DNS);
+
+	FOUNDATION_SYM(type_size_t, TYPE_SIZE_T);
+	FOUNDATION_SYM(type_ssize_t, TYPE_SSIZE_T);
+
+	return 0;
 }
 
 int
@@ -834,7 +850,7 @@ lua_load_foundation(lua_State* state) {
 	static unsigned char bytecode[] = {
 #include "bind.foundation.hex"
 	};
-
+	string_const_t errmsg = {0, 0};
 	lua_readbuffer_t read_buffer = {
 		.buffer = bytecode,
 		.size   = sizeof(bytecode),
@@ -847,15 +863,17 @@ lua_load_foundation(lua_State* state) {
 	lua_load_foundation_builtins(state);
 
 	if (lua_load(state, lua_read_buffer, &read_buffer, "=eval") != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %s"),
-		           lua_tostring(state, -1));
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %.*s"),
+		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
 		return 0;
 	}
 
 	if (lua_pcall(state, 0, 0, 0) != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %s"),
-		           lua_tostring(state, -1));
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %.*s"),
+		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
 		return 0;
 	}

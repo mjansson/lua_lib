@@ -3,14 +3,13 @@ local ffi = require( "ffi" )
 local C = ffi.C
 
 -- Basic system, build and architecture types
-
 ffi.cdef[[
-typedef float    float32_t;
-typedef double   float64_t;
-int              system_size_size_t(void);
-int              system_size_real(void);
-int              system_size_pointer(void);
-int              system_size_wchar(void);
+typedef float  float32_t;
+typedef double float64_t;
+int system_size_size_t(void);
+int system_size_real(void);
+int system_size_pointer(void);
+int system_size_wchar(void);
 ]]
 
 if C.system_size_size_t() > 4 then
@@ -38,7 +37,6 @@ else
 end
 
 -- Foundation types and functions
-
 ffi.cdef[[
 
 typedef struct application_t          application_t;
@@ -101,26 +99,26 @@ typedef stream_t*      (* stream_open_fn )(const char*, size_t, unsigned int);
 typedef void*          (* thread_fn )(object_t, void*);
 typedef string_const_t (* string_map_fn)(hash_t);
 
-void*                  array_allocate_pointer(unsigned int);
-int                    array_size(const void*);
-const void*            array_element_pointer(const void*, int);
-void                   array_set_element_pointer(const void*, int, void*);
-void                   array_deallocate(void*);
+void*       array_allocate_pointer(unsigned int);
+int         array_size(const void*);
+const void* array_element_pointer(const void*, int);
+void        array_set_element_pointer(const void*, int, void*);
+void        array_deallocate(void*);
 
-assert_handler_fn      assert_handler(void);
-void                   assert_set_handler(assert_handler_fn);
-int                    assert_report(uint64_t, const char*, size_t, const char*, size_t, int, const char*, size_t);
+assert_handler_fn assert_handler(void);
+void              assert_set_handler(assert_handler_fn);
+int               assert_report(uint64_t, const char*, size_t, const char*, size_t, int, const char*, size_t);
 
-stream_t*              asset_stream_open(const char*, size_t, unsigned int);
+stream_t* asset_stream_open(const char*, size_t, unsigned int);
 
-size_t                 base64_encode(const void*, size_t, char*, size_t);
-size_t                 base64_decode(const char*, size_t, void*, size_t);
+size_t base64_encode(const void*, size_t, char*, size_t);
+size_t base64_decode(const char*, size_t, void*, size_t);
 
-bitbuffer_t*           bitbuffer_allocate_buffer(void*, size_t, bool);
-bitbuffer_t*           bitbuffer_allocate_stream(stream_t*);
-void                   bitbuffer_deallocate(bitbuffer_t*);
-void                   bitbuffer_initialize_buffer(bitbuffer_t*, void*, size_t, bool);
-void                   bitbuffer_initialize_stream(bitbuffer_t*, stream_t*);
+bitbuffer_t* bitbuffer_allocate_buffer(void*, size_t, bool);
+bitbuffer_t* bitbuffer_allocate_stream(stream_t*);
+void         bitbuffer_deallocate(bitbuffer_t*);
+void         bitbuffer_initialize_buffer(bitbuffer_t*, void*, size_t, bool);
+void         bitbuffer_initialize_stream(bitbuffer_t*, stream_t*);
 void                   bitbuffer_finalize(bitbuffer_t*);
 uint32_t               bitbuffer_read32(bitbuffer_t*, unsigned int);
 uint64_t               bitbuffer_read64(bitbuffer_t*, unsigned int);
@@ -633,22 +631,44 @@ uuid_t                 uuid_null(void);
 bool                   uuid_is_null(const uuid_t);
 uuid_t                 uuid_dns(void);
 
+size_t                 type_size_t(unsigned int);
+ssize_t                type_ssize_t(int);
+
 ]]
 
+-- Metatypes
+local string_meta_t
+local string_meta_table = {
+	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length) end,
+	__len = function(str) return str.length end,
+	__gc = function(str) C.string_deallocate(str.str) end,
+	__index = {}
+}
+local string_meta_t = ffi.metatype("string_t", string_meta_table)
+
+local string_const_meta_t
+local string_const_meta_table = {
+	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length) end,
+	__len = function(str) return str.length end,
+	__index = {}
+}
+local string_const_meta_t = ffi.metatype("string_const_t", string_const_meta_table)
+
 -- Helper functions
+function hash(str)
+	return C.hash(str, #str)
+end
 
-function hash( str ) return C.hash( str, C.string_length( str ) ) end
-
-function string_array_to_table( arr )
+function string_array_to_table(arr)
       local tab = {}
-      local arr_size = C.array_size( arr )
+      local arr_size = C.array_size(arr)
       for i = 1, arr_size do
             tab[i] = ffi.string( C.array_element_pointer( arr, i-1 ) )
       end
       return tab
 end
 
-function string_table_to_array( tab )
+function string_table_to_array(tab)
       local num = 0
       while tab[num+1] ~= nil do num = num + 1 end
       local arr = C.array_allocate_pointer( num )
@@ -659,16 +679,15 @@ function string_table_to_array( tab )
 end
 
 -- Constants
-
-PLATFORM_WINDOWS = 1
-PLATFORM_LINUX = 2
-PLATFORM_MACOSX = 3
-PLATFORM_IOS = 4
-PLATFORM_ANDROID = 5
-PLATFORM_RASPBERRYPI = 6
-PLATFORM_PNACL = 7
-PLATFORM_BSD = 8
-PLATFORM_TIZEN = 9
+PLATFORM_WINDOWS = 0
+PLATFORM_LINUX = 1
+PLATFORM_MACOSX = 2
+PLATFORM_IOS = 3
+PLATFORM_ANDROID = 4
+PLATFORM_RASPBERRYPI = 5
+PLATFORM_PNACL = 6
+PLATFORM_BSD = 7
+PLATFORM_TIZEN = 8
 
 ARCHITECTURE_X86 = 0
 ARCHITECTURE_X86_64 = 1
@@ -726,7 +745,7 @@ ERROR_SCRIPT = 15
 
 WARNING_PERFORMANCE = 0
 WARNING_DEPRECATED = 1
-WARNING_BAD_DATA = 2
+WARNING_INVALID_VALUE = 2
 WARNING_MEMORY = 3
 WARNING_UNSUPPORTED = 4
 WARNING_SUSPICIOUS = 5
@@ -747,10 +766,10 @@ STREAM_SEEK_BEGIN = 0
 STREAM_SEEK_CURRENT = 1
 STREAM_SEEK_END = 2
 
-BLOWFISH_ECB = 0
-BLOWFISH_CBC = 1
-BLOWFISH_CFB = 2
-BLOWFISH_OFB = 3
+BLOCKCIPHER_ECB = 0
+BLOCKCIPHER_CBC = 1
+BLOCKCIPHER_CFB = 2
+BLOCKCIPHER_OFB = 3
 
 RADIXSORT_INT32 = 0
 RADIXSORT_UINT32 = 1
@@ -803,26 +822,14 @@ MEMORY_ZERO_INITIALIZED    = 0x0008
 
 -- Context hash value is hash of "lua", since luajit parser does not handle
 -- full 64bit hex numbers (numbers > 0xc000000000000000 are truncated)
-HASH_LUA = hash( "lua" )
+HASH_LUA = hash("lua")
 
 -- Convenience wrappers
+function log_debug(message) C.log_debugf(HASH_LUA, "%s", 2, message) end
+function log_info(message) C.log_infof(HASH_LUA, "%s", 2, message) end
+function log_warn(message) C.log_warnf(HASH_LUA, 8, "%s", 2, message) end -- 8 = WARNING_SCRIPT
+function log_error(message) C.log_errorf(HASH_LUA, 15, "%s", 2, message) end -- 15 = ERROR_SCRIPT
+function log_panic(message) C.log_panicf(HASH_LUA, 15, "%s", 2, message) end -- 15 = ERROR_SCRIPT
 
-function log_debug( message ) C.log_debugf( HASH_LUA, "%s", 2, message ) end
-function log_info( message ) C.log_infof( HASH_LUA, "%s", 2, message ) end
-function log_warn( message ) C.log_warnf( HASH_LUA, 8, "%s", 2, message ) end -- 8 = WARNING_SCRIPT
-function log_error( message ) C.log_errorf( HASH_LUA, 15, "%s", 2, message ) end -- 15 = ERROR_SCRIPT
-function log_panic( message ) C.log_panicf( HASH_LUA, 15, "%s", 2, message ) end -- 15 = ERROR_SCRIPT
-
-function string_explode( str, delimiters, allow_empty ) local arr = C.string_explode( str, delimiters, allow_empty ); local tab = string_array_to_table( arr ); C.array_deallocate( arr ); return tab end
-function string_merge( tab, delimiter ) local arr, num = string_table_to_array( tab ); local cstr = C.string_merge( arr, num, delimiter ); local str = ffi.string( cstr ); C.string_deallocate( cstr ); C.array_deallocate( arr ); return str end
-
-function environment_command_line() local arr = C.environment_command_line(); return string_array_to_table( arr ) end
-
-function stream_read_line( stream, delimiter ) local line = C.stream_read_line( stream, delimiter ); local str = ffi.string( line ); string.deallocate( line ); return str end
-function stream_read_string( stream ) local line = C.stream_read_string( stream ); local str = ffi.string( line ); string.deallocate( line ); return str end
-
-function fs_matching_files( path, pattern, recurse ) local arr = C.fs_matching_files( path, pattern, recurse ); local table = string_array_to_table( arr ); C.array_deallocate( arr ); return table end
-function fs_files( path ) local arr = C.fs_files( path ); local table = string_array_to_table( arr ); C.array_deallocate( arr ); return table end
-function fs_subdirs( path ) local arr = C.fs_subdirs( path ); local table = string_array_to_table( arr ); C.array_deallocate( arr ); return table end
-
-function process_set_arguments( proc, args ) local arr, num = string_table_to_array( args ); C.process_set_arguments( proc, arr, num ); C.array_deallocate( arr ); end
+function size_t(val) return C.type_size_t(val) end
+function ssize_t(val) return C.type_ssize_t(val) end

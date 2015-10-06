@@ -505,3 +505,5 @@
 #define HASH_SYM_UUID_NULL static_hash_string("uuid_null", 9, 0xdab5a4c8ece7f6a1ULL)
 #define HASH_SYM_UUID_IS_NULL static_hash_string("uuid_is_null", 12, 0x8f6f62a715e4568dULL)
 #define HASH_SYM_UUID_DNS static_hash_string("uuid_dns", 8, 0x50975469e15d995ULL)
+#define HASH_SYM_TYPE_SIZE_T static_hash_string("type_size_t", 11, 0xe32e05b1b73193f9ULL)
+#define HASH_SYM_TYPE_SSIZE_T static_hash_string("type_ssize_t", 12, 0x27c1dc8d6a34f695ULL)

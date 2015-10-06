@@ -198,9 +198,10 @@ _lua_interpreter(lua_t* lua) {
 
 			if ((status = lua_load(state, lua_read_string, &read_string, "=eval")) != 0) {
 				bool continued = false;
-				const char* msg = lua_tostring(state, -1);
+				string_const_t msg = {0, 0};
+				msg.str = lua_tolstring(state, -1, &msg.length);
 				if (status == LUA_ERRSYNTAX) {
-					if (string_ends_with(msg, string_length(msg), STRING_CONST("'<eof>'")))
+					if (string_ends_with(STRING_ARGS(msg), STRING_CONST("'<eof>'")))
 						continued = true;
 				}
 				if (continued) {
@@ -210,9 +211,9 @@ _lua_interpreter(lua_t* lua) {
 					}
 				}
 				else {
-					if (string_equal_substr(msg, string_length(msg), 0, STRING_CONST("eval:"), 0))
-						msg += 5;
-					log_errorf(HASH_LUA, ERROR_SCRIPT, STRING_CONST("%s"), msg);
+					if ((msg.length > 4) && (string_equal(msg.str, 5, STRING_CONST("eval:"))))
+						msg = string_substr(STRING_ARGS(msg), 5, STRING_NPOS);
+					log_errorf(HASH_LUA, ERROR_SCRIPT, STRING_CONST("%.*s"), STRING_FORMAT(msg));
 				}
 				lua_pop(state, 1);
 			}
@@ -222,10 +223,11 @@ _lua_interpreter(lua_t* lua) {
 				collated = string(0, 0);
 
 				if (lua_pcall(state, 0, 0, 0) != 0) {
-					const char* msg = lua_tostring(state, -1);
-					if (string_equal_substr(msg, string_length(msg), 0, STRING_CONST("eval:"), 0))
-						msg += 5;
-					log_errorf(HASH_LUA, ERROR_SCRIPT, STRING_CONST("%s"), msg);
+					string_const_t msg = {0, 0};
+					msg.str = lua_tolstring(state, -1, &msg.length);
+					if ((msg.length > 4) && (string_equal(msg.str, 5, STRING_CONST("eval:"))))
+						msg = string_substr(STRING_ARGS(msg), 5, STRING_NPOS);
+					log_errorf(HASH_LUA, ERROR_SCRIPT, STRING_CONST("%.*s"), STRING_FORMAT(msg));
 					lua_pop(state, 1);
 				}
 			}

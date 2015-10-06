@@ -209,9 +209,11 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 
 static FOUNDATION_NOINLINE int
 lua_panic(lua_State* state) {
-	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API (%s)", lua_tostring(state, -1));
-	log_errorf(HASH_LUA, ERROR_EXCEPTION, STRING_CONST("unprotected error in call to Lua API (%s)"),
-	           lua_tostring(state, -1));
+	string_const_t errmsg = {0, 0};
+	errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length, errmsg.str);
+	log_errorf(HASH_LUA, ERROR_EXCEPTION, STRING_CONST("unprotected error in call to Lua API: %.*s"),
+	           STRING_FORMAT(errmsg));
 	return 0;
 }
 
@@ -453,8 +455,10 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 
 	//TODO: Parse return value from call
 	if (lua_pcall(state, numargs, 0, 0) != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %s"), (int)length, method,
-		           lua_tostring(state, -1));
+		string_const_t errmsg = {0, 0};
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"), (int)length, method,
+		           STRING_FORMAT(errmsg));
 		result = LUA_ERROR;
 	}
 
@@ -559,15 +563,19 @@ lua_do_eval_string(lua_t* env, const char* code, size_t length) {
 	};
 
 	if (lua_load(state, lua_read_string, &read_string, "=eval") != 0) {
-		log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Lua eval string failed on load: %s"),
-		           lua_tostring(state, -1));
+		string_const_t errmsg = {0, 0};
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Lua eval string failed on load: %.*s"),
+		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
 		return LUA_ERROR;
 	}
 
 	if (lua_pcall(state, 0, 0, 0) != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua eval string failed on pcall: %s"),
-		           lua_tostring(state, -1));
+		string_const_t errmsg = {0, 0};
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua eval string failed on pcall: %.*s"),
+		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
 		return LUA_ERROR;
 	}
@@ -589,15 +597,19 @@ lua_do_eval_stream(lua_t* env, stream_t* stream) {
 	};
 
 	if (lua_load(state, lua_read_stream, &read_stream, "=eval") != 0) {
-		log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Lua eval stream failed on load: %s"),
-		           lua_tostring(state, -1));
+		string_const_t errmsg = {0, 0};
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Lua eval stream failed on load: %.*s"),
+		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
 		return LUA_ERROR;
 	}
 
 	if (lua_pcall(state, 0, 0, 0) != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua eval stream failed on pcall: %s"),
-		           lua_tostring(state, -1));
+		string_const_t errmsg = {0, 0};
+		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua eval stream failed on pcall: %.*s"),
+		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
 		return LUA_ERROR;
 	}
@@ -830,9 +842,9 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 	return LUA_OK;
 }
 
-const char*
+string_const_t
 lua_get_string(lua_t* env, const char* property, size_t length) {
-	const char* value = "";
+	string_const_t value = {0, 0};
 	lua_State* state = env->state;
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
@@ -841,9 +853,8 @@ lua_get_string(lua_t* env, const char* property, size_t length) {
 #endif
 
 	int stacksize = lua_gettop(env->state);
-
 	if (lua_do_get(env, property, length) == LUA_OK)
-		value = lua_tostring(state, -1);
+		value.str = lua_tolstring(state, -1, &value.length);
 
 	lua_pop(state, lua_gettop(state) - stacksize);
 

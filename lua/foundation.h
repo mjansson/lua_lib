@@ -40,3 +40,5 @@
 LUA_API int
 lua_load_foundation(lua_State* state);
 
+LUA_API int
+lua_load_foundation_builtins(lua_State* state);

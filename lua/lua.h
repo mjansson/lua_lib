@@ -128,7 +128,7 @@ LUA_API lua_result_t
 lua_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg);
 
 //! Access value
-LUA_API const char*
+LUA_API string_const_t
 lua_get_string(lua_t* env, const char* property, size_t length);
 
 //! Access value
