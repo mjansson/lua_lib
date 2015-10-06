@@ -492,6 +492,7 @@ HASH_SYM_SYSTEM_PROCESS_EVENTS          system_process_events
 HASH_SYM_SYSTEM_MESSAGE_BOX             system_message_box
 HASH_SYM_SYSTEM_EVENT_STREAM            system_event_stream
 HASH_SYM_SYSTEM_POST_EVENT              system_post_event
+HASH_SYM_SYSTEM_SIZE_SIZE_T             system_size_size_t
 HASH_SYM_SYSTEM_SIZE_REAL               system_size_real
 HASH_SYM_SYSTEM_SIZE_POINTER            system_size_pointer
 HASH_SYM_SYSTEM_SIZE_WCHAR              system_size_wchar

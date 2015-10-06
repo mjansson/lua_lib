@@ -463,6 +463,7 @@
 #define HASH_SYM_SYSTEM_MESSAGE_BOX static_hash_string("system_message_box", 18, 0xdd9cc82488ec86f0ULL)
 #define HASH_SYM_SYSTEM_EVENT_STREAM static_hash_string("system_event_stream", 19, 0xf68519f71ce0ca35ULL)
 #define HASH_SYM_SYSTEM_POST_EVENT static_hash_string("system_post_event", 17, 0x2060060354703c9bULL)
+#define HASH_SYM_SYSTEM_SIZE_SIZE_T static_hash_string("system_size_size_t", 18, 0xe03c110aad674c7bULL)
 #define HASH_SYM_SYSTEM_SIZE_REAL static_hash_string("system_size_real", 16, 0xc10479e4d54f77c9ULL)
 #define HASH_SYM_SYSTEM_SIZE_POINTER static_hash_string("system_size_pointer", 19, 0xab6b8335ecff377ULL)
 #define HASH_SYM_SYSTEM_SIZE_WCHAR static_hash_string("system_size_wchar", 17, 0x2fa8740b911ee4f9ULL)

@@ -135,7 +135,7 @@ main_initialize(void) {
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
 		return ret;
 
-	return 0;
+	return lua_module_initialize();
 }
 
 int
@@ -152,6 +152,11 @@ main_run(void* main_arg) {
 
 	dump.env = lua_allocate();
 	state = lua_state(dump.env);
+
+	if (lua_load_foundation(state) < 0) {
+		result = LUADUMP_RESULT_UNABLE_TO_LOAD_FOUNDATION;
+		goto exit;
+	}
 
 	/*if( ( result = luadump_load_jitbc( dump.env ) ) != LUADUMP_RESULT_OK )
 		goto exit;
@@ -211,6 +216,7 @@ exit:
 
 void
 main_finalize(void) {
+	lua_module_finalize();
 	foundation_finalize();
 }
 

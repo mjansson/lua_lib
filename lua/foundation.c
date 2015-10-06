@@ -42,11 +42,11 @@
 
 #if !BUILD_ENABLE_DEBUG_LOG
 
-static void  
-_log_debugf_disabled( uint64_t context, const char* format, size_t format_size, ... ) {
-	FOUNDATION_UNUSED( context );
-	FOUNDATION_UNUSED( format );
-	FOUNDATION_UNUSED( format_size );
+static void
+_log_debugf_disabled(uint64_t context, const char* format, size_t format_size, ...) {
+	FOUNDATION_UNUSED(context);
+	FOUNDATION_UNUSED(format);
+	FOUNDATION_UNUSED(format_size);
 }
 
 #endif
@@ -88,11 +88,12 @@ _log_suppress_clear(void) {
 
 #if !BUILD_ENABLE_ERROR_CONTEXT
 
-static void _error_context_push_disabled( const char* name, size_t name_length, const char* data, size_t data_length ) {
-	FOUNDATION_UNUSED( name );
-	FOUNDATION_UNUSED( name_length );
-	FOUNDATION_UNUSED( data );
-	FOUNDATION_UNUSED( data_length );
+static void _error_context_push_disabled(const char* name, size_t name_length, const char* data,
+                                         size_t data_length) {
+	FOUNDATION_UNUSED(name);
+	FOUNDATION_UNUSED(name_length);
+	FOUNDATION_UNUSED(data);
+	FOUNDATION_UNUSED(data_length);
 }
 
 static void _error_context_pop_disabled() {
@@ -109,746 +110,753 @@ _error_context_buffer_disabled(char* str, size_t length) {
 
 #endif
 
-static void*        
-_array_allocate_pointer( int size ) {
+static void*
+_array_allocate_pointer(int size) {
 	void** arr = 0;
-	array_grow( arr, size );
+	array_grow(arr, size);
 	return arr;
 }
 
-static void         
-_array_deallocate( void** arr ) {
-	array_deallocate( arr );
+static void
+_array_deallocate(void** arr) {
+	array_deallocate(arr);
 }
 
-static int          
-_array_size( const void* arr ) { 
-	return ( arr ? array_size( arr ) : 0 );
+static int
+_array_size(const void* arr) {
+	return (arr ? array_size(arr) : 0);
 }
 
-static const void*  
-_array_element_pointer( const void* arr, int pos ) { 
-	return ( arr && ( pos >= 0 ) && ( pos < (int)array_size( arr ) ) ) ?
-		((const void* const*)arr)[pos] :
-		0;
+static const void*
+_array_element_pointer(const void* arr, int pos) {
+	return (arr && (pos >= 0) && (pos < (int)array_size(arr))) ?
+	       ((const void* const*)arr)[pos] :
+	       0;
 }
 
-static void         
-_array_set_element_pointer( const void** arr, int pos, void* ptr ) {
+static void
+_array_set_element_pointer(const void** arr, int pos, void* ptr) {
 	arr[pos] = ptr;
 }
 
 #if !FOUNDATION_PLATFORM_ANDROID
-static stream_t* 
-asset_stream_open( const char* path, size_t path_length, unsigned int mode ) {
-	FOUNDATION_UNUSED( path ); 
-	FOUNDATION_UNUSED( path_length ); 
-	FOUNDATION_UNUSED( mode );
+static stream_t*
+asset_stream_open(const char* path, size_t path_length, unsigned int mode) {
+	FOUNDATION_UNUSED(path);
+	FOUNDATION_UNUSED(path_length);
+	FOUNDATION_UNUSED(mode);
 	return 0;
 }
 
-static void      
-thread_attach_jvm( void ) {
+static void
+thread_attach_jvm(void) {
 }
 
-static void      
-thread_detach_jvm( void ) {
+static void
+thread_detach_jvm(void) {
 }
 
 #endif
 
-static int 
-system_size_real( void ) { 
+static int
+system_size_size_t(void) {
+	return sizeof(size_t);
+}
+
+static int
+system_size_real(void) {
 	return FOUNDATION_SIZE_REAL;
 }
 
-static int 
-system_size_pointer( void ) { 
+static int
+system_size_pointer(void) {
 	return FOUNDATION_SIZE_POINTER;
 }
 
-static int       
-system_size_wchar( void ) { 
+static int
+system_size_wchar(void) {
 	return FOUNDATION_SIZE_WCHAR;
 }
 
 #if !BUILD_ENABLE_PROFILE
 
-void 
-_profile_initialize( const char* str, size_t length, void* ptr, uint64_t val ) { 
-	FOUNDATION_UNUSED( str ); 
-	FOUNDATION_UNUSED( length );
-	FOUNDATION_UNUSED( ptr ); 
-	FOUNDATION_UNUSED( val );
+void
+_profile_initialize(const char* str, size_t length, void* ptr, uint64_t val) {
+	FOUNDATION_UNUSED(str);
+	FOUNDATION_UNUSED(length);
+	FOUNDATION_UNUSED(ptr);
+	FOUNDATION_UNUSED(val);
 }
 
-void 
-_profile_void( void ) {
+void
+_profile_void(void) {
 }
 
-void 
-_profile_bool( bool flag ) { 
-	FOUNDATION_UNUSED( flag );
+void
+_profile_bool(bool flag) {
+	FOUNDATION_UNUSED(flag);
 }
 
-void 
-_profile_fn( profile_write_fn fn ) { 
-	FOUNDATION_UNUSED( fn );
+void
+_profile_fn(profile_write_fn fn) {
+	FOUNDATION_UNUSED(fn);
 }
 
-void 
-_profile_int( int val ) { 
-	FOUNDATION_UNUSED( val );
+void
+_profile_int(int val) {
+	FOUNDATION_UNUSED(val);
 }
 
-void 
-_profile_uint64( uint64_t val ) { 
-	FOUNDATION_UNUSED( val );
+void
+_profile_uint64(uint64_t val) {
+	FOUNDATION_UNUSED(val);
 }
 
-void 
-_profile_str( const char* str, size_t length ) { 
-	FOUNDATION_UNUSED( str );
-	FOUNDATION_UNUSED( length );
+void
+_profile_str(const char* str, size_t length) {
+	FOUNDATION_UNUSED(str);
+	FOUNDATION_UNUSED(length);
 }
 
 #endif
 
-static void 
-_string_array_deallocate( string_t* array ) { 
-	string_array_deallocate( array );
+static void
+_string_array_deallocate(string_t* array) {
+	string_array_deallocate(array);
 }
 
-static uuid_t uuid_dns( void ) { 
+static uuid_t uuid_dns(void) {
 	return UUID_DNS;
 }
 
-static FOUNDATION_NOINLINE void 
-lua_load_foundation_builtins( lua_State* state )
-{
-	lua_t* env = lua_from_state( state );
-	hashmap_t* map = lua_lookup_map( env );
+static FOUNDATION_NOINLINE void
+lua_load_foundation_builtins(lua_State* state) {
+	lua_t* env = lua_from_state(state);
+	hashmap_t* map = lua_lookup_map(env);
 
-	hashmap_insert( map, HASH_SYM_ARRAY_ALLOCATE_POINTER,         (void*)(uintptr_t)_array_allocate_pointer );
-	hashmap_insert( map, HASH_SYM_ARRAY_SIZE,                     (void*)(uintptr_t)_array_size );
-	hashmap_insert( map, HASH_SYM_ARRAY_ELEMENT_POINTER,          (void*)(uintptr_t)_array_element_pointer );
-	hashmap_insert( map, HASH_SYM_ARRAY_SET_ELEMENT_POINTER,      (void*)(uintptr_t)_array_set_element_pointer );
-	hashmap_insert( map, HASH_SYM_ARRAY_DEALLOCATE,               (void*)(uintptr_t)_array_deallocate );
+#define FOUNDATION_SYM(fn, name) hashmap_insert(map, HASH_SYM_##name, (void*)(uintptr_t)fn)
 
-	hashmap_insert( map, HASH_SYM_ASSERT_HANDLER,                 (void*)(uintptr_t)assert_handler );
-	hashmap_insert( map, HASH_SYM_ASSERT_SET_HANDLER,             (void*)(uintptr_t)assert_set_handler );
-	hashmap_insert( map, HASH_SYM_ASSERT_REPORT,                  (void*)(uintptr_t)assert_report );
+	FOUNDATION_SYM(_array_allocate_pointer, ARRAY_ALLOCATE_POINTER);
+	FOUNDATION_SYM(_array_size, ARRAY_SIZE);
+	FOUNDATION_SYM(_array_element_pointer, ARRAY_ELEMENT_POINTER);
+	FOUNDATION_SYM(_array_set_element_pointer, ARRAY_SET_ELEMENT_POINTER);
+	FOUNDATION_SYM(_array_deallocate, ARRAY_DEALLOCATE);
 
-	hashmap_insert( map, HASH_SYM_ASSET_STREAM_OPEN,              (void*)(uintptr_t)asset_stream_open );
+	FOUNDATION_SYM(assert_handler, ASSERT_HANDLER);
+	FOUNDATION_SYM(assert_set_handler, ASSERT_SET_HANDLER);
+	FOUNDATION_SYM(assert_report, ASSERT_REPORT);
 
-	hashmap_insert( map, HASH_SYM_BASE64_ENCODE,                  (void*)(uintptr_t)base64_encode );
-	hashmap_insert( map, HASH_SYM_BASE64_DECODE,                  (void*)(uintptr_t)base64_decode );
+	FOUNDATION_SYM(asset_stream_open, ASSET_STREAM_OPEN);
 
-	hashmap_insert( map, HASH_SYM_BITBUFFER_ALLOCATE_BUFFER,      (void*)(uintptr_t)bitbuffer_allocate_buffer );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_ALLOCATE_STREAM,      (void*)(uintptr_t)bitbuffer_allocate_stream );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_DEALLOCATE,           (void*)(uintptr_t)bitbuffer_deallocate );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_INITIALIZE_BUFFER,    (void*)(uintptr_t)bitbuffer_initialize_buffer );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_INITIALIZE_STREAM,    (void*)(uintptr_t)bitbuffer_initialize_stream );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_FINALIZE,             (void*)(uintptr_t)bitbuffer_finalize );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_READ32,               (void*)(uintptr_t)bitbuffer_read32 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_READ64,               (void*)(uintptr_t)bitbuffer_read64 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_READ128,              (void*)(uintptr_t)bitbuffer_read128 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_READ_FLOAT32,         (void*)(uintptr_t)bitbuffer_read_float32 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_READ_FLOAT64,         (void*)(uintptr_t)bitbuffer_read_float64 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_WRITE32,              (void*)(uintptr_t)bitbuffer_write32 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_WRITE64,              (void*)(uintptr_t)bitbuffer_write64 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_WRITE128,             (void*)(uintptr_t)bitbuffer_write128 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_WRITE_FLOAT32,        (void*)(uintptr_t)bitbuffer_write_float32 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_WRITE_FLOAT64,        (void*)(uintptr_t)bitbuffer_write_float64 );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_ALIGN_READ,           (void*)(uintptr_t)bitbuffer_align_read );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_ALIGN_WRITE,          (void*)(uintptr_t)bitbuffer_align_write );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_DISCARD_READ,         (void*)(uintptr_t)bitbuffer_discard_read );
-	hashmap_insert( map, HASH_SYM_BITBUFFER_DISCARD_WRITE,        (void*)(uintptr_t)bitbuffer_discard_write );
+	FOUNDATION_SYM(base64_encode, BASE64_ENCODE);
+	FOUNDATION_SYM(base64_decode, BASE64_DECODE);
 
-	hashmap_insert( map, HASH_SYM_BYTEORDER_SWAP16,               (void*)(uintptr_t)byteorder_swap16 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_SWAP32,               (void*)(uintptr_t)byteorder_swap32 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_SWAP64,               (void*)(uintptr_t)byteorder_swap64 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_SWAP,                 (void*)(uintptr_t)byteorder_swap );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_BIGENDIAN16,          (void*)(uintptr_t)byteorder_bigendian16 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_BIGENDIAN32,          (void*)(uintptr_t)byteorder_bigendian32 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_BIGENDIAN64,          (void*)(uintptr_t)byteorder_bigendian64 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_BIGENDIAN,            (void*)(uintptr_t)byteorder_bigendian );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_LITTLEENDIAN16,       (void*)(uintptr_t)byteorder_littleendian16 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_LITTLEENDIAN32,       (void*)(uintptr_t)byteorder_littleendian32 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_LITTLEENDIAN64,       (void*)(uintptr_t)byteorder_littleendian64 );
-	hashmap_insert( map, HASH_SYM_BYTEORDER_LITTLEENDIAN,         (void*)(uintptr_t)byteorder_littleendian );
+	FOUNDATION_SYM(bitbuffer_allocate_buffer, BITBUFFER_ALLOCATE_BUFFER);
+	FOUNDATION_SYM(bitbuffer_allocate_stream, BITBUFFER_ALLOCATE_STREAM);
+	FOUNDATION_SYM(bitbuffer_deallocate, BITBUFFER_DEALLOCATE);
+	FOUNDATION_SYM(bitbuffer_initialize_buffer, BITBUFFER_INITIALIZE_BUFFER);
+	FOUNDATION_SYM(bitbuffer_initialize_stream, BITBUFFER_INITIALIZE_STREAM);
+	FOUNDATION_SYM(bitbuffer_finalize, BITBUFFER_FINALIZE);
+	FOUNDATION_SYM(bitbuffer_read32, BITBUFFER_READ32);
+	FOUNDATION_SYM(bitbuffer_read64, BITBUFFER_READ64);
+	FOUNDATION_SYM(bitbuffer_read128, BITBUFFER_READ128);
+	FOUNDATION_SYM(bitbuffer_read_float32, BITBUFFER_READ_FLOAT32);
+	FOUNDATION_SYM(bitbuffer_read_float64, BITBUFFER_READ_FLOAT64);
+	FOUNDATION_SYM(bitbuffer_write32, BITBUFFER_WRITE32);
+	FOUNDATION_SYM(bitbuffer_write64, BITBUFFER_WRITE64);
+	FOUNDATION_SYM(bitbuffer_write128, BITBUFFER_WRITE128);
+	FOUNDATION_SYM(bitbuffer_write_float32, BITBUFFER_WRITE_FLOAT32);
+	FOUNDATION_SYM(bitbuffer_write_float64, BITBUFFER_WRITE_FLOAT64);
+	FOUNDATION_SYM(bitbuffer_align_read, BITBUFFER_ALIGN_READ);
+	FOUNDATION_SYM(bitbuffer_align_write, BITBUFFER_ALIGN_WRITE);
+	FOUNDATION_SYM(bitbuffer_discard_read, BITBUFFER_DISCARD_READ);
+	FOUNDATION_SYM(bitbuffer_discard_write, BITBUFFER_DISCARD_WRITE);
 
-	hashmap_insert( map, HASH_SYM_BLOWFISH_ALLOCATE,              (void*)(uintptr_t)blowfish_allocate );
-	hashmap_insert( map, HASH_SYM_BLOWFISH_DEALLOCATE,            (void*)(uintptr_t)blowfish_deallocate );
-	hashmap_insert( map, HASH_SYM_BLOWFISH_INITIALIZE,            (void*)(uintptr_t)blowfish_initialize );
-	hashmap_insert( map, HASH_SYM_BLOWFISH_FINALIZE,              (void*)(uintptr_t)blowfish_finalize );
-	hashmap_insert( map, HASH_SYM_BLOWFISH_ENCRYPT,               (void*)(uintptr_t)blowfish_encrypt );
-	hashmap_insert( map, HASH_SYM_BLOWFISH_DECRYPT,               (void*)(uintptr_t)blowfish_decrypt );
+	FOUNDATION_SYM(byteorder_swap16, BYTEORDER_SWAP16);
+	FOUNDATION_SYM(byteorder_swap32, BYTEORDER_SWAP32);
+	FOUNDATION_SYM(byteorder_swap64, BYTEORDER_SWAP64);
+	FOUNDATION_SYM(byteorder_swap, BYTEORDER_SWAP);
+	FOUNDATION_SYM(byteorder_bigendian16, BYTEORDER_BIGENDIAN16);
+	FOUNDATION_SYM(byteorder_bigendian32, BYTEORDER_BIGENDIAN32);
+	FOUNDATION_SYM(byteorder_bigendian64, BYTEORDER_BIGENDIAN64);
+	FOUNDATION_SYM(byteorder_bigendian, BYTEORDER_BIGENDIAN);
+	FOUNDATION_SYM(byteorder_littleendian16, BYTEORDER_LITTLEENDIAN16);
+	FOUNDATION_SYM(byteorder_littleendian32, BYTEORDER_LITTLEENDIAN32);
+	FOUNDATION_SYM(byteorder_littleendian64, BYTEORDER_LITTLEENDIAN64);
+	FOUNDATION_SYM(byteorder_littleendian, BYTEORDER_LITTLEENDIAN);
 
-	hashmap_insert( map, HASH_SYM_BUFFER_STREAM_ALLOCATE,         (void*)(uintptr_t)buffer_stream_allocate );
-	hashmap_insert( map, HASH_SYM_BUFFER_STREAM_INITIALIZE,       (void*)(uintptr_t)buffer_stream_initialize );
+	FOUNDATION_SYM(blowfish_allocate, BLOWFISH_ALLOCATE);
+	FOUNDATION_SYM(blowfish_deallocate, BLOWFISH_DEALLOCATE);
+	FOUNDATION_SYM(blowfish_initialize, BLOWFISH_INITIALIZE);
+	FOUNDATION_SYM(blowfish_finalize, BLOWFISH_FINALIZE);
+	FOUNDATION_SYM(blowfish_encrypt, BLOWFISH_ENCRYPT);
+	FOUNDATION_SYM(blowfish_decrypt, BLOWFISH_DECRYPT);
 
-	hashmap_insert( map, HASH_SYM_CONFIG_BOOL,                    (void*)(uintptr_t)config_bool );
-	hashmap_insert( map, HASH_SYM_CONFIG_INT,                     (void*)(uintptr_t)config_int );
-	hashmap_insert( map, HASH_SYM_CONFIG_REAL,                    (void*)(uintptr_t)config_real );
-	hashmap_insert( map, HASH_SYM_CONFIG_STRING,                  (void*)(uintptr_t)config_string );
-	hashmap_insert( map, HASH_SYM_CONFIG_HASH,                    (void*)(uintptr_t)config_hash );
-	hashmap_insert( map, HASH_SYM_CONFIG_SET_BOOL,                (void*)(uintptr_t)config_set_bool );
-	hashmap_insert( map, HASH_SYM_CONFIG_SET_INT,                 (void*)(uintptr_t)config_set_int );
-	hashmap_insert( map, HASH_SYM_CONFIG_SET_REAL,                (void*)(uintptr_t)config_set_real );
-	hashmap_insert( map, HASH_SYM_CONFIG_SET_STRING,              (void*)(uintptr_t)config_set_string );
-	hashmap_insert( map, HASH_SYM_CONFIG_LOAD,                    (void*)(uintptr_t)config_load );
-	hashmap_insert( map, HASH_SYM_CONFIG_PARSE,                   (void*)(uintptr_t)config_parse );
-	hashmap_insert( map, HASH_SYM_CONFIG_WRITE,                   (void*)(uintptr_t)config_write );
-	hashmap_insert( map, HASH_SYM_CONFIG_PARSE_COMMANDLINE,       (void*)(uintptr_t)config_parse_commandline );
+	FOUNDATION_SYM(buffer_stream_allocate, BUFFER_STREAM_ALLOCATE);
+	FOUNDATION_SYM(buffer_stream_initialize, BUFFER_STREAM_INITIALIZE);
 
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_COMMAND_LINE,                   (void*)(uintptr_t)environment_command_line );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME,                (void*)(uintptr_t)environment_executable_name );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY,           (void*)(uintptr_t)environment_executable_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_EXECUTABLE_PATH,                (void*)(uintptr_t)environment_executable_path );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY,      (void*)(uintptr_t)environment_initial_working_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY,      (void*)(uintptr_t)environment_current_working_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY,  (void*)(uintptr_t)environment_set_current_working_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_HOME_DIRECTORY,                 (void*)(uintptr_t)environment_home_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY,            (void*)(uintptr_t)environment_temporary_directory );
-	hashmap_insert( map, HASH_SYM_ENVIRONMENT_VARIABLE,                       (void*)(uintptr_t)environment_variable );
+	FOUNDATION_SYM(config_bool, CONFIG_BOOL);
+	FOUNDATION_SYM(config_int, CONFIG_INT);
+	FOUNDATION_SYM(config_real, CONFIG_REAL);
+	FOUNDATION_SYM(config_string, CONFIG_STRING);
+	FOUNDATION_SYM(config_hash, CONFIG_HASH);
+	FOUNDATION_SYM(config_set_bool, CONFIG_SET_BOOL);
+	FOUNDATION_SYM(config_set_int, CONFIG_SET_INT);
+	FOUNDATION_SYM(config_set_real, CONFIG_SET_REAL);
+	FOUNDATION_SYM(config_set_string, CONFIG_SET_STRING);
+	FOUNDATION_SYM(config_load, CONFIG_LOAD);
+	FOUNDATION_SYM(config_parse, CONFIG_PARSE);
+	FOUNDATION_SYM(config_write, CONFIG_WRITE);
+	FOUNDATION_SYM(config_parse_commandline, CONFIG_PARSE_COMMANDLINE);
 
-	hashmap_insert( map, HASH_SYM_ERROR,                          (void*)(uintptr_t)error );
-	hashmap_insert( map, HASH_SYM_ERROR_REPORT,                   (void*)(uintptr_t)error_report );
-	hashmap_insert( map, HASH_SYM_ERROR_CALLBACK,                 (void*)(uintptr_t)error_callback );
-	hashmap_insert( map, HASH_SYM_ERROR_SET_CALLBACK,             (void*)(uintptr_t)error_set_callback );
+	FOUNDATION_SYM(environment_command_line, ENVIRONMENT_COMMAND_LINE);
+	FOUNDATION_SYM(environment_executable_name, ENVIRONMENT_EXECUTABLE_NAME);
+	FOUNDATION_SYM(environment_executable_directory, ENVIRONMENT_EXECUTABLE_DIRECTORY);
+	FOUNDATION_SYM(environment_executable_path, ENVIRONMENT_EXECUTABLE_PATH);
+	FOUNDATION_SYM(environment_initial_working_directory, ENVIRONMENT_INITIAL_WORKING_DIRECTORY);
+	FOUNDATION_SYM(environment_current_working_directory, ENVIRONMENT_CURRENT_WORKING_DIRECTORY);
+	FOUNDATION_SYM(environment_set_current_working_directory, ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
+	FOUNDATION_SYM(environment_home_directory, ENVIRONMENT_HOME_DIRECTORY);
+	FOUNDATION_SYM(environment_temporary_directory, ENVIRONMENT_TEMPORARY_DIRECTORY);
+	FOUNDATION_SYM(environment_variable, ENVIRONMENT_VARIABLE);
+
+	FOUNDATION_SYM(error, ERROR);
+	FOUNDATION_SYM(error_report, ERROR_REPORT);
+	FOUNDATION_SYM(error_callback, ERROR_CALLBACK);
+	FOUNDATION_SYM(error_set_callback, ERROR_SET_CALLBACK);
 #if BUILD_ENABLE_ERROR_CONTEXT
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,             (void*)(uintptr_t)_error_context_push );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,              (void*)(uintptr_t)_error_context_pop );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_CLEAR,            (void*)(uintptr_t)_error_context_clear );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_BUFFER,           (void*)(uintptr_t)_error_context_buffer );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT,                  (void*)(uintptr_t)_error_context );
+	FOUNDATION_SYM(_error_context_push, ERROR_CONTEXT_PUSH);
+	FOUNDATION_SYM(_error_context_pop, ERROR_CONTEXT_POP);
+	FOUNDATION_SYM(_error_context_clear, ERROR_CONTEXT_CLEAR);
+	FOUNDATION_SYM(_error_context_buffer, ERROR_CONTEXT_BUFFER);
+	FOUNDATION_SYM(_error_context, ERROR_CONTEXT);
 #else
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_PUSH,             (void*)(uintptr_t)_error_context_push_disabled );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_POP,              (void*)(uintptr_t)_error_context_pop_disabled );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_CLEAR,            (void*)(uintptr_t)_error_context_pop_disabled );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT_BUFFER,           (void*)(uintptr_t)_error_context_buffer_disabled );
-	hashmap_insert( map, HASH_SYM_ERROR_CONTEXT,                  (void*)(uintptr_t)_error_context_disabled );
+	FOUNDATION_SYM(_error_context_push_disabled, ERROR_CONTEXT_PUSH);
+	FOUNDATION_SYM(_error_context_pop_disabled, ERROR_CONTEXT_POP);
+	FOUNDATION_SYM(_error_context_pop_disabled, ERROR_CONTEXT_CLEAR);
+	FOUNDATION_SYM(_error_context_buffer_disabled, ERROR_CONTEXT_BUFFER);
+	FOUNDATION_SYM(_error_context_disabled, ERROR_CONTEXT);
 #endif
 
-	hashmap_insert( map, HASH_SYM_EVENT_POST,                     (void*)(uintptr_t)event_post_varg );
-	hashmap_insert( map, HASH_SYM_EVENT_NEXT,                     (void*)(uintptr_t)event_next );
-	hashmap_insert( map, HASH_SYM_EVENT_PAYLOAD_SIZE,             (void*)(uintptr_t)event_payload_size );
-	hashmap_insert( map, HASH_SYM_EVENT_STREAM_ALLOCATE,          (void*)(uintptr_t)event_stream_allocate );
-	hashmap_insert( map, HASH_SYM_EVENT_STREAM_DEALLOCATE,        (void*)(uintptr_t)event_stream_deallocate );
-	hashmap_insert( map, HASH_SYM_EVENT_STREAM_INITIALIZE,        (void*)(uintptr_t)event_stream_initialize );
-	hashmap_insert( map, HASH_SYM_EVENT_STREAM_FINALIZE,          (void*)(uintptr_t)event_stream_finalize );
-	hashmap_insert( map, HASH_SYM_EVENT_STREAM_PROCESS,           (void*)(uintptr_t)event_stream_process );
+	FOUNDATION_SYM(event_post_varg, EVENT_POST);
+	FOUNDATION_SYM(event_next, EVENT_NEXT);
+	FOUNDATION_SYM(event_payload_size, EVENT_PAYLOAD_SIZE);
+	FOUNDATION_SYM(event_stream_allocate, EVENT_STREAM_ALLOCATE);
+	FOUNDATION_SYM(event_stream_deallocate, EVENT_STREAM_DEALLOCATE);
+	FOUNDATION_SYM(event_stream_initialize, EVENT_STREAM_INITIALIZE);
+	FOUNDATION_SYM(event_stream_finalize, EVENT_STREAM_FINALIZE);
+	FOUNDATION_SYM(event_stream_process, EVENT_STREAM_PROCESS);
 
-	hashmap_insert( map, HASH_SYM_FS_OPEN_FILE,                   (void*)(uintptr_t)fs_open_file );
-	hashmap_insert( map, HASH_SYM_FS_COPY_FILE,                   (void*)(uintptr_t)fs_copy_file );
-	hashmap_insert( map, HASH_SYM_FS_REMOVE_FILE,                 (void*)(uintptr_t)fs_remove_file );
-	hashmap_insert( map, HASH_SYM_FS_IS_FILE,                     (void*)(uintptr_t)fs_is_file );
-	hashmap_insert( map, HASH_SYM_FS_MAKE_DIRECTORY,              (void*)(uintptr_t)fs_make_directory );
-	hashmap_insert( map, HASH_SYM_FS_REMOVE_DIRECTORY,            (void*)(uintptr_t)fs_remove_directory );
-	hashmap_insert( map, HASH_SYM_FS_IS_DIRECTORY,                (void*)(uintptr_t)fs_is_directory );
-	hashmap_insert( map, HASH_SYM_FS_LAST_MODIFIED,               (void*)(uintptr_t)fs_last_modified );
-	hashmap_insert( map, HASH_SYM_FS_TOUCH,                       (void*)(uintptr_t)fs_touch );
-	hashmap_insert( map, HASH_SYM_FS_MD5,                         (void*)(uintptr_t)fs_md5 );
-	hashmap_insert( map, HASH_SYM_FS_MATCHING_FILES,              (void*)(uintptr_t)fs_matching_files );
-	hashmap_insert( map, HASH_SYM_FS_MATCHING_FILES_REGEX,        (void*)(uintptr_t)fs_matching_files_regex );
-	hashmap_insert( map, HASH_SYM_FS_FILES,                       (void*)(uintptr_t)fs_files );
-	hashmap_insert( map, HASH_SYM_FS_SUBDIRS,                     (void*)(uintptr_t)fs_subdirs );
-	hashmap_insert( map, HASH_SYM_FS_MONITOR,                     (void*)(uintptr_t)fs_monitor );
-	hashmap_insert( map, HASH_SYM_FS_UNMONITOR,                   (void*)(uintptr_t)fs_unmonitor );
-	hashmap_insert( map, HASH_SYM_FS_TEMPORARY_FILE,              (void*)(uintptr_t)fs_temporary_file );
-	hashmap_insert( map, HASH_SYM_FS_POST_EVENT,                  (void*)(uintptr_t)fs_post_event );
-	hashmap_insert( map, HASH_SYM_FS_EVENT_STREAM,                (void*)(uintptr_t)fs_event_stream );
+	FOUNDATION_SYM(fs_open_file, FS_OPEN_FILE);
+	FOUNDATION_SYM(fs_copy_file, FS_COPY_FILE);
+	FOUNDATION_SYM(fs_remove_file, FS_REMOVE_FILE);
+	FOUNDATION_SYM(fs_is_file, FS_IS_FILE);
+	FOUNDATION_SYM(fs_make_directory, FS_MAKE_DIRECTORY);
+	FOUNDATION_SYM(fs_remove_directory, FS_REMOVE_DIRECTORY);
+	FOUNDATION_SYM(fs_is_directory, FS_IS_DIRECTORY);
+	FOUNDATION_SYM(fs_last_modified, FS_LAST_MODIFIED);
+	FOUNDATION_SYM(fs_touch, FS_TOUCH);
+	FOUNDATION_SYM(fs_md5, FS_MD5);
+	FOUNDATION_SYM(fs_matching_files, FS_MATCHING_FILES);
+	FOUNDATION_SYM(fs_matching_files_regex, FS_MATCHING_FILES_REGEX);
+	FOUNDATION_SYM(fs_files, FS_FILES);
+	FOUNDATION_SYM(fs_subdirs, FS_SUBDIRS);
+	FOUNDATION_SYM(fs_monitor, FS_MONITOR);
+	FOUNDATION_SYM(fs_unmonitor, FS_UNMONITOR);
+	FOUNDATION_SYM(fs_temporary_file, FS_TEMPORARY_FILE);
+	FOUNDATION_SYM(fs_post_event, FS_POST_EVENT);
+	FOUNDATION_SYM(fs_event_stream, FS_EVENT_STREAM);
 
-	hashmap_insert( map, HASH_SYM_FOUNDATION_VERSION,             (void*)(uintptr_t)foundation_version );
+	FOUNDATION_SYM(foundation_version, FOUNDATION_VERSION);
 
-	hashmap_insert( map, HASH_SYM_HASH,                           (void*)(uintptr_t)hash );
-	hashmap_insert( map, HASH_SYM_HASH_TO_STRING,                 (void*)(uintptr_t)hash_to_string );
+	FOUNDATION_SYM(hash, HASH);
+	FOUNDATION_SYM(hash_to_string, HASH_TO_STRING);
 
-	hashmap_insert( map, HASH_SYM_HASHMAP_ALLOCATE,               (void*)(uintptr_t)hashmap_allocate );
-	hashmap_insert( map, HASH_SYM_HASHMAP_DEALLOCATE,             (void*)(uintptr_t)hashmap_deallocate );
-	hashmap_insert( map, HASH_SYM_HASHMAP_INITIALIZE,             (void*)(uintptr_t)hashmap_initialize );
-	hashmap_insert( map, HASH_SYM_HASHMAP_FINALIZE,               (void*)(uintptr_t)hashmap_finalize );
-	hashmap_insert( map, HASH_SYM_HASHMAP_INSERT,                 (void*)(uintptr_t)hashmap_insert );
-	hashmap_insert( map, HASH_SYM_HASHMAP_ERASE,                  (void*)(uintptr_t)hashmap_erase );
-	hashmap_insert( map, HASH_SYM_HASHMAP_LOOKUP,                 (void*)(uintptr_t)hashmap_lookup );
-	hashmap_insert( map, HASH_SYM_HASHMAP_HAS_KEY,                (void*)(uintptr_t)hashmap_has_key );
-	hashmap_insert( map, HASH_SYM_HASHMAP_SIZE,                   (void*)(uintptr_t)hashmap_size );
-	hashmap_insert( map, HASH_SYM_HASHMAP_CLEAR,                  (void*)(uintptr_t)hashmap_clear );
+	FOUNDATION_SYM(hashmap_allocate, HASHMAP_ALLOCATE);
+	FOUNDATION_SYM(hashmap_deallocate, HASHMAP_DEALLOCATE);
+	FOUNDATION_SYM(hashmap_initialize, HASHMAP_INITIALIZE);
+	FOUNDATION_SYM(hashmap_finalize, HASHMAP_FINALIZE);
+	FOUNDATION_SYM(hashmap_insert, HASHMAP_INSERT);
+	FOUNDATION_SYM(hashmap_erase, HASHMAP_ERASE);
+	FOUNDATION_SYM(hashmap_lookup, HASHMAP_LOOKUP);
+	FOUNDATION_SYM(hashmap_has_key, HASHMAP_HAS_KEY);
+	FOUNDATION_SYM(hashmap_size, HASHMAP_SIZE);
+	FOUNDATION_SYM(hashmap_clear, HASHMAP_CLEAR);
 
 #if FOUNDATION_SIZE_POINTER == 4
-	hashmap_insert( map, HASH_SYM_HASHTABLE_ALLOCATE,             (void*)(uintptr_t)hashtable32_allocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_DEALLOCATE,           (void*)(uintptr_t)hashtable32_deallocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_INITIALIZE,           (void*)(uintptr_t)hashtable32_initialize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_FINALIZE,             (void*)(uintptr_t)hashtable32_finalize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_SET,                  (void*)(uintptr_t)hashtable32_set );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_ERASE,                (void*)(uintptr_t)hashtable32_erase );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_GET,                  (void*)(uintptr_t)hashtable32_get );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_SIZE,                 (void*)(uintptr_t)hashtable32_size );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_CLEAR,                (void*)(uintptr_t)hashtable32_clear );
+	FOUNDATION_SYM(hashtable32_allocate, HASHTABLE_ALLOCATE);
+	FOUNDATION_SYM(hashtable32_deallocate, HASHTABLE_DEALLOCATE);
+	FOUNDATION_SYM(hashtable32_initialize, HASHTABLE_INITIALIZE);
+	FOUNDATION_SYM(hashtable32_finalize, HASHTABLE_FINALIZE);
+	FOUNDATION_SYM(hashtable32_set, HASHTABLE_SET);
+	FOUNDATION_SYM(hashtable32_erase, HASHTABLE_ERASE);
+	FOUNDATION_SYM(hashtable32_get, HASHTABLE_GET);
+	FOUNDATION_SYM(hashtable32_size, HASHTABLE_SIZE);
+	FOUNDATION_SYM(hashtable32_clear, HASHTABLE_CLEAR);
 #else
-	hashmap_insert( map, HASH_SYM_HASHTABLE_ALLOCATE,             (void*)(uintptr_t)hashtable64_allocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_DEALLOCATE,           (void*)(uintptr_t)hashtable64_deallocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_INITIALIZE,           (void*)(uintptr_t)hashtable64_initialize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_FINALIZE,             (void*)(uintptr_t)hashtable64_finalize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_SET,                  (void*)(uintptr_t)hashtable64_set );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_ERASE,                (void*)(uintptr_t)hashtable64_erase );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_GET,                  (void*)(uintptr_t)hashtable64_get );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_SIZE,                 (void*)(uintptr_t)hashtable64_size );
-	hashmap_insert( map, HASH_SYM_HASHTABLE_CLEAR,                (void*)(uintptr_t)hashtable64_clear );
+	FOUNDATION_SYM(hashtable64_allocate, HASHTABLE_ALLOCATE);
+	FOUNDATION_SYM(hashtable64_deallocate, HASHTABLE_DEALLOCATE);
+	FOUNDATION_SYM(hashtable64_initialize, HASHTABLE_INITIALIZE);
+	FOUNDATION_SYM(hashtable64_finalize, HASHTABLE_FINALIZE);
+	FOUNDATION_SYM(hashtable64_set, HASHTABLE_SET);
+	FOUNDATION_SYM(hashtable64_erase, HASHTABLE_ERASE);
+	FOUNDATION_SYM(hashtable64_get, HASHTABLE_GET);
+	FOUNDATION_SYM(hashtable64_size, HASHTABLE_SIZE);
+	FOUNDATION_SYM(hashtable64_clear, HASHTABLE_CLEAR);
 #endif
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_ALLOCATE,           (void*)(uintptr_t)hashtable32_allocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_DEALLOCATE,         (void*)(uintptr_t)hashtable32_deallocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_INITIALIZE,         (void*)(uintptr_t)hashtable32_initialize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_FINALIZE,           (void*)(uintptr_t)hashtable32_finalize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_SET,                (void*)(uintptr_t)hashtable32_set );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_ERASE,              (void*)(uintptr_t)hashtable32_erase );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_GET,                (void*)(uintptr_t)hashtable32_get );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_CLEAR,              (void*)(uintptr_t)hashtable32_size );
-	hashmap_insert( map, HASH_SYM_HASHTABLE32_SIZE,               (void*)(uintptr_t)hashtable32_clear );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_ALLOCATE,           (void*)(uintptr_t)hashtable64_allocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_DEALLOCATE,         (void*)(uintptr_t)hashtable64_deallocate );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_INITIALIZE,         (void*)(uintptr_t)hashtable64_initialize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_FINALIZE,           (void*)(uintptr_t)hashtable64_finalize );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_SET,                (void*)(uintptr_t)hashtable64_set );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_ERASE,              (void*)(uintptr_t)hashtable64_erase );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_GET,                (void*)(uintptr_t)hashtable64_get );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_SIZE,               (void*)(uintptr_t)hashtable64_size );
-	hashmap_insert( map, HASH_SYM_HASHTABLE64_CLEAR,              (void*)(uintptr_t)hashtable64_clear );
+	FOUNDATION_SYM(hashtable32_allocate, HASHTABLE32_ALLOCATE);
+	FOUNDATION_SYM(hashtable32_deallocate, HASHTABLE32_DEALLOCATE);
+	FOUNDATION_SYM(hashtable32_initialize, HASHTABLE32_INITIALIZE);
+	FOUNDATION_SYM(hashtable32_finalize, HASHTABLE32_FINALIZE);
+	FOUNDATION_SYM(hashtable32_set, HASHTABLE32_SET);
+	FOUNDATION_SYM(hashtable32_erase, HASHTABLE32_ERASE);
+	FOUNDATION_SYM(hashtable32_get, HASHTABLE32_GET);
+	FOUNDATION_SYM(hashtable32_size, HASHTABLE32_CLEAR);
+	FOUNDATION_SYM(hashtable32_clear, HASHTABLE32_SIZE);
+	FOUNDATION_SYM(hashtable64_allocate, HASHTABLE64_ALLOCATE);
+	FOUNDATION_SYM(hashtable64_deallocate, HASHTABLE64_DEALLOCATE);
+	FOUNDATION_SYM(hashtable64_initialize, HASHTABLE64_INITIALIZE);
+	FOUNDATION_SYM(hashtable64_finalize, HASHTABLE64_FINALIZE);
+	FOUNDATION_SYM(hashtable64_set, HASHTABLE64_SET);
+	FOUNDATION_SYM(hashtable64_erase, HASHTABLE64_ERASE);
+	FOUNDATION_SYM(hashtable64_get, HASHTABLE64_GET);
+	FOUNDATION_SYM(hashtable64_size, HASHTABLE64_SIZE);
+	FOUNDATION_SYM(hashtable64_clear, HASHTABLE64_CLEAR);
 
-	hashmap_insert( map, HASH_SYM_LIBRARY_LOAD,                   (void*)(uintptr_t)library_load );
-	hashmap_insert( map, HASH_SYM_LIBRARY_REF,                    (void*)(uintptr_t)library_ref );
-	hashmap_insert( map, HASH_SYM_LIBRARY_UNLOAD,                 (void*)(uintptr_t)library_unload );
-	hashmap_insert( map, HASH_SYM_LIBRARY_SYMBOL,                 (void*)(uintptr_t)library_symbol );
-	hashmap_insert( map, HASH_SYM_LIBRARY_NAME,                   (void*)(uintptr_t)library_name );
-	hashmap_insert( map, HASH_SYM_LIBRARY_VALID,                  (void*)(uintptr_t)library_valid );
+	FOUNDATION_SYM(library_load, LIBRARY_LOAD);
+	FOUNDATION_SYM(library_ref, LIBRARY_REF);
+	FOUNDATION_SYM(library_unload, LIBRARY_UNLOAD);
+	FOUNDATION_SYM(library_symbol, LIBRARY_SYMBOL);
+	FOUNDATION_SYM(library_name, LIBRARY_NAME);
+	FOUNDATION_SYM(library_valid, LIBRARY_VALID);
 
 #if BUILD_ENABLE_DEBUG_LOG
-	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,                     (void*)(uintptr_t)log_debugf );
+	FOUNDATION_SYM(log_debugf, LOG_DEBUGF);
 #else
-	hashmap_insert( map, HASH_SYM_LOG_DEBUGF,                     (void*)(uintptr_t)_log_debugf_disabled );
+	FOUNDATION_SYM(_log_debugf_disabled, LOG_DEBUGF);
 #endif
 #if BUILD_ENABLE_LOG
-	hashmap_insert( map, HASH_SYM_LOG_INFOF,                      (void*)(uintptr_t)log_infof );
-	hashmap_insert( map, HASH_SYM_LOG_WARNF,                      (void*)(uintptr_t)log_warnf );
-	hashmap_insert( map, HASH_SYM_LOG_ERRORF,                     (void*)(uintptr_t)log_errorf );
-	hashmap_insert( map, HASH_SYM_LOG_PANICF,                     (void*)(uintptr_t)log_panicf );
-	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,              (void*)(uintptr_t)log_enable_prefix );
-	hashmap_insert( map, HASH_SYM_LOG_ENABLE_STDOUT,              (void*)(uintptr_t)log_enable_stdout );
-	hashmap_insert( map, HASH_SYM_LOG_CALLBACK,                   (void*)(uintptr_t)log_callback );
-	hashmap_insert( map, HASH_SYM_LOG_SET_CALLBACK,               (void*)(uintptr_t)log_set_callback );
-	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,               (void*)(uintptr_t)log_set_suppress );
-	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,                   (void*)(uintptr_t)log_suppress );
-	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS_CLEAR,             (void*)(uintptr_t)log_suppress_clear );
+	FOUNDATION_SYM(log_infof, LOG_INFOF);
+	FOUNDATION_SYM(log_warnf, LOG_WARNF);
+	FOUNDATION_SYM(log_errorf, LOG_ERRORF);
+	FOUNDATION_SYM(log_panicf, LOG_PANICF);
+	FOUNDATION_SYM(log_enable_prefix, LOG_ENABLE_PREFIX);
+	FOUNDATION_SYM(log_enable_stdout, LOG_ENABLE_STDOUT);
+	FOUNDATION_SYM(log_callback, LOG_CALLBACK);
+	FOUNDATION_SYM(log_set_callback, LOG_SET_CALLBACK);
+	FOUNDATION_SYM(log_set_suppress, LOG_SET_SUPPRESS);
+	FOUNDATION_SYM(log_suppress, LOG_SUPPRESS);
+	FOUNDATION_SYM(log_suppress_clear, LOG_SUPPRESS_CLEAR);
 #else
-	hashmap_insert( map, HASH_SYM_LOG_INFOF,                      (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_WARNF,                      (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_ERRORF,                     (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_PANICF,                     (void*)(uintptr_t)_log_debugf_disabled );
-	hashmap_insert( map, HASH_SYM_LOG_ENABLE_PREFIX,              (void*)(uintptr_t)_log_enable );
-	hashmap_insert( map, HASH_SYM_LOG_ENABLE_STDOUT,              (void*)(uintptr_t)_log_enable );
-	hashmap_insert( map, HASH_SYM_LOG_CALLBACK,                   (void*)(uintptr_t)_log_callback );
-	hashmap_insert( map, HASH_SYM_LOG_SET_CALLBACK,               (void*)(uintptr_t)_log_set_callback );
-	hashmap_insert( map, HASH_SYM_LOG_SET_SUPPRESS,               (void*)(uintptr_t)_log_set_suppress );
-	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS,                   (void*)(uintptr_t)_log_suppress );
-	hashmap_insert( map, HASH_SYM_LOG_SUPPRESS_CLEAR,             (void*)(uintptr_t)_log_suppress_clear );
+	FOUNDATION_SYM(_log_debugf_disabled, LOG_INFOF);
+	FOUNDATION_SYM(_log_debugf_disabled, LOG_WARNF);
+	FOUNDATION_SYM(_log_debugf_disabled, LOG_ERRORF);
+	FOUNDATION_SYM(_log_debugf_disabled, LOG_PANICF);
+	FOUNDATION_SYM(_log_enable, LOG_ENABLE_PREFIX);
+	FOUNDATION_SYM(_log_enable, LOG_ENABLE_STDOUT);
+	FOUNDATION_SYM(_log_callback, LOG_CALLBACK);
+	FOUNDATION_SYM(_log_set_callback, LOG_SET_CALLBACK);
+	FOUNDATION_SYM(_log_set_suppress, LOG_SET_SUPPRESS);
+	FOUNDATION_SYM(_log_suppress, LOG_SUPPRESS);
+	FOUNDATION_SYM(_log_suppress_clear, LOG_SUPPRESS_CLEAR);
 #endif
 
-	hashmap_insert( map, HASH_SYM_MD5_ALLOCATE,                   (void*)(uintptr_t)md5_allocate );
-	hashmap_insert( map, HASH_SYM_MD5_DEALLOCATE,                 (void*)(uintptr_t)md5_deallocate );
-	hashmap_insert( map, HASH_SYM_MD5_INITIALIZE,                 (void*)(uintptr_t)md5_initialize );
-	hashmap_insert( map, HASH_SYM_MD5_FINALIZE,                   (void*)(uintptr_t)md5_finalize );
-	hashmap_insert( map, HASH_SYM_MD5_DIGEST,                     (void*)(uintptr_t)md5_digest );
-	hashmap_insert( map, HASH_SYM_MD5_DIGEST_FINALIZE,            (void*)(uintptr_t)md5_digest_finalize );
-	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST,                 (void*)(uintptr_t)md5_get_digest );
-	hashmap_insert( map, HASH_SYM_MD5_GET_DIGEST_RAW,             (void*)(uintptr_t)md5_get_digest_raw );
+	FOUNDATION_SYM(md5_allocate, MD5_ALLOCATE);
+	FOUNDATION_SYM(md5_deallocate, MD5_DEALLOCATE);
+	FOUNDATION_SYM(md5_initialize, MD5_INITIALIZE);
+	FOUNDATION_SYM(md5_finalize, MD5_FINALIZE);
+	FOUNDATION_SYM(md5_digest, MD5_DIGEST);
+	FOUNDATION_SYM(md5_digest_finalize, MD5_DIGEST_FINALIZE);
+	FOUNDATION_SYM(md5_get_digest, MD5_GET_DIGEST);
+	FOUNDATION_SYM(md5_get_digest_raw, MD5_GET_DIGEST_RAW);
 
-	hashmap_insert( map, HASH_SYM_MEMORY_ALLOCATE,                (void*)(uintptr_t)memory_allocate );
-	hashmap_insert( map, HASH_SYM_MEMORY_REALLOCATE,              (void*)(uintptr_t)memory_reallocate );
-	hashmap_insert( map, HASH_SYM_MEMORY_DEALLOCATE,              (void*)(uintptr_t)memory_deallocate );
-	hashmap_insert( map, HASH_SYM_MEMORY_CONTEXT_PUSH,            (void*)(uintptr_t)memory_context_push );
-	hashmap_insert( map, HASH_SYM_MEMORY_CONTEXT_POP,             (void*)(uintptr_t)memory_context_pop );
-	hashmap_insert( map, HASH_SYM_MEMORY_CONTEXT,                 (void*)(uintptr_t)memory_context );
+	FOUNDATION_SYM(memory_allocate, MEMORY_ALLOCATE);
+	FOUNDATION_SYM(memory_reallocate, MEMORY_REALLOCATE);
+	FOUNDATION_SYM(memory_deallocate, MEMORY_DEALLOCATE);
+	FOUNDATION_SYM(memory_context_push, MEMORY_CONTEXT_PUSH);
+	FOUNDATION_SYM(memory_context_pop, MEMORY_CONTEXT_POP);
+	FOUNDATION_SYM(memory_context, MEMORY_CONTEXT);
 
-	hashmap_insert( map, HASH_SYM_MUTEX_ALLOCATE,                 (void*)(uintptr_t)mutex_allocate );
-	hashmap_insert( map, HASH_SYM_MUTEX_DEALLOCATE,               (void*)(uintptr_t)mutex_deallocate );
-	hashmap_insert( map, HASH_SYM_MUTEX_NAME,                     (void*)(uintptr_t)mutex_name );
-	hashmap_insert( map, HASH_SYM_MUTEX_TRY_LOCK,                 (void*)(uintptr_t)mutex_try_lock );
-	hashmap_insert( map, HASH_SYM_MUTEX_LOCK,                     (void*)(uintptr_t)mutex_lock );
-	hashmap_insert( map, HASH_SYM_MUTEX_UNLOCK,                   (void*)(uintptr_t)mutex_unlock );
-	hashmap_insert( map, HASH_SYM_MUTEX_WAIT,                     (void*)(uintptr_t)mutex_wait );
-	hashmap_insert( map, HASH_SYM_MUTEX_SIGNAL,                   (void*)(uintptr_t)mutex_signal );
+	FOUNDATION_SYM(mutex_allocate, MUTEX_ALLOCATE);
+	FOUNDATION_SYM(mutex_deallocate, MUTEX_DEALLOCATE);
+	FOUNDATION_SYM(mutex_name, MUTEX_NAME);
+	FOUNDATION_SYM(mutex_try_lock, MUTEX_TRY_LOCK);
+	FOUNDATION_SYM(mutex_lock, MUTEX_LOCK);
+	FOUNDATION_SYM(mutex_unlock, MUTEX_UNLOCK);
+	FOUNDATION_SYM(mutex_wait, MUTEX_WAIT);
+	FOUNDATION_SYM(mutex_signal, MUTEX_SIGNAL);
 
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_ALLOCATE,             (void*)(uintptr_t)objectmap_allocate );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_DEALLOCATE,           (void*)(uintptr_t)objectmap_deallocate );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_INITIALIZE,           (void*)(uintptr_t)objectmap_initialize );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_FINALIZE,             (void*)(uintptr_t)objectmap_finalize );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_SIZE,                 (void*)(uintptr_t)objectmap_size );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_RESERVE,              (void*)(uintptr_t)objectmap_reserve );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_FREE,                 (void*)(uintptr_t)objectmap_free );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_SET,                  (void*)(uintptr_t)objectmap_set );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_RAW_LOOKUP,           (void*)(uintptr_t)objectmap_raw_lookup );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_LOOKUP_REF,           (void*)(uintptr_t)objectmap_lookup_ref );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_LOOKUP_UNREF,         (void*)(uintptr_t)objectmap_lookup_unref );
-	hashmap_insert( map, HASH_SYM_OBJECTMAP_LOOKUP,               (void*)(uintptr_t)objectmap_lookup );
+	FOUNDATION_SYM(objectmap_allocate, OBJECTMAP_ALLOCATE);
+	FOUNDATION_SYM(objectmap_deallocate, OBJECTMAP_DEALLOCATE);
+	FOUNDATION_SYM(objectmap_initialize, OBJECTMAP_INITIALIZE);
+	FOUNDATION_SYM(objectmap_finalize, OBJECTMAP_FINALIZE);
+	FOUNDATION_SYM(objectmap_size, OBJECTMAP_SIZE);
+	FOUNDATION_SYM(objectmap_reserve, OBJECTMAP_RESERVE);
+	FOUNDATION_SYM(objectmap_free, OBJECTMAP_FREE);
+	FOUNDATION_SYM(objectmap_set, OBJECTMAP_SET);
+	FOUNDATION_SYM(objectmap_raw_lookup, OBJECTMAP_RAW_LOOKUP);
+	FOUNDATION_SYM(objectmap_lookup_ref, OBJECTMAP_LOOKUP_REF);
+	FOUNDATION_SYM(objectmap_lookup_unref, OBJECTMAP_LOOKUP_UNREF);
+	FOUNDATION_SYM(objectmap_lookup, OBJECTMAP_LOOKUP);
 
-	hashmap_insert( map, HASH_SYM_PATH_BASE_FILE_NAME,            (void*)(uintptr_t)path_base_file_name);
-	hashmap_insert( map, HASH_SYM_PATH_BASE_FILE_NAME_WITH_DIRECTORY, (void*)(uintptr_t)path_base_file_name_with_directory);
-	hashmap_insert( map, HASH_SYM_PATH_FILE_EXTENSION,            (void*)(uintptr_t)path_file_extension);
-	hashmap_insert( map, HASH_SYM_PATH_FILE_NAME,                 (void*)(uintptr_t)path_file_name);
-	hashmap_insert( map, HASH_SYM_PATH_DIRECTORY_NAME,            (void*)(uintptr_t)path_directory_name);
-	hashmap_insert( map, HASH_SYM_PATH_SUBDIRECTORY_NAME,         (void*)(uintptr_t)path_subdirectory_name);
-	hashmap_insert( map, HASH_SYM_PATH_PROTOCOL,                  (void*)(uintptr_t)path_protocol);
-	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_CONCAT,           (void*)(uintptr_t)path_allocate_concat_varg);
-	hashmap_insert( map, HASH_SYM_PATH_CONCAT,                    (void*)(uintptr_t)path_concat_varg);
-	hashmap_insert( map, HASH_SYM_PATH_APPEND,                    (void*)(uintptr_t)path_append_varg);
-	hashmap_insert( map, HASH_SYM_PATH_PREPEND,                   (void*)(uintptr_t)path_prepend_varg);
-	hashmap_insert( map, HASH_SYM_PATH_ABSOLUTE,                  (void*)(uintptr_t)path_absolute);
-	hashmap_insert( map, HASH_SYM_PATH_ALLOCATE_ABSOLUTE,         (void*)(uintptr_t)path_allocate_absolute);
-	hashmap_insert( map, HASH_SYM_PATH_CLEAN,                     (void*)(uintptr_t)path_clean);
-	hashmap_insert( map, HASH_SYM_PATH_IS_ABSOLUTE,               (void*)(uintptr_t)path_is_absolute);
-	hashmap_insert( map, HASH_SYM_PATH_MAKE_TEMPORARY,            (void*)(uintptr_t)path_make_temporary);
+	FOUNDATION_SYM(path_base_file_name, PATH_BASE_FILE_NAME);
+	FOUNDATION_SYM(path_base_file_name_with_directory, PATH_BASE_FILE_NAME_WITH_DIRECTORY);
+	FOUNDATION_SYM(path_file_extension, PATH_FILE_EXTENSION);
+	FOUNDATION_SYM(path_file_name, PATH_FILE_NAME);
+	FOUNDATION_SYM(path_directory_name, PATH_DIRECTORY_NAME);
+	FOUNDATION_SYM(path_subdirectory_name, PATH_SUBDIRECTORY_NAME);
+	FOUNDATION_SYM(path_protocol, PATH_PROTOCOL);
+	FOUNDATION_SYM(path_allocate_concat_varg, PATH_ALLOCATE_CONCAT);
+	FOUNDATION_SYM(path_concat_varg, PATH_CONCAT);
+	FOUNDATION_SYM(path_append_varg, PATH_APPEND);
+	FOUNDATION_SYM(path_prepend_varg, PATH_PREPEND);
+	FOUNDATION_SYM(path_absolute, PATH_ABSOLUTE);
+	FOUNDATION_SYM(path_allocate_absolute, PATH_ALLOCATE_ABSOLUTE);
+	FOUNDATION_SYM(path_clean, PATH_CLEAN);
+	FOUNDATION_SYM(path_is_absolute, PATH_IS_ABSOLUTE);
+	FOUNDATION_SYM(path_make_temporary, PATH_MAKE_TEMPORARY);
 
-	hashmap_insert( map, HASH_SYM_PIPE_ALLOCATE,                  (void*)(uintptr_t)pipe_allocate );
-	hashmap_insert( map, HASH_SYM_PIPE_INITIALIZE,                (void*)(uintptr_t)pipe_initialize );
-	hashmap_insert( map, HASH_SYM_PIPE_CLOSE_READ,                (void*)(uintptr_t)pipe_close_read );
-	hashmap_insert( map, HASH_SYM_PIPE_CLOSE_WRITE,               (void*)(uintptr_t)pipe_close_write );
+	FOUNDATION_SYM(pipe_allocate, PIPE_ALLOCATE);
+	FOUNDATION_SYM(pipe_initialize, PIPE_INITIALIZE);
+	FOUNDATION_SYM(pipe_close_read, PIPE_CLOSE_READ);
+	FOUNDATION_SYM(pipe_close_write, PIPE_CLOSE_WRITE);
 
-	hashmap_insert( map, HASH_SYM_PROCESS_ALLOCATE,               (void*)(uintptr_t)process_allocate );
-	hashmap_insert( map, HASH_SYM_PROCESS_DEALLOCATE,             (void*)(uintptr_t)process_deallocate );
-	hashmap_insert( map, HASH_SYM_PROCESS_INITIALIZE,             (void*)(uintptr_t)process_initialize );
-	hashmap_insert( map, HASH_SYM_PROCESS_FINALIZE,               (void*)(uintptr_t)process_finalize );
-	hashmap_insert( map, HASH_SYM_PROCESS_SET_WORKING_DIRECTORY,  (void*)(uintptr_t)process_set_working_directory );
-	hashmap_insert( map, HASH_SYM_PROCESS_SET_EXECUTABLE_PATH,    (void*)(uintptr_t)process_set_executable_path );
-	hashmap_insert( map, HASH_SYM_PROCESS_SET_ARGUMENTS,          (void*)(uintptr_t)process_set_arguments );
-	hashmap_insert( map, HASH_SYM_PROCESS_SET_FLAGS,              (void*)(uintptr_t)process_set_flags );
-	hashmap_insert( map, HASH_SYM_PROCESS_SET_VERB,               (void*)(uintptr_t)process_set_verb );
-	hashmap_insert( map, HASH_SYM_PROCESS_SET_EXIT_CODE,          (void*)(uintptr_t)process_set_exit_code );
-	hashmap_insert( map, HASH_SYM_PROCESS_SPAWN,                  (void*)(uintptr_t)process_spawn );
-	hashmap_insert( map, HASH_SYM_PROCESS_STDOUT,                 (void*)(uintptr_t)process_stdout );
-	hashmap_insert( map, HASH_SYM_PROCESS_STDIN,                  (void*)(uintptr_t)process_stdin );
-	hashmap_insert( map, HASH_SYM_PROCESS_WAIT,                   (void*)(uintptr_t)process_wait );
-	hashmap_insert( map, HASH_SYM_PROCESS_EXIT_CODE,              (void*)(uintptr_t)process_exit_code );
-	hashmap_insert( map, HASH_SYM_PROCESS_EXIT,                   (void*)(uintptr_t)process_exit );
+	FOUNDATION_SYM(process_allocate, PROCESS_ALLOCATE);
+	FOUNDATION_SYM(process_deallocate, PROCESS_DEALLOCATE);
+	FOUNDATION_SYM(process_initialize, PROCESS_INITIALIZE);
+	FOUNDATION_SYM(process_finalize, PROCESS_FINALIZE);
+	FOUNDATION_SYM(process_set_working_directory, PROCESS_SET_WORKING_DIRECTORY);
+	FOUNDATION_SYM(process_set_executable_path, PROCESS_SET_EXECUTABLE_PATH);
+	FOUNDATION_SYM(process_set_arguments, PROCESS_SET_ARGUMENTS);
+	FOUNDATION_SYM(process_set_flags, PROCESS_SET_FLAGS);
+	FOUNDATION_SYM(process_set_verb, PROCESS_SET_VERB);
+	FOUNDATION_SYM(process_set_exit_code, PROCESS_SET_EXIT_CODE);
+	FOUNDATION_SYM(process_spawn, PROCESS_SPAWN);
+	FOUNDATION_SYM(process_stdout, PROCESS_STDOUT);
+	FOUNDATION_SYM(process_stdin, PROCESS_STDIN);
+	FOUNDATION_SYM(process_wait, PROCESS_WAIT);
+	FOUNDATION_SYM(process_exit_code, PROCESS_EXIT_CODE);
+	FOUNDATION_SYM(process_exit, PROCESS_EXIT);
 
 #if BUILD_ENABLE_PROFILE
-	hashmap_insert( map, HASH_SYM_PROFILE_INITIALIZE,             (void*)(uintptr_t)profile_initialize );
-	hashmap_insert( map, HASH_SYM_PROFILE_FINALIZE,               (void*)(uintptr_t)profile_finalize );
-	hashmap_insert( map, HASH_SYM_PROFILE_ENABLE,                 (void*)(uintptr_t)profile_enable );
-	hashmap_insert( map, HASH_SYM_PROFILE_SET_OUTPUT,             (void*)(uintptr_t)profile_set_output );
-	hashmap_insert( map, HASH_SYM_PROFILE_SET_OUTPUT_WAIT,        (void*)(uintptr_t)profile_set_output_wait );
-	hashmap_insert( map, HASH_SYM_PROFILE_END_FRAME,              (void*)(uintptr_t)profile_end_frame );
-	hashmap_insert( map, HASH_SYM_PROFILE_BEGIN_BLOCK,            (void*)(uintptr_t)profile_begin_block );
-	hashmap_insert( map, HASH_SYM_PROFILE_UPDATE_BLOCK,           (void*)(uintptr_t)profile_update_block );
-	hashmap_insert( map, HASH_SYM_PROFILE_END_BLOCK,              (void*)(uintptr_t)profile_end_block );
-	hashmap_insert( map, HASH_SYM_PROFILE_LOG,                    (void*)(uintptr_t)profile_log );
-	hashmap_insert( map, HASH_SYM_PROFILE_TRYLOCK,                (void*)(uintptr_t)profile_trylock );
-	hashmap_insert( map, HASH_SYM_PROFILE_LOCK,                   (void*)(uintptr_t)profile_lock );
-	hashmap_insert( map, HASH_SYM_PROFILE_UNLOCK,                 (void*)(uintptr_t)profile_unlock );
-	hashmap_insert( map, HASH_SYM_PROFILE_WAIT,                   (void*)(uintptr_t)profile_wait );
-	hashmap_insert( map, HASH_SYM_PROFILE_SIGNAL,                 (void*)(uintptr_t)profile_signal );
+	FOUNDATION_SYM(profile_initialize, PROFILE_INITIALIZE);
+	FOUNDATION_SYM(profile_finalize, PROFILE_FINALIZE);
+	FOUNDATION_SYM(profile_enable, PROFILE_ENABLE);
+	FOUNDATION_SYM(profile_set_output, PROFILE_SET_OUTPUT);
+	FOUNDATION_SYM(profile_set_output_wait, PROFILE_SET_OUTPUT_WAIT);
+	FOUNDATION_SYM(profile_end_frame, PROFILE_END_FRAME);
+	FOUNDATION_SYM(profile_begin_block, PROFILE_BEGIN_BLOCK);
+	FOUNDATION_SYM(profile_update_block, PROFILE_UPDATE_BLOCK);
+	FOUNDATION_SYM(profile_end_block, PROFILE_END_BLOCK);
+	FOUNDATION_SYM(profile_log, PROFILE_LOG);
+	FOUNDATION_SYM(profile_trylock, PROFILE_TRYLOCK);
+	FOUNDATION_SYM(profile_lock, PROFILE_LOCK);
+	FOUNDATION_SYM(profile_unlock, PROFILE_UNLOCK);
+	FOUNDATION_SYM(profile_wait, PROFILE_WAIT);
+	FOUNDATION_SYM(profile_signal, PROFILE_SIGNAL);
 #else
-	hashmap_insert( map, HASH_SYM_PROFILE_INITIALIZE,             (void*)(uintptr_t)_profile_initialize );
-	hashmap_insert( map, HASH_SYM_PROFILE_SHUTDOWN,               (void*)(uintptr_t)_profile_void );
-	hashmap_insert( map, HASH_SYM_PROFILE_ENABLE,                 (void*)(uintptr_t)_profile_bool );
-	hashmap_insert( map, HASH_SYM_PROFILE_SET_OUTPUT,             (void*)(uintptr_t)_profile_fn );
-	hashmap_insert( map, HASH_SYM_PROFILE_SET_OUTPUT_WAIT,        (void*)(uintptr_t)_profile_int );
-	hashmap_insert( map, HASH_SYM_PROFILE_END_FRAME,              (void*)(uintptr_t)_profile_uint64 );
-	hashmap_insert( map, HASH_SYM_PROFILE_BEGIN_BLOCK,            (void*)(uintptr_t)_profile_str );
-	hashmap_insert( map, HASH_SYM_PROFILE_UPDATE_BLOCK,           (void*)(uintptr_t)_profile_void );
-	hashmap_insert( map, HASH_SYM_PROFILE_END_BLOCK,              (void*)(uintptr_t)_profile_void );
-	hashmap_insert( map, HASH_SYM_PROFILE_LOG,                    (void*)(uintptr_t)_profile_str );
-	hashmap_insert( map, HASH_SYM_PROFILE_TRYLOCK,                (void*)(uintptr_t)_profile_str );
-	hashmap_insert( map, HASH_SYM_PROFILE_LOCK,                   (void*)(uintptr_t)_profile_str );
-	hashmap_insert( map, HASH_SYM_PROFILE_UNLOCK,                 (void*)(uintptr_t)_profile_str );
-	hashmap_insert( map, HASH_SYM_PROFILE_WAIT,                   (void*)(uintptr_t)_profile_str );
-	hashmap_insert( map, HASH_SYM_PROFILE_SIGNAL,                 (void*)(uintptr_t)_profile_str );
+	FOUNDATION_SYM(_profile_initialize, PROFILE_INITIALIZE);
+	FOUNDATION_SYM(_profile_void, PROFILE_SHUTDOWN);
+	FOUNDATION_SYM(_profile_bool, PROFILE_ENABLE);
+	FOUNDATION_SYM(_profile_fn, PROFILE_SET_OUTPUT);
+	FOUNDATION_SYM(_profile_int, PROFILE_SET_OUTPUT_WAIT);
+	FOUNDATION_SYM(_profile_uint64, PROFILE_END_FRAME);
+	FOUNDATION_SYM(_profile_str, PROFILE_BEGIN_BLOCK);
+	FOUNDATION_SYM(_profile_void, PROFILE_UPDATE_BLOCK);
+	FOUNDATION_SYM(_profile_void, PROFILE_END_BLOCK);
+	FOUNDATION_SYM(_profile_str, PROFILE_LOG);
+	FOUNDATION_SYM(_profile_str, PROFILE_TRYLOCK);
+	FOUNDATION_SYM(_profile_str, PROFILE_LOCK);
+	FOUNDATION_SYM(_profile_str, PROFILE_UNLOCK);
+	FOUNDATION_SYM(_profile_str, PROFILE_WAIT);
+	FOUNDATION_SYM(_profile_str, PROFILE_SIGNAL);
 #endif
 
-	hashmap_insert( map, HASH_SYM_RADIXSORT_ALLOCATE,             (void*)(uintptr_t)radixsort_allocate );
-	hashmap_insert( map, HASH_SYM_RADIXSORT_DEALLOCATE,           (void*)(uintptr_t)radixsort_deallocate );
-	hashmap_insert( map, HASH_SYM_RADIXSORT_INITIALIZE,           (void*)(uintptr_t)radixsort_initialize );
-	hashmap_insert( map, HASH_SYM_RADIXSORT_FINALIZE,             (void*)(uintptr_t)radixsort_finalize );
-	hashmap_insert( map, HASH_SYM_RADIXSORT_SORT,                 (void*)(uintptr_t)radixsort_sort );
+	FOUNDATION_SYM(radixsort_allocate, RADIXSORT_ALLOCATE);
+	FOUNDATION_SYM(radixsort_deallocate, RADIXSORT_DEALLOCATE);
+	FOUNDATION_SYM(radixsort_initialize, RADIXSORT_INITIALIZE);
+	FOUNDATION_SYM(radixsort_finalize, RADIXSORT_FINALIZE);
+	FOUNDATION_SYM(radixsort_sort, RADIXSORT_SORT);
 
-	hashmap_insert( map, HASH_SYM_RANDOM32,                       (void*)(uintptr_t)random32 );
-	hashmap_insert( map, HASH_SYM_RANDOM32_RANGE,                 (void*)(uintptr_t)random32_range );
-	hashmap_insert( map, HASH_SYM_RANDOM64,                       (void*)(uintptr_t)random64 );
-	hashmap_insert( map, HASH_SYM_RANDOM64_RANGE,                 (void*)(uintptr_t)random64_range );
-	hashmap_insert( map, HASH_SYM_RANDOM_NORMALIZED,              (void*)(uintptr_t)random_normalized );
-	hashmap_insert( map, HASH_SYM_RANDOM_RANGE,                   (void*)(uintptr_t)random_range );
-	hashmap_insert( map, HASH_SYM_RANDOM32_GAUSSIAN_RANGE,        (void*)(uintptr_t)random32_gaussian_range );
-	hashmap_insert( map, HASH_SYM_RANDOM_GAUSSIAN_RANGE,          (void*)(uintptr_t)random_gaussian_range );
-	hashmap_insert( map, HASH_SYM_RANDOM32_TRIANGLE_RANGE,        (void*)(uintptr_t)random32_triangle_range );
-	hashmap_insert( map, HASH_SYM_RANDOM_TRIANGLE_RANGE,          (void*)(uintptr_t)random_triangle_range );
-	hashmap_insert( map, HASH_SYM_RANDOM32_WEIGHTED,              (void*)(uintptr_t)random32_weighted );
+	FOUNDATION_SYM(random32, RANDOM32);
+	FOUNDATION_SYM(random32_range, RANDOM32_RANGE);
+	FOUNDATION_SYM(random64, RANDOM64);
+	FOUNDATION_SYM(random64_range, RANDOM64_RANGE);
+	FOUNDATION_SYM(random_normalized, RANDOM_NORMALIZED);
+	FOUNDATION_SYM(random_range, RANDOM_RANGE);
+	FOUNDATION_SYM(random32_gaussian_range, RANDOM32_GAUSSIAN_RANGE);
+	FOUNDATION_SYM(random_gaussian_range, RANDOM_GAUSSIAN_RANGE);
+	FOUNDATION_SYM(random32_triangle_range, RANDOM32_TRIANGLE_RANGE);
+	FOUNDATION_SYM(random_triangle_range, RANDOM_TRIANGLE_RANGE);
+	FOUNDATION_SYM(random32_weighted, RANDOM32_WEIGHTED);
 
-	hashmap_insert( map, HASH_SYM_REGEX_COMPILE,                  (void*)(uintptr_t)regex_compile );
-	hashmap_insert( map, HASH_SYM_REGEX_MATCH,                    (void*)(uintptr_t)regex_match );
-	hashmap_insert( map, HASH_SYM_REGEX_DEALLOCATE,               (void*)(uintptr_t)regex_deallocate );
+	FOUNDATION_SYM(regex_compile, REGEX_COMPILE);
+	FOUNDATION_SYM(regex_match, REGEX_MATCH);
+	FOUNDATION_SYM(regex_deallocate, REGEX_DEALLOCATE);
 
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_ALLOCATE,            (void*)(uintptr_t)ringbuffer_allocate );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_DEALLOCATE,          (void*)(uintptr_t)ringbuffer_deallocate );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_INITIALIZE,          (void*)(uintptr_t)ringbuffer_initialize );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_FINALIZE,            (void*)(uintptr_t)ringbuffer_finalize );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_SIZE,                (void*)(uintptr_t)ringbuffer_size );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_RESET,               (void*)(uintptr_t)ringbuffer_reset );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_READ,                (void*)(uintptr_t)ringbuffer_read );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_WRITE,               (void*)(uintptr_t)ringbuffer_write );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_TOTAL_READ,          (void*)(uintptr_t)ringbuffer_total_read );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_TOTAL_WRITTEN,       (void*)(uintptr_t)ringbuffer_total_written );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_STREAM_ALLOCATE,     (void*)(uintptr_t)ringbuffer_stream_allocate );
-	hashmap_insert( map, HASH_SYM_RINGBUFFER_STREAM_INITIALIZE,   (void*)(uintptr_t)ringbuffer_stream_initialize );
+	FOUNDATION_SYM(ringbuffer_allocate, RINGBUFFER_ALLOCATE);
+	FOUNDATION_SYM(ringbuffer_deallocate, RINGBUFFER_DEALLOCATE);
+	FOUNDATION_SYM(ringbuffer_initialize, RINGBUFFER_INITIALIZE);
+	FOUNDATION_SYM(ringbuffer_finalize, RINGBUFFER_FINALIZE);
+	FOUNDATION_SYM(ringbuffer_size, RINGBUFFER_SIZE);
+	FOUNDATION_SYM(ringbuffer_reset, RINGBUFFER_RESET);
+	FOUNDATION_SYM(ringbuffer_read, RINGBUFFER_READ);
+	FOUNDATION_SYM(ringbuffer_write, RINGBUFFER_WRITE);
+	FOUNDATION_SYM(ringbuffer_total_read, RINGBUFFER_TOTAL_READ);
+	FOUNDATION_SYM(ringbuffer_total_written, RINGBUFFER_TOTAL_WRITTEN);
+	FOUNDATION_SYM(ringbuffer_stream_allocate, RINGBUFFER_STREAM_ALLOCATE);
+	FOUNDATION_SYM(ringbuffer_stream_initialize, RINGBUFFER_STREAM_INITIALIZE);
 
-	hashmap_insert( map, HASH_SYM_SEMAPHORE_INITIALIZE,           (void*)(uintptr_t)semaphore_initialize );
-	hashmap_insert( map, HASH_SYM_SEMAPHORE_INITIALIZE_NAMED,     (void*)(uintptr_t)semaphore_initialize_named );
-	hashmap_insert( map, HASH_SYM_SEMAPHORE_FINALIZE,             (void*)(uintptr_t)semaphore_finalize );
-	hashmap_insert( map, HASH_SYM_SEMAPHORE_WAIT,                 (void*)(uintptr_t)semaphore_wait );
-	hashmap_insert( map, HASH_SYM_SEMAPHORE_TRY_WAIT,             (void*)(uintptr_t)semaphore_try_wait );
-	hashmap_insert( map, HASH_SYM_SEMAPHORE_POST,                 (void*)(uintptr_t)semaphore_post );
+	FOUNDATION_SYM(semaphore_initialize, SEMAPHORE_INITIALIZE);
+	FOUNDATION_SYM(semaphore_initialize_named, SEMAPHORE_INITIALIZE_NAMED);
+	FOUNDATION_SYM(semaphore_finalize, SEMAPHORE_FINALIZE);
+	FOUNDATION_SYM(semaphore_wait, SEMAPHORE_WAIT);
+	FOUNDATION_SYM(semaphore_try_wait, SEMAPHORE_TRY_WAIT);
+	FOUNDATION_SYM(semaphore_post, SEMAPHORE_POST);
 
-	hashmap_insert( map, HASH_SYM_STACKTRACE_CAPTURE,             (void*)(uintptr_t)stacktrace_capture );
-	hashmap_insert( map, HASH_SYM_STACKTRACE_RESOLVE,             (void*)(uintptr_t)stacktrace_resolve );
+	FOUNDATION_SYM(stacktrace_capture, STACKTRACE_CAPTURE);
+	FOUNDATION_SYM(stacktrace_resolve, STACKTRACE_RESOLVE);
 
-	hashmap_insert( map, HASH_SYM_STREAM_OPEN,                    (void*)(uintptr_t)stream_open );
-	hashmap_insert( map, HASH_SYM_STREAM_CLONE,                   (void*)(uintptr_t)stream_clone );
-	hashmap_insert( map, HASH_SYM_STREAM_DEALLOCATE,              (void*)(uintptr_t)stream_deallocate );
-	hashmap_insert( map, HASH_SYM_STREAM_INITIALIZE,              (void*)(uintptr_t)stream_initialize );
-	hashmap_insert( map, HASH_SYM_STREAM_FINALIZE,                (void*)(uintptr_t)stream_finalize );
-	hashmap_insert( map, HASH_SYM_STREAM_TELL,                    (void*)(uintptr_t)stream_tell );
-	hashmap_insert( map, HASH_SYM_STREAM_SEEK,                    (void*)(uintptr_t)stream_seek );
-	hashmap_insert( map, HASH_SYM_STREAM_EOS,                     (void*)(uintptr_t)stream_eos );
-	hashmap_insert( map, HASH_SYM_STREAM_SIZE,                    (void*)(uintptr_t)stream_size );
-	hashmap_insert( map, HASH_SYM_STREAM_SET_BYTEORDER,           (void*)(uintptr_t)stream_set_byteorder );
-	hashmap_insert( map, HASH_SYM_STREAM_SET_BINARY,              (void*)(uintptr_t)stream_set_binary );
-	hashmap_insert( map, HASH_SYM_STREAM_DETERMINE_BINARY_MODE,   (void*)(uintptr_t)stream_determine_binary_mode );
-	hashmap_insert( map, HASH_SYM_STREAM_IS_BINARY,               (void*)(uintptr_t)stream_is_binary );
-	hashmap_insert( map, HASH_SYM_STREAM_IS_SEQUENTIAL,           (void*)(uintptr_t)stream_is_sequential );
-	hashmap_insert( map, HASH_SYM_STREAM_IS_RELIABLE,             (void*)(uintptr_t)stream_is_reliable );
-	hashmap_insert( map, HASH_SYM_STREAM_IS_INORDER,              (void*)(uintptr_t)stream_is_inorder );
-	hashmap_insert( map, HASH_SYM_STREAM_IS_SWAPPED,              (void*)(uintptr_t)stream_is_swapped );
-	hashmap_insert( map, HASH_SYM_STREAM_BYTEORDER,               (void*)(uintptr_t)stream_byteorder );
-	hashmap_insert( map, HASH_SYM_STREAM_PATH,                    (void*)(uintptr_t)stream_path );
-	hashmap_insert( map, HASH_SYM_STREAM_LAST_MODIFIED,           (void*)(uintptr_t)stream_last_modified );
-	hashmap_insert( map, HASH_SYM_STREAM_READ,                    (void*)(uintptr_t)stream_read );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_LINE_BUFFER,        (void*)(uintptr_t)stream_read_line_buffer );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_LINE,               (void*)(uintptr_t)stream_read_line );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_BOOL,               (void*)(uintptr_t)stream_read_bool );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_INT8,               (void*)(uintptr_t)stream_read_int8 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT8,              (void*)(uintptr_t)stream_read_uint8 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_INT16,              (void*)(uintptr_t)stream_read_int16 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT16,             (void*)(uintptr_t)stream_read_uint16 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_INT32,              (void*)(uintptr_t)stream_read_int32 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT32,             (void*)(uintptr_t)stream_read_uint32 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_INT64,              (void*)(uintptr_t)stream_read_int64 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_UINT64,             (void*)(uintptr_t)stream_read_uint64 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_FLOAT32,            (void*)(uintptr_t)stream_read_float32 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_FLOAT64,            (void*)(uintptr_t)stream_read_float64 );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_STRING,             (void*)(uintptr_t)stream_read_string );
-	hashmap_insert( map, HASH_SYM_STREAM_READ_STRING_BUFFER,      (void*)(uintptr_t)stream_read_string_buffer );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE,                   (void*)(uintptr_t)stream_write );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_BOOL,              (void*)(uintptr_t)stream_write_bool );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT8,              (void*)(uintptr_t)stream_write_int8 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT8,             (void*)(uintptr_t)stream_write_uint8 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT16,             (void*)(uintptr_t)stream_write_int16 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT16,            (void*)(uintptr_t)stream_write_uint16 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT32,             (void*)(uintptr_t)stream_write_int32 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT32,            (void*)(uintptr_t)stream_write_uint32 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_INT64,             (void*)(uintptr_t)stream_write_int64 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_UINT64,            (void*)(uintptr_t)stream_write_uint64 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_FLOAT32,           (void*)(uintptr_t)stream_write_float32 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_FLOAT64,           (void*)(uintptr_t)stream_write_float64 );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_STRING,            (void*)(uintptr_t)stream_write_string );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_ENDL,              (void*)(uintptr_t)stream_write_endl );
-	hashmap_insert( map, HASH_SYM_STREAM_WRITE_FORMAT,            (void*)(uintptr_t)stream_write_format );
-	hashmap_insert( map, HASH_SYM_STREAM_BUFFER_READ,             (void*)(uintptr_t)stream_buffer_read );
-	hashmap_insert( map, HASH_SYM_STREAM_AVAILABLE_READ,          (void*)(uintptr_t)stream_available_read );
-	hashmap_insert( map, HASH_SYM_STREAM_MD5,                     (void*)(uintptr_t)stream_md5 );
-	hashmap_insert( map, HASH_SYM_STREAM_TRUNCATE,                (void*)(uintptr_t)stream_truncate );
-	hashmap_insert( map, HASH_SYM_STREAM_FLUSH,                   (void*)(uintptr_t)stream_flush );
-	hashmap_insert( map, HASH_SYM_STREAM_OPEN_STDOUT,             (void*)(uintptr_t)stream_open_stdout );
-	hashmap_insert( map, HASH_SYM_STREAM_OPEN_STDERR,             (void*)(uintptr_t)stream_open_stderr );
-	hashmap_insert( map, HASH_SYM_STREAM_OPEN_STDIN,              (void*)(uintptr_t)stream_open_stdin );
-	hashmap_insert( map, HASH_SYM_STREAM_SET_PROTOCOL_HANDLER,    (void*)(uintptr_t)stream_set_protocol_handler );
-	hashmap_insert( map, HASH_SYM_STREAM_PROTOCOL_HANDLER,        (void*)(uintptr_t)stream_protocol_handler );
+	FOUNDATION_SYM(stream_open, STREAM_OPEN);
+	FOUNDATION_SYM(stream_clone, STREAM_CLONE);
+	FOUNDATION_SYM(stream_deallocate, STREAM_DEALLOCATE);
+	FOUNDATION_SYM(stream_initialize, STREAM_INITIALIZE);
+	FOUNDATION_SYM(stream_finalize, STREAM_FINALIZE);
+	FOUNDATION_SYM(stream_tell, STREAM_TELL);
+	FOUNDATION_SYM(stream_seek, STREAM_SEEK);
+	FOUNDATION_SYM(stream_eos, STREAM_EOS);
+	FOUNDATION_SYM(stream_size, STREAM_SIZE);
+	FOUNDATION_SYM(stream_set_byteorder, STREAM_SET_BYTEORDER);
+	FOUNDATION_SYM(stream_set_binary, STREAM_SET_BINARY);
+	FOUNDATION_SYM(stream_determine_binary_mode, STREAM_DETERMINE_BINARY_MODE);
+	FOUNDATION_SYM(stream_is_binary, STREAM_IS_BINARY);
+	FOUNDATION_SYM(stream_is_sequential, STREAM_IS_SEQUENTIAL);
+	FOUNDATION_SYM(stream_is_reliable, STREAM_IS_RELIABLE);
+	FOUNDATION_SYM(stream_is_inorder, STREAM_IS_INORDER);
+	FOUNDATION_SYM(stream_is_swapped, STREAM_IS_SWAPPED);
+	FOUNDATION_SYM(stream_byteorder, STREAM_BYTEORDER);
+	FOUNDATION_SYM(stream_path, STREAM_PATH);
+	FOUNDATION_SYM(stream_last_modified, STREAM_LAST_MODIFIED);
+	FOUNDATION_SYM(stream_read, STREAM_READ);
+	FOUNDATION_SYM(stream_read_line_buffer, STREAM_READ_LINE_BUFFER);
+	FOUNDATION_SYM(stream_read_line, STREAM_READ_LINE);
+	FOUNDATION_SYM(stream_read_bool, STREAM_READ_BOOL);
+	FOUNDATION_SYM(stream_read_int8, STREAM_READ_INT8);
+	FOUNDATION_SYM(stream_read_uint8, STREAM_READ_UINT8);
+	FOUNDATION_SYM(stream_read_int16, STREAM_READ_INT16);
+	FOUNDATION_SYM(stream_read_uint16, STREAM_READ_UINT16);
+	FOUNDATION_SYM(stream_read_int32, STREAM_READ_INT32);
+	FOUNDATION_SYM(stream_read_uint32, STREAM_READ_UINT32);
+	FOUNDATION_SYM(stream_read_int64, STREAM_READ_INT64);
+	FOUNDATION_SYM(stream_read_uint64, STREAM_READ_UINT64);
+	FOUNDATION_SYM(stream_read_float32, STREAM_READ_FLOAT32);
+	FOUNDATION_SYM(stream_read_float64, STREAM_READ_FLOAT64);
+	FOUNDATION_SYM(stream_read_string, STREAM_READ_STRING);
+	FOUNDATION_SYM(stream_read_string_buffer, STREAM_READ_STRING_BUFFER);
+	FOUNDATION_SYM(stream_write, STREAM_WRITE);
+	FOUNDATION_SYM(stream_write_bool, STREAM_WRITE_BOOL);
+	FOUNDATION_SYM(stream_write_int8, STREAM_WRITE_INT8);
+	FOUNDATION_SYM(stream_write_uint8, STREAM_WRITE_UINT8);
+	FOUNDATION_SYM(stream_write_int16, STREAM_WRITE_INT16);
+	FOUNDATION_SYM(stream_write_uint16, STREAM_WRITE_UINT16);
+	FOUNDATION_SYM(stream_write_int32, STREAM_WRITE_INT32);
+	FOUNDATION_SYM(stream_write_uint32, STREAM_WRITE_UINT32);
+	FOUNDATION_SYM(stream_write_int64, STREAM_WRITE_INT64);
+	FOUNDATION_SYM(stream_write_uint64, STREAM_WRITE_UINT64);
+	FOUNDATION_SYM(stream_write_float32, STREAM_WRITE_FLOAT32);
+	FOUNDATION_SYM(stream_write_float64, STREAM_WRITE_FLOAT64);
+	FOUNDATION_SYM(stream_write_string, STREAM_WRITE_STRING);
+	FOUNDATION_SYM(stream_write_endl, STREAM_WRITE_ENDL);
+	FOUNDATION_SYM(stream_write_format, STREAM_WRITE_FORMAT);
+	FOUNDATION_SYM(stream_buffer_read, STREAM_BUFFER_READ);
+	FOUNDATION_SYM(stream_available_read, STREAM_AVAILABLE_READ);
+	FOUNDATION_SYM(stream_md5, STREAM_MD5);
+	FOUNDATION_SYM(stream_truncate, STREAM_TRUNCATE);
+	FOUNDATION_SYM(stream_flush, STREAM_FLUSH);
+	FOUNDATION_SYM(stream_open_stdout, STREAM_OPEN_STDOUT);
+	FOUNDATION_SYM(stream_open_stderr, STREAM_OPEN_STDERR);
+	FOUNDATION_SYM(stream_open_stdin, STREAM_OPEN_STDIN);
+	FOUNDATION_SYM(stream_set_protocol_handler, STREAM_SET_PROTOCOL_HANDLER);
+	FOUNDATION_SYM(stream_protocol_handler, STREAM_PROTOCOL_HANDLER);
 
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE,                (void*)(uintptr_t)string_allocate );
-	hashmap_insert( map, HASH_SYM_STRING_DEALLOCATE,              (void*)(uintptr_t)string_deallocate );
-	hashmap_insert( map, HASH_SYM_STRING_CLONE,                   (void*)(uintptr_t)string_clone );
-	hashmap_insert( map, HASH_SYM_STRING_CLONE_STRING,            (void*)(uintptr_t)string_clone_string );
-	hashmap_insert( map, HASH_SYM_STRING_NULL,                    (void*)(uintptr_t)string_null );
-	hashmap_insert( map, HASH_SYM_STRING_EMPTY,                   (void*)(uintptr_t)string_empty );
-	hashmap_insert( map, HASH_SYM_STRING,                         (void*)(uintptr_t)string );
-	hashmap_insert( map, HASH_SYM_STRING_CONST,                   (void*)(uintptr_t)string_const );
-	hashmap_insert( map, HASH_SYM_STRING_TO_CONST,                (void*)(uintptr_t)string_to_const );
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_FORMAT,         (void*)(uintptr_t)string_allocate_format );
-	hashmap_insert( map, HASH_SYM_STRING_FORMAT,                  (void*)(uintptr_t)string_format );
-	hashmap_insert( map, HASH_SYM_STRING_LENGTH,                  (void*)(uintptr_t)string_length );
-	hashmap_insert( map, HASH_SYM_STRING_GLYPHS,                  (void*)(uintptr_t)string_glyphs );
-	hashmap_insert( map, HASH_SYM_STRING_HASH,                    (void*)(uintptr_t)string_hash );
-	hashmap_insert( map, HASH_SYM_STRING_COPY,                    (void*)(uintptr_t)string_copy );
-	hashmap_insert( map, HASH_SYM_STRING_RESIZE,                  (void*)(uintptr_t)string_resize );
-	hashmap_insert( map, HASH_SYM_STRING_REPLACE,                 (void*)(uintptr_t)string_replace );
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_CONCAT,         (void*)(uintptr_t)string_allocate_concat_varg );
-	hashmap_insert( map, HASH_SYM_STRING_CONCAT,                  (void*)(uintptr_t)string_concat_varg );
-	hashmap_insert( map, HASH_SYM_STRING_APPEND,                  (void*)(uintptr_t)string_append_varg );
-	hashmap_insert( map, HASH_SYM_STRING_PREPEND,                 (void*)(uintptr_t)string_prepend_varg );
-	hashmap_insert( map, HASH_SYM_STRING_SUBSTR,                  (void*)(uintptr_t)string_substr );
-	hashmap_insert( map, HASH_SYM_STRING_STRIP,                   (void*)(uintptr_t)string_strip );
-	hashmap_insert( map, HASH_SYM_STRING_FIND,                    (void*)(uintptr_t)string_find );
-	hashmap_insert( map, HASH_SYM_STRING_FIND_STRING,             (void*)(uintptr_t)string_find_string );
-	hashmap_insert( map, HASH_SYM_STRING_RFIND,                   (void*)(uintptr_t)string_rfind );
-	hashmap_insert( map, HASH_SYM_STRING_RFIND_STRING,            (void*)(uintptr_t)string_rfind_string );
-	hashmap_insert( map, HASH_SYM_STRING_FIND_FIRST_OF,           (void*)(uintptr_t)string_find_first_of );
-	hashmap_insert( map, HASH_SYM_STRING_FIND_LAST_OF,            (void*)(uintptr_t)string_find_last_of );
-	hashmap_insert( map, HASH_SYM_STRING_FIND_FIRST_NOT_OF,       (void*)(uintptr_t)string_find_first_not_of );
-	hashmap_insert( map, HASH_SYM_STRING_FIND_LAST_NOT_OF,        (void*)(uintptr_t)string_find_last_not_of );
-	hashmap_insert( map, HASH_SYM_STRING_ENDS_WITH,               (void*)(uintptr_t)string_ends_with );
-	hashmap_insert( map, HASH_SYM_STRING_EQUAL,                   (void*)(uintptr_t)string_equal );
-	hashmap_insert( map, HASH_SYM_STRING_EQUAL_NOCASE,            (void*)(uintptr_t)string_equal_nocase );
-	hashmap_insert( map, HASH_SYM_STRING_EQUAL_SUBSTR,            (void*)(uintptr_t)string_equal_substr );
-	hashmap_insert( map, HASH_SYM_STRING_EQUAL_SUBSTR_NOCASE,     (void*)(uintptr_t)string_equal_substr_nocase );
-	hashmap_insert( map, HASH_SYM_STRING_MATCH_PATTERN,           (void*)(uintptr_t)string_match_pattern );
-	hashmap_insert( map, HASH_SYM_STRING_SPLIT,                   (void*)(uintptr_t)string_split );
-	hashmap_insert( map, HASH_SYM_STRING_EXPLODE,                 (void*)(uintptr_t)string_explode );
-	hashmap_insert( map, HASH_SYM_STRING_MERGE,                   (void*)(uintptr_t)string_merge );
-	hashmap_insert( map, HASH_SYM_STRING_GLYPH,                   (void*)(uintptr_t)string_glyph );
-	hashmap_insert( map, HASH_SYM_STRING_ARRAY_FIND,              (void*)(uintptr_t)string_array_find );
-	hashmap_insert( map, HASH_SYM_STRING_ARRAY_DEALLOCATE_ELEMENTS, (void*)(uintptr_t)string_array_deallocate_elements );
-	hashmap_insert( map, HASH_SYM_STRING_ARRAY_DEALLOCATE,        (void*)(uintptr_t)_string_array_deallocate );
-	hashmap_insert( map, HASH_SYM_WSTRING_ALLOCATE_FROM_STRING,   (void*)(uintptr_t)wstring_allocate_from_string );
-	hashmap_insert( map, HASH_SYM_WSTRING_FROM_STRING,            (void*)(uintptr_t)wstring_from_string );
-	hashmap_insert( map, HASH_SYM_WSTRING_DEALLOCATE,             (void*)(uintptr_t)wstring_deallocate );
-	hashmap_insert( map, HASH_SYM_WSTRING_LENGTH,                 (void*)(uintptr_t)wstring_length );
-	hashmap_insert( map, HASH_SYM_WSTRING_EQUAL,                  (void*)(uintptr_t)wstring_equal );
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_FROM_WSTRING,   (void*)(uintptr_t)string_allocate_from_wstring );
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_FROM_UTF16,     (void*)(uintptr_t)string_allocate_from_utf16 );
-	hashmap_insert( map, HASH_SYM_STRING_ALLOCATE_FROM_UTF32,     (void*)(uintptr_t)string_allocate_from_utf32 );
-	hashmap_insert( map, HASH_SYM_STRING_CONVERT_UTF16,           (void*)(uintptr_t)string_convert_utf16 );
-	hashmap_insert( map, HASH_SYM_STRING_CONVERT_UTF32,           (void*)(uintptr_t)string_convert_utf32 );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_INT,                (void*)(uintptr_t)string_from_int );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT,               (void*)(uintptr_t)string_from_uint );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT128,            (void*)(uintptr_t)string_from_uint128 );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_REAL,               (void*)(uintptr_t)string_from_real );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_TIME,               (void*)(uintptr_t)string_from_time );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UUID,               (void*)(uintptr_t)string_from_uuid );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_VERSION,            (void*)(uintptr_t)string_from_version );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_INT_STATIC,         (void*)(uintptr_t)string_from_int_static );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT_STATIC,        (void*)(uintptr_t)string_from_uint_static );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UINT128_STATIC,     (void*)(uintptr_t)string_from_uint128_static );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_REAL_STATIC,        (void*)(uintptr_t)string_from_real_static );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_TIME_STATIC,        (void*)(uintptr_t)string_from_time_static );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_UUID_STATIC,        (void*)(uintptr_t)string_from_uuid_static );
-	hashmap_insert( map, HASH_SYM_STRING_FROM_VERSION_STATIC,     (void*)(uintptr_t)string_from_version_static );
-	hashmap_insert( map, HASH_SYM_STRING_TO_INT,                  (void*)(uintptr_t)string_to_int );
-	hashmap_insert( map, HASH_SYM_STRING_TO_UINT,                 (void*)(uintptr_t)string_to_uint );
-	hashmap_insert( map, HASH_SYM_STRING_TO_INT64,                (void*)(uintptr_t)string_to_int64 );
-	hashmap_insert( map, HASH_SYM_STRING_TO_UINT64,               (void*)(uintptr_t)string_to_uint64 );
-	hashmap_insert( map, HASH_SYM_STRING_TO_UINT128,              (void*)(uintptr_t)string_to_uint128 );
-	hashmap_insert( map, HASH_SYM_STRING_TO_FLOAT32,              (void*)(uintptr_t)string_to_float32 );
-	hashmap_insert( map, HASH_SYM_STRING_TO_FLOAT64,              (void*)(uintptr_t)string_to_float64 );
-	hashmap_insert( map, HASH_SYM_STRING_TO_REAL,                 (void*)(uintptr_t)string_to_real );
-	hashmap_insert( map, HASH_SYM_STRING_TO_UUID,                 (void*)(uintptr_t)string_to_uuid );
-	hashmap_insert( map, HASH_SYM_STRING_TO_VERSION,              (void*)(uintptr_t)string_to_version );
-	hashmap_insert( map, HASH_SYM_STRING_THREAD_BUFFER,           (void*)(uintptr_t)string_thread_buffer );
+	FOUNDATION_SYM(string_allocate, STRING_ALLOCATE);
+	FOUNDATION_SYM(string_deallocate, STRING_DEALLOCATE);
+	FOUNDATION_SYM(string_clone, STRING_CLONE);
+	FOUNDATION_SYM(string_clone_string, STRING_CLONE_STRING);
+	FOUNDATION_SYM(string_null, STRING_NULL);
+	FOUNDATION_SYM(string_empty, STRING_EMPTY);
+	FOUNDATION_SYM(string, STRING);
+	FOUNDATION_SYM(string_const, STRING_CONST);
+	FOUNDATION_SYM(string_to_const, STRING_TO_CONST);
+	FOUNDATION_SYM(string_allocate_format, STRING_ALLOCATE_FORMAT);
+	FOUNDATION_SYM(string_format, STRING_FORMAT);
+	FOUNDATION_SYM(string_length, STRING_LENGTH);
+	FOUNDATION_SYM(string_glyphs, STRING_GLYPHS);
+	FOUNDATION_SYM(string_hash, STRING_HASH);
+	FOUNDATION_SYM(string_copy, STRING_COPY);
+	FOUNDATION_SYM(string_resize, STRING_RESIZE);
+	FOUNDATION_SYM(string_replace, STRING_REPLACE);
+	FOUNDATION_SYM(string_allocate_concat_varg, STRING_ALLOCATE_CONCAT);
+	FOUNDATION_SYM(string_concat_varg, STRING_CONCAT);
+	FOUNDATION_SYM(string_append_varg, STRING_APPEND);
+	FOUNDATION_SYM(string_prepend_varg, STRING_PREPEND);
+	FOUNDATION_SYM(string_substr, STRING_SUBSTR);
+	FOUNDATION_SYM(string_strip, STRING_STRIP);
+	FOUNDATION_SYM(string_find, STRING_FIND);
+	FOUNDATION_SYM(string_find_string, STRING_FIND_STRING);
+	FOUNDATION_SYM(string_rfind, STRING_RFIND);
+	FOUNDATION_SYM(string_rfind_string, STRING_RFIND_STRING);
+	FOUNDATION_SYM(string_find_first_of, STRING_FIND_FIRST_OF);
+	FOUNDATION_SYM(string_find_last_of, STRING_FIND_LAST_OF);
+	FOUNDATION_SYM(string_find_first_not_of, STRING_FIND_FIRST_NOT_OF);
+	FOUNDATION_SYM(string_find_last_not_of, STRING_FIND_LAST_NOT_OF);
+	FOUNDATION_SYM(string_ends_with, STRING_ENDS_WITH);
+	FOUNDATION_SYM(string_equal, STRING_EQUAL);
+	FOUNDATION_SYM(string_equal_nocase, STRING_EQUAL_NOCASE);
+	FOUNDATION_SYM(string_equal_substr, STRING_EQUAL_SUBSTR);
+	FOUNDATION_SYM(string_equal_substr_nocase, STRING_EQUAL_SUBSTR_NOCASE);
+	FOUNDATION_SYM(string_match_pattern, STRING_MATCH_PATTERN);
+	FOUNDATION_SYM(string_split, STRING_SPLIT);
+	FOUNDATION_SYM(string_explode, STRING_EXPLODE);
+	FOUNDATION_SYM(string_merge, STRING_MERGE);
+	FOUNDATION_SYM(string_glyph, STRING_GLYPH);
+	FOUNDATION_SYM(string_array_find, STRING_ARRAY_FIND);
+	FOUNDATION_SYM(string_array_deallocate_elements, STRING_ARRAY_DEALLOCATE_ELEMENTS);
+	FOUNDATION_SYM(_string_array_deallocate, STRING_ARRAY_DEALLOCATE);
+	FOUNDATION_SYM(wstring_allocate_from_string, WSTRING_ALLOCATE_FROM_STRING);
+	FOUNDATION_SYM(wstring_from_string, WSTRING_FROM_STRING);
+	FOUNDATION_SYM(wstring_deallocate, WSTRING_DEALLOCATE);
+	FOUNDATION_SYM(wstring_length, WSTRING_LENGTH);
+	FOUNDATION_SYM(wstring_equal, WSTRING_EQUAL);
+	FOUNDATION_SYM(string_allocate_from_wstring, STRING_ALLOCATE_FROM_WSTRING);
+	FOUNDATION_SYM(string_allocate_from_utf16, STRING_ALLOCATE_FROM_UTF16);
+	FOUNDATION_SYM(string_allocate_from_utf32, STRING_ALLOCATE_FROM_UTF32);
+	FOUNDATION_SYM(string_convert_utf16, STRING_CONVERT_UTF16);
+	FOUNDATION_SYM(string_convert_utf32, STRING_CONVERT_UTF32);
+	FOUNDATION_SYM(string_from_int, STRING_FROM_INT);
+	FOUNDATION_SYM(string_from_uint, STRING_FROM_UINT);
+	FOUNDATION_SYM(string_from_uint128, STRING_FROM_UINT128);
+	FOUNDATION_SYM(string_from_real, STRING_FROM_REAL);
+	FOUNDATION_SYM(string_from_time, STRING_FROM_TIME);
+	FOUNDATION_SYM(string_from_uuid, STRING_FROM_UUID);
+	FOUNDATION_SYM(string_from_version, STRING_FROM_VERSION);
+	FOUNDATION_SYM(string_from_int_static, STRING_FROM_INT_STATIC);
+	FOUNDATION_SYM(string_from_uint_static, STRING_FROM_UINT_STATIC);
+	FOUNDATION_SYM(string_from_uint128_static, STRING_FROM_UINT128_STATIC);
+	FOUNDATION_SYM(string_from_real_static, STRING_FROM_REAL_STATIC);
+	FOUNDATION_SYM(string_from_time_static, STRING_FROM_TIME_STATIC);
+	FOUNDATION_SYM(string_from_uuid_static, STRING_FROM_UUID_STATIC);
+	FOUNDATION_SYM(string_from_version_static, STRING_FROM_VERSION_STATIC);
+	FOUNDATION_SYM(string_to_int, STRING_TO_INT);
+	FOUNDATION_SYM(string_to_uint, STRING_TO_UINT);
+	FOUNDATION_SYM(string_to_int64, STRING_TO_INT64);
+	FOUNDATION_SYM(string_to_uint64, STRING_TO_UINT64);
+	FOUNDATION_SYM(string_to_uint128, STRING_TO_UINT128);
+	FOUNDATION_SYM(string_to_float32, STRING_TO_FLOAT32);
+	FOUNDATION_SYM(string_to_float64, STRING_TO_FLOAT64);
+	FOUNDATION_SYM(string_to_real, STRING_TO_REAL);
+	FOUNDATION_SYM(string_to_uuid, STRING_TO_UUID);
+	FOUNDATION_SYM(string_to_version, STRING_TO_VERSION);
+	FOUNDATION_SYM(string_thread_buffer, STRING_THREAD_BUFFER);
 
-	hashmap_insert( map, HASH_SYM_SYSTEM_ERROR,                   (void*)(uintptr_t)system_error );
-	hashmap_insert( map, HASH_SYM_SYSTEM_ERROR_RESET,             (void*)(uintptr_t)system_error_reset );
-	hashmap_insert( map, HASH_SYM_SYSTEM_ERROR_MESSAGE,           (void*)(uintptr_t)system_error_message );
-	hashmap_insert( map, HASH_SYM_SYSTEM_PLATFORM,                (void*)(uintptr_t)system_platform );
-	hashmap_insert( map, HASH_SYM_SYSTEM_ARCHITECTURE,            (void*)(uintptr_t)system_architecture );
-	hashmap_insert( map, HASH_SYM_SYSTEM_BYTEORDER,               (void*)(uintptr_t)system_byteorder );
-	hashmap_insert( map, HASH_SYM_SYSTEM_HARDWARE_THREADS,        (void*)(uintptr_t)system_hardware_threads );
-	hashmap_insert( map, HASH_SYM_SYSTEM_HOSTNAME,                (void*)(uintptr_t)system_hostname );
-	hashmap_insert( map, HASH_SYM_SYSTEM_HOSTID,                  (void*)(uintptr_t)system_hostid );
-	hashmap_insert( map, HASH_SYM_SYSTEM_USERNAME,                (void*)(uintptr_t)system_username );
-	hashmap_insert( map, HASH_SYM_SYSTEM_DEBUGGER_ATTACHED,       (void*)(uintptr_t)system_debugger_attached );
-	hashmap_insert( map, HASH_SYM_SYSTEM_PAUSE,                   (void*)(uintptr_t)system_pause );
-	hashmap_insert( map, HASH_SYM_SYSTEM_LANGUAGE,                (void*)(uintptr_t)system_language );
-	hashmap_insert( map, HASH_SYM_SYSTEM_COUNTRY,                 (void*)(uintptr_t)system_country );
-	hashmap_insert( map, HASH_SYM_SYSTEM_LOCALE,                  (void*)(uintptr_t)system_locale );
-	hashmap_insert( map, HASH_SYM_SYSTEM_LOCALE_STRING,           (void*)(uintptr_t)system_locale_string );
-	hashmap_insert( map, HASH_SYM_SYSTEM_SET_DEVICE_ORIENTATION,  (void*)(uintptr_t)system_set_device_orientation );
-	hashmap_insert( map, HASH_SYM_SYSTEM_DEVICE_ORIENTATION,      (void*)(uintptr_t)system_device_orientation );
-	hashmap_insert( map, HASH_SYM_SYSTEM_PROCESS_EVENTS,          (void*)(uintptr_t)system_process_events );
-	hashmap_insert( map, HASH_SYM_SYSTEM_MESSAGE_BOX,             (void*)(uintptr_t)system_message_box );
-	hashmap_insert( map, HASH_SYM_SYSTEM_EVENT_STREAM,            (void*)(uintptr_t)system_event_stream );
-	hashmap_insert( map, HASH_SYM_SYSTEM_POST_EVENT,              (void*)(uintptr_t)system_post_event );
-	hashmap_insert( map, HASH_SYM_SYSTEM_SIZE_REAL,               (void*)(uintptr_t)system_size_real );
-	hashmap_insert( map, HASH_SYM_SYSTEM_SIZE_POINTER,            (void*)(uintptr_t)system_size_pointer );
-	hashmap_insert( map, HASH_SYM_SYSTEM_SIZE_WCHAR,              (void*)(uintptr_t)system_size_wchar );
+	FOUNDATION_SYM(system_error, SYSTEM_ERROR);
+	FOUNDATION_SYM(system_error_reset, SYSTEM_ERROR_RESET);
+	FOUNDATION_SYM(system_error_message, SYSTEM_ERROR_MESSAGE);
+	FOUNDATION_SYM(system_platform, SYSTEM_PLATFORM);
+	FOUNDATION_SYM(system_architecture, SYSTEM_ARCHITECTURE);
+	FOUNDATION_SYM(system_byteorder, SYSTEM_BYTEORDER);
+	FOUNDATION_SYM(system_hardware_threads, SYSTEM_HARDWARE_THREADS);
+	FOUNDATION_SYM(system_hostname, SYSTEM_HOSTNAME);
+	FOUNDATION_SYM(system_hostid, SYSTEM_HOSTID);
+	FOUNDATION_SYM(system_username, SYSTEM_USERNAME);
+	FOUNDATION_SYM(system_debugger_attached, SYSTEM_DEBUGGER_ATTACHED);
+	FOUNDATION_SYM(system_pause, SYSTEM_PAUSE);
+	FOUNDATION_SYM(system_language, SYSTEM_LANGUAGE);
+	FOUNDATION_SYM(system_country, SYSTEM_COUNTRY);
+	FOUNDATION_SYM(system_locale, SYSTEM_LOCALE);
+	FOUNDATION_SYM(system_locale_string, SYSTEM_LOCALE_STRING);
+	FOUNDATION_SYM(system_set_device_orientation, SYSTEM_SET_DEVICE_ORIENTATION);
+	FOUNDATION_SYM(system_device_orientation, SYSTEM_DEVICE_ORIENTATION);
+	FOUNDATION_SYM(system_process_events, SYSTEM_PROCESS_EVENTS);
+	FOUNDATION_SYM(system_message_box, SYSTEM_MESSAGE_BOX);
+	FOUNDATION_SYM(system_event_stream, SYSTEM_EVENT_STREAM);
+	FOUNDATION_SYM(system_post_event, SYSTEM_POST_EVENT);
+	FOUNDATION_SYM(system_size_size_t, SYSTEM_SIZE_SIZE_T);
+	FOUNDATION_SYM(system_size_real, SYSTEM_SIZE_REAL);
+	FOUNDATION_SYM(system_size_pointer, SYSTEM_SIZE_POINTER);
+	FOUNDATION_SYM(system_size_wchar, SYSTEM_SIZE_WCHAR);
 
-	hashmap_insert( map, HASH_SYM_THREAD_CREATE,                  (void*)(uintptr_t)thread_create );
-	hashmap_insert( map, HASH_SYM_THREAD_REF,                     (void*)(uintptr_t)thread_ref );
-	hashmap_insert( map, HASH_SYM_THREAD_DESTROY,                 (void*)(uintptr_t)thread_destroy );
-	hashmap_insert( map, HASH_SYM_THREAD_START,                   (void*)(uintptr_t)thread_start );
-	hashmap_insert( map, HASH_SYM_THREAD_TERMINATE,               (void*)(uintptr_t)thread_terminate );
-	hashmap_insert( map, HASH_SYM_THREAD_IS_STARTED,              (void*)(uintptr_t)thread_is_started );
-	hashmap_insert( map, HASH_SYM_THREAD_IS_RUNNING,              (void*)(uintptr_t)thread_is_running );
-	hashmap_insert( map, HASH_SYM_THREAD_IS_THREAD,               (void*)(uintptr_t)thread_is_thread );
-	hashmap_insert( map, HASH_SYM_THREAD_IS_MAIN,                 (void*)(uintptr_t)thread_is_main );
-	hashmap_insert( map, HASH_SYM_THREAD_SHOULD_TERMINATE,        (void*)(uintptr_t)thread_should_terminate );
-	hashmap_insert( map, HASH_SYM_THREAD_SET_MAIN,                (void*)(uintptr_t)thread_set_main );
-	hashmap_insert( map, HASH_SYM_THREAD_SET_NAME,                (void*)(uintptr_t)thread_set_name );
-	hashmap_insert( map, HASH_SYM_THREAD_SET_HARDWARE,            (void*)(uintptr_t)thread_set_hardware );
-	hashmap_insert( map, HASH_SYM_THREAD_RESULT,                  (void*)(uintptr_t)thread_result );
-	hashmap_insert( map, HASH_SYM_THREAD_SELF,                    (void*)(uintptr_t)thread_self );
-	hashmap_insert( map, HASH_SYM_THREAD_NAME,                    (void*)(uintptr_t)thread_name );
-	hashmap_insert( map, HASH_SYM_THREAD_ID,                      (void*)(uintptr_t)thread_id );
-	hashmap_insert( map, HASH_SYM_THREAD_HARDWARE,                (void*)(uintptr_t)thread_hardware );
-	hashmap_insert( map, HASH_SYM_THREAD_SLEEP,                   (void*)(uintptr_t)thread_sleep );
-	hashmap_insert( map, HASH_SYM_THREAD_YIELD,                   (void*)(uintptr_t)thread_yield );
-	hashmap_insert( map, HASH_SYM_THREAD_FINALIZE,                (void*)(uintptr_t)thread_finalize );
-	hashmap_insert( map, HASH_SYM_THREAD_ATTACH_JVM,              (void*)(uintptr_t)thread_attach_jvm );
-	hashmap_insert( map, HASH_SYM_THREAD_DETACH_JVM,              (void*)(uintptr_t)thread_detach_jvm );
+	FOUNDATION_SYM(thread_create, THREAD_CREATE);
+	FOUNDATION_SYM(thread_ref, THREAD_REF);
+	FOUNDATION_SYM(thread_destroy, THREAD_DESTROY);
+	FOUNDATION_SYM(thread_start, THREAD_START);
+	FOUNDATION_SYM(thread_terminate, THREAD_TERMINATE);
+	FOUNDATION_SYM(thread_is_started, THREAD_IS_STARTED);
+	FOUNDATION_SYM(thread_is_running, THREAD_IS_RUNNING);
+	FOUNDATION_SYM(thread_is_thread, THREAD_IS_THREAD);
+	FOUNDATION_SYM(thread_is_main, THREAD_IS_MAIN);
+	FOUNDATION_SYM(thread_should_terminate, THREAD_SHOULD_TERMINATE);
+	FOUNDATION_SYM(thread_set_main, THREAD_SET_MAIN);
+	FOUNDATION_SYM(thread_set_name, THREAD_SET_NAME);
+	FOUNDATION_SYM(thread_set_hardware, THREAD_SET_HARDWARE);
+	FOUNDATION_SYM(thread_result, THREAD_RESULT);
+	FOUNDATION_SYM(thread_self, THREAD_SELF);
+	FOUNDATION_SYM(thread_name, THREAD_NAME);
+	FOUNDATION_SYM(thread_id, THREAD_ID);
+	FOUNDATION_SYM(thread_hardware, THREAD_HARDWARE);
+	FOUNDATION_SYM(thread_sleep, THREAD_SLEEP);
+	FOUNDATION_SYM(thread_yield, THREAD_YIELD);
+	FOUNDATION_SYM(thread_finalize, THREAD_FINALIZE);
+	FOUNDATION_SYM(thread_attach_jvm, THREAD_ATTACH_JVM);
+	FOUNDATION_SYM(thread_detach_jvm, THREAD_DETACH_JVM);
 
-	hashmap_insert( map, HASH_SYM_TIME_CURRENT,                   (void*)(uintptr_t)time_current );
-	hashmap_insert( map, HASH_SYM_TIME_DIFF,                      (void*)(uintptr_t)time_diff );
-	hashmap_insert( map, HASH_SYM_TIME_ELAPSED,                   (void*)(uintptr_t)time_elapsed );
-	hashmap_insert( map, HASH_SYM_TIME_ELAPSED_TICKS,             (void*)(uintptr_t)time_elapsed_ticks );
-	hashmap_insert( map, HASH_SYM_TIME_TICKS_PER_SECOND,          (void*)(uintptr_t)time_ticks_per_second );
-	hashmap_insert( map, HASH_SYM_TIME_TICKS_TO_SECONDS,          (void*)(uintptr_t)time_ticks_to_seconds );
-	hashmap_insert( map, HASH_SYM_TIME_STARTUP,                   (void*)(uintptr_t)time_startup );
-	hashmap_insert( map, HASH_SYM_TIME_SYSTEM,                    (void*)(uintptr_t)time_system );
+	FOUNDATION_SYM(time_current, TIME_CURRENT);
+	FOUNDATION_SYM(time_diff, TIME_DIFF);
+	FOUNDATION_SYM(time_elapsed, TIME_ELAPSED);
+	FOUNDATION_SYM(time_elapsed_ticks, TIME_ELAPSED_TICKS);
+	FOUNDATION_SYM(time_ticks_per_second, TIME_TICKS_PER_SECOND);
+	FOUNDATION_SYM(time_ticks_to_seconds, TIME_TICKS_TO_SECONDS);
+	FOUNDATION_SYM(time_startup, TIME_STARTUP);
+	FOUNDATION_SYM(time_system, TIME_SYSTEM);
 
-	hashmap_insert( map, HASH_SYM_UUID_GENERATE_TIME,             (void*)(uintptr_t)uuid_generate_time );
-	hashmap_insert( map, HASH_SYM_UUID_GENERATE_NAME,             (void*)(uintptr_t)uuid_generate_name );
-	hashmap_insert( map, HASH_SYM_UUID_GENERATE_RANDOM,           (void*)(uintptr_t)uuid_generate_random );
-	hashmap_insert( map, HASH_SYM_UUID_GENERATE_EQUAL,            (void*)(uintptr_t)uuid_equal );
-	hashmap_insert( map, HASH_SYM_UUID_NULL,                      (void*)(uintptr_t)uuid_null );
-	hashmap_insert( map, HASH_SYM_UUID_IS_NULL,                   (void*)(uintptr_t)uuid_is_null );
-	hashmap_insert( map, HASH_SYM_UUID_DNS,                       (void*)(uintptr_t)uuid_dns );
+	FOUNDATION_SYM(uuid_generate_time, UUID_GENERATE_TIME);
+	FOUNDATION_SYM(uuid_generate_name, UUID_GENERATE_NAME);
+	FOUNDATION_SYM(uuid_generate_random, UUID_GENERATE_RANDOM);
+	FOUNDATION_SYM(uuid_equal, UUID_GENERATE_EQUAL);
+	FOUNDATION_SYM(uuid_null, UUID_NULL);
+	FOUNDATION_SYM(uuid_is_null, UUID_IS_NULL);
+	FOUNDATION_SYM(uuid_dns, UUID_DNS);
 }
 
-int 
-lua_load_foundation( lua_State* state )
-{
+int
+lua_load_foundation(lua_State* state) {
 	//TODO: When implemented lua compiled bytecode libraries, load from library resource instaed
 	static unsigned char bytecode[] = {
-		#include "bind.foundation.hex"
+#include "bind.foundation.hex"
 	};
 
 	lua_readbuffer_t read_buffer = {
 		.buffer = bytecode,
-		.size   = sizeof( bytecode ),
+		.size   = sizeof(bytecode),
 		.offset = 0
 	};
 
-	log_debugf( HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"), read_buffer.size );
+	log_debugf(HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"),
+	           read_buffer.size);
 
-	lua_load_foundation_builtins( state );
+	lua_load_foundation_builtins(state);
 
-	if( lua_load( state, lua_read_buffer, &read_buffer, "=eval" ) != 0 )
-	{
-		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %s"), lua_tostring( state, -1 ) );
-		lua_pop( state, 1 );
+	if (lua_load(state, lua_read_buffer, &read_buffer, "=eval") != 0) {
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %s"),
+		           lua_tostring(state, -1));
+		lua_pop(state, 1);
 		return 0;
 	}
 
-	if( lua_pcall( state, 0, 0, 0 ) != 0 )
-	{
-		log_errorf( HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %s"), lua_tostring( state, -1 ) );
-		lua_pop( state, 1 );
+	if (lua_pcall(state, 0, 0, 0) != 0) {
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %s"),
+		           lua_tostring(state, -1));
+		lua_pop(state, 1);
 		return 0;
 	}
 

@@ -72,6 +72,9 @@ DECLARE_TEST(foundation, log) {
 
 	EXPECT_NE(env, 0);
 
+	//Foundation bindings
+	lua_load_foundation(lua_state(env));
+
 	string_const_t testcode = string_const(STRING_CONST(
 	    "local ffi = require( \"ffi\" )\n"
 	    "local C = ffi.C\n"
@@ -103,6 +106,9 @@ DECLARE_TEST(foundation, environment) {
 	log_info(HASH_LUA, STRING_CONST("Running environment lua tests"));
 
 	EXPECT_NE(env, 0);
+
+	//Foundation bindings
+	lua_load_foundation(lua_state(env));
 
 	string_const_t testcode = string_const(STRING_CONST(
 	    "local ffi = require( \"ffi\" )\n"

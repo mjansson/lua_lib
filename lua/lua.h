@@ -37,6 +37,7 @@
 
 #include <lua/types.h>
 #include <lua/hashstrings.h>
+#include <lua/foundation.h>
 
 LUA_API int
 lua_module_initialize(void);

@@ -7,10 +7,17 @@ local C = ffi.C
 ffi.cdef[[
 typedef float    float32_t;
 typedef double   float64_t;
+int              system_size_size_t(void);
 int              system_size_real(void);
 int              system_size_pointer(void);
 int              system_size_wchar(void);
 ]]
+
+if C.system_size_size_t() > 4 then
+      ffi.cdef( "typedef int64_t ssize_t;" );
+else
+      ffi.cdef( "typedef int32_t ssize_t;" );
+end
 
 if C.system_size_real() > 4 then
       ffi.cdef( "typedef float64_t real;" );
@@ -34,28 +41,40 @@ end
 
 ffi.cdef[[
 
-typedef struct stream_t        stream_t;
-typedef struct event_t         event_t;
-typedef struct event_block_t   event_block_t;
-typedef struct event_stream_t  event_stream_t;
-typedef struct blowfish_t      blowfish_t;
-typedef struct md5_t           md5_t;
-typedef struct process_t       process_t;
-typedef struct ringbuffer_t    ringbuffer_t;
-typedef struct bitbuffer_t     bitbuffer_t;
-typedef struct stream_buffer_t stream_buffer_t;
-typedef struct stream_pipe_t   stream_pipe_t;
-typedef struct stream_ringbuffer_t stream_ringbuffer_t;
-typedef struct hashmap_t       hashmap_t;
-typedef struct hashtable_t     hashtable_t;
-typedef struct hashtable32_t   hashtable32_t;
-typedef struct hashtable64_t   hashtable64_t;
-typedef struct mutex_t         mutex_t;
-typedef struct objectmap_t     objectmap_t;
-typedef struct radixsort_t     radixsort_t;
-typedef struct regex_t         regex_t;
-typedef struct regex_capture_t regex_capture_t;
-typedef struct semaphore_t     semaphore_t;
+typedef struct application_t          application_t;
+typedef struct bitbuffer_t            bitbuffer_t;
+typedef struct blowfish_t             blowfish_t;
+typedef struct error_frame_t          error_frame_t;
+typedef struct error_context_t        error_context_t;
+typedef struct event_t                event_t;
+typedef struct event_block_t          event_block_t;
+typedef struct event_stream_t         event_stream_t;
+typedef struct fs_event_payload_t     fs_event_payload_t;
+typedef struct hashmap_node_t         hashmap_node_t;
+typedef struct hashmap_t              hashmap_t;
+typedef struct hashtable32_entry_t    hashtable32_entry_t;
+typedef struct hashtable64_entry_t    hashtable64_entry_t;
+typedef struct hashtable_t            hashtable_t;
+typedef struct hashtable32_t          hashtable32_t;
+typedef struct hashtable64_t          hashtable64_t;
+typedef struct md5_t                  md5_t;
+typedef struct memory_context_t       memory_context_t;
+typedef struct memory_system_t        memory_system_t;
+typedef struct memory_tracker_t       memory_tracker_t;
+typedef struct mutex_t                mutex_t;
+typedef struct object_base_t          object_base_t;
+typedef struct objectmap_t            objectmap_t;
+typedef struct process_t              process_t;
+typedef struct radixsort_t            radixsort_t;
+typedef struct regex_t                regex_t;
+typedef struct ringbuffer_t           ringbuffer_t;
+typedef struct semaphore_t            semaphore_t;
+typedef struct stream_t               stream_t;
+typedef struct stream_buffer_t        stream_buffer_t;
+typedef struct stream_pipe_t          stream_pipe_t;
+typedef struct stream_ringbuffer_t    stream_ringbuffer_t;
+typedef struct stream_vtable_t        stream_vtable_t;
+typedef struct foundation_config_t    foundation_config_t;
 
 typedef uint64_t       object_t;
 typedef uint64_t       hash_t;
@@ -69,8 +88,8 @@ typedef struct { uint64_t word[4]; } uint256_t;
 typedef uint128_t      uuid_t;
 typedef uint128_t      version_t;
 
-typedef struct { char* str, size_t length } string_t;
-typedef struct { const char* str, size_t length } string_const_t;
+typedef struct { char* str; size_t length; } string_t;
+typedef struct { const char* str; size_t length; } string_const_t;
 
 typedef int            (* error_callback_fn)(int, int);
 typedef int            (* assert_handler_fn)(hash_t, const char*, size_t, const char*, size_t, int, const char*, size_t);
@@ -138,7 +157,7 @@ void                   blowfish_finalize(blowfish_t*);
 void                   blowfish_encrypt(const blowfish_t*, void*, size_t, int, uint64_t);
 void                   blowfish_decrypt(const blowfish_t*, void*, size_t, int, uint64_t);
 
-stream_t*              buffer_stream_allocate(void*, unsigned int, sjze_t, size_t, bool, bool);
+stream_t*              buffer_stream_allocate(void*, unsigned int, size_t, size_t, bool, bool);
 void                   buffer_stream_initialize(stream_buffer_t*, void*, unsigned int, size_t, size_t, bool, bool);
 
 bool                   config_bool(hash_t, hash_t);
@@ -788,11 +807,11 @@ HASH_LUA = hash( "lua" )
 
 -- Convenience wrappers
 
-function log_debug( message ) C.log_debugf( HASH_LUA, "%s", message ) end
-function log_info( message ) C.log_infof( HASH_LUA, "%s", message ) end
-function log_warn( message ) C.log_warnf( HASH_LUA, 8, "%s", message ) end -- 8 = WARNING_SCRIPT
-function log_error( message ) C.log_errorf( HASH_LUA, 15, "%s", message ) end -- 15 = ERROR_SCRIPT
-function log_panic( message ) C.log_panicf( HASH_LUA, 15, "%s", message ) end -- 15 = ERROR_SCRIPT
+function log_debug( message ) C.log_debugf( HASH_LUA, "%s", 2, message ) end
+function log_info( message ) C.log_infof( HASH_LUA, "%s", 2, message ) end
+function log_warn( message ) C.log_warnf( HASH_LUA, 8, "%s", 2, message ) end -- 8 = WARNING_SCRIPT
+function log_error( message ) C.log_errorf( HASH_LUA, 15, "%s", 2, message ) end -- 15 = ERROR_SCRIPT
+function log_panic( message ) C.log_panicf( HASH_LUA, 15, "%s", 2, message ) end -- 15 = ERROR_SCRIPT
 
 function string_explode( str, delimiters, allow_empty ) local arr = C.string_explode( str, delimiters, allow_empty ); local tab = string_array_to_table( arr ); C.array_deallocate( arr ); return tab end
 function string_merge( tab, delimiter ) local arr, num = string_table_to_array( tab ); local cstr = C.string_merge( arr, num, delimiter ); local str = ffi.string( cstr ); C.string_deallocate( cstr ); C.array_deallocate( arr ); return str end

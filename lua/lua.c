@@ -256,9 +256,6 @@ lua_allocate(void) {
 	log_debug(HASH_LUA, STRING_CONST("Loading Lua built-ins"));
 	luaL_openlibs(state);
 
-	//Foundation bindings
-	lua_load_foundation(state);
-
 	lua_pop(state, lua_gettop(state) - stacksize);
 
 	return env;
@@ -1018,3 +1015,11 @@ lua_lookup_map(lua_t* env) {
 	return &env->lookup_map;
 }
 
+int
+lua_module_initialize(void) {
+	return 0;
+}
+
+void
+lua_module_finalize(void) {
+}
