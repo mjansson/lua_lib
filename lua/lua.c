@@ -788,7 +788,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 			}
 			else if (!lua_istable(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
-				           "Invalid script bind call, existing data '%.*s' in '%.*s' is not a table",
+				           STRING_CONST("Invalid script bind call, existing data '%.*s' in '%.*s' is not a table"),
 				           STRING_FORMAT(part), (int)next, property);
 				lua_pop(state, lua_gettop(state) - stacksize);
 				return LUA_ERROR;

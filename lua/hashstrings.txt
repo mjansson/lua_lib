@@ -3,9 +3,12 @@ HASH_LUA                                lua
 HASH_SCRIPT                             script
 
 HASH_SYM_ARRAY_ALLOCATE_POINTER         array_allocate_pointer
+HASH_SYM_ARRAY_ALLOCATE_STRING          array_allocate_string
 HASH_SYM_ARRAY_SIZE                     array_size
 HASH_SYM_ARRAY_ELEMENT_POINTER          array_element_pointer
 HASH_SYM_ARRAY_SET_ELEMENT_POINTER      array_set_element_pointer
+HASH_SYM_ARRAY_ELEMENT_STRING           array_element_string
+HASH_SYM_ARRAY_SET_ELEMENT_STRING       array_set_element_string
 HASH_SYM_ARRAY_DEALLOCATE               array_deallocate
 
 HASH_SYM_ASSERT_HANDLER                 assert_handler

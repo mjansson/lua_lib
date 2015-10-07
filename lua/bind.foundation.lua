@@ -26,8 +26,10 @@ end
 
 if C.system_size_pointer() > 4 then
       ffi.cdef( "typedef uint64_t hashtable_int_t;" );
+      nullptr = 0LL
 else
       ffi.cdef( "typedef uint32_t hashtable_int_t;" );
+      nullptr = 0
 end
 
 if C.system_size_wchar() > 2 then
@@ -99,11 +101,14 @@ typedef stream_t*      (* stream_open_fn )(const char*, size_t, unsigned int);
 typedef void*          (* thread_fn )(object_t, void*);
 typedef string_const_t (* string_map_fn)(hash_t);
 
-void*       array_allocate_pointer(unsigned int);
-int         array_size(const void*);
-const void* array_element_pointer(const void*, int);
-void        array_set_element_pointer(const void*, int, void*);
-void        array_deallocate(void*);
+void*          array_allocate_pointer(unsigned int);
+void*          array_allocate_string(unsigned int);
+int            array_size(const void*);
+const void*    array_element_pointer(const void*, int);
+void           array_set_element_pointer(const void*, int, void*);
+string_const_t array_element_string(const void*, int);
+void           array_set_element_string(const void*, int, string_const_t);
+void           array_deallocate(void*);
 
 assert_handler_fn assert_handler(void);
 void              assert_set_handler(assert_handler_fn);
@@ -639,18 +644,16 @@ ssize_t                type_ssize_t(int);
 -- Metatypes
 local string_meta_t
 local string_meta_table = {
-	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length) end,
+	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length, nullptr) end,
 	__len = function(str) return str.length end,
 	__gc = function(str) C.string_deallocate(str.str) end,
-	__index = {}
 }
 local string_meta_t = ffi.metatype("string_t", string_meta_table)
 
 local string_const_meta_t
 local string_const_meta_table = {
-	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length) end,
+	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length, nullptr) end,
 	__len = function(str) return str.length end,
-	__index = {}
 }
 local string_const_meta_t = ffi.metatype("string_const_t", string_const_meta_table)
 
@@ -660,22 +663,23 @@ function hash(str)
 end
 
 function string_array_to_table(arr)
-      local tab = {}
-      local arr_size = C.array_size(arr)
-      for i = 1, arr_size do
-            tab[i] = ffi.string( C.array_element_pointer( arr, i-1 ) )
-      end
-      return tab
+	local tab = {}
+	local arr_size = C.array_size(arr)
+	for i = 0, arr_size-1 do
+		local str = C.array_element_string(arr, i)
+		tab[i] = ffi.string(str.str, str.length)
+	end
+	return tab, arr_size
 end
 
 function string_table_to_array(tab)
-      local num = 0
-      while tab[num+1] ~= nil do num = num + 1 end
-      local arr = C.array_allocate_pointer( num )
-      for i = 0, num do
-      	  C.array_set_element_pointer( arr, i, tab[i+1] )
-      end
-      return arr, num
+    local num = 0
+    while tab[num+1] ~= nil do num = num + 1 end
+    local arr = C.array_allocate_string(num)
+    for i = 0, num-1 do
+        C.array_set_element_string(arr, i, C.string_clone(tab[i+1], #tab[i+1]))
+    end
+    return ffi.gc(arr, C.string_array_deallocate), num
 end
 
 -- Constants

@@ -117,6 +117,13 @@ _array_allocate_pointer(int size) {
 	return arr;
 }
 
+static void*
+_array_allocate_string(int size) {
+	string_t* arr = 0;
+	array_grow(arr, size);
+	return arr;
+}
+
 static void
 _array_deallocate(void** arr) {
 	array_deallocate(arr);
@@ -136,7 +143,24 @@ _array_element_pointer(const void* arr, int pos) {
 
 static void
 _array_set_element_pointer(const void** arr, int pos, void* ptr) {
-	arr[pos] = ptr;
+	if (arr && (pos >= 0) && (pos < (int)array_size(arr)))
+		arr[pos] = ptr;
+}
+
+static string_const_t
+_array_element_string(const void* arr, int pos) {
+	return (arr && (pos >= 0) && (pos < (int)array_size(arr))) ?
+	       ((const string_const_t*)arr)[pos] :
+	       string_empty();
+}
+
+static void
+_array_set_element_string(void* arr, int pos, string_const_t str) {
+	if (arr && (pos >= 0) && (pos < (int)array_size(arr))) {
+		string_t* strarr = (string_t*)arr;
+		string_deallocate(strarr[pos].str);
+		strarr[pos] = string_clone_string(str);
+	}
 }
 
 #if !FOUNDATION_PLATFORM_ANDROID
@@ -247,9 +271,12 @@ lua_load_foundation_builtins(lua_State* state) {
 #define FOUNDATION_SYM(fn, name) hashmap_insert(map, HASH_SYM_##name, (void*)(uintptr_t)fn)
 
 	FOUNDATION_SYM(_array_allocate_pointer, ARRAY_ALLOCATE_POINTER);
+	FOUNDATION_SYM(_array_allocate_string, ARRAY_ALLOCATE_STRING);
 	FOUNDATION_SYM(_array_size, ARRAY_SIZE);
 	FOUNDATION_SYM(_array_element_pointer, ARRAY_ELEMENT_POINTER);
 	FOUNDATION_SYM(_array_set_element_pointer, ARRAY_SET_ELEMENT_POINTER);
+	FOUNDATION_SYM(_array_element_string, ARRAY_ELEMENT_STRING);
+	FOUNDATION_SYM(_array_set_element_string, ARRAY_SET_ELEMENT_STRING);
 	FOUNDATION_SYM(_array_deallocate, ARRAY_DEALLOCATE);
 
 	FOUNDATION_SYM(assert_handler, ASSERT_HANDLER);
