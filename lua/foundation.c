@@ -884,6 +884,7 @@ lua_load_foundation(lua_State* state) {
 		.offset = 0
 	};
 
+	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
 	log_debugf(HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"),
 	           read_buffer.size);
 
