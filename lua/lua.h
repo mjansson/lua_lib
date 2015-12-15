@@ -40,7 +40,7 @@
 #include <lua/foundation.h>
 
 LUA_API int
-lua_module_initialize(void);
+lua_module_initialize(const lua_config_t config);
 
 LUA_API void
 lua_module_finalize(void);

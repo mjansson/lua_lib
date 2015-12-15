@@ -93,6 +93,7 @@ typedef struct lua_arg_t lua_arg_t;
 typedef struct lua_readstream_t lua_readstream_t;
 typedef struct lua_readbuffer_t lua_readbuffer_t;
 typedef struct lua_readstring_t lua_readstring_t;
+typedef struct lua_config_t lua_config_t;
 typedef struct lua_t lua_t;
 
 union lua_value_t {
@@ -103,6 +104,10 @@ union lua_value_t {
 	const char* str;
 	bool        flag;
 	lua_fn      fn;
+};
+
+struct lua_config_t {
+	unsigned int __unused;
 };
 
 struct lua_arg_t {

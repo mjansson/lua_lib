@@ -1027,7 +1027,8 @@ lua_lookup_map(lua_t* env) {
 }
 
 int
-lua_module_initialize(void) {
+lua_module_initialize(const lua_config_t config) {
+	FOUNDATION_UNUSED(config);
 	return 0;
 }
 

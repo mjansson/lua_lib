@@ -135,7 +135,12 @@ main_initialize(void) {
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
 		return ret;
 
-	return lua_module_initialize();
+	lua_config_t lua_config;
+	memset(&lua_config, 0, sizeof(lua_config));
+	if ((ret = lua_module_initialize(lua_config)) < 0)
+		return ret;
+
+	return 0;
 }
 
 int

@@ -71,13 +71,15 @@ LUA_API int
 lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 
 static void*
-event_thread(object_t thread, void* arg) {
+event_thread(void* arg) {
 	event_block_t* block;
 	event_t* event = 0;
 
 	FOUNDATION_UNUSED(arg);
 
-	while (!thread_should_terminate(thread)) {
+	event_stream_set_beacon(system_event_stream(), &thread_self()->beacon);
+
+	while (!_lua_terminate) {
 		block = event_stream_process(system_event_stream());
 		event = 0;
 
@@ -93,7 +95,7 @@ event_thread(object_t thread, void* arg) {
 			}
 		}
 
-		thread_sleep(10);
+		thread_wait();
 	}
 
 	return 0;
@@ -120,17 +122,23 @@ main_initialize(void) {
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
 		return ret;
 
+	lua_config_t lua_config;
+	memset(&lua_config, 0, sizeof(lua_config_t));
+	if ((ret = lua_module_initialize(lua_config)) < 0)
+		return ret;
+
 	return 0;
 }
 
 int
 main_run(void* main_arg) {
 	int result = LUA_RESULT_OK;
+	thread_t eventthread;
 	lua_State* state = 0;
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
-	object_t eventthread = thread_create(event_thread, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
-	thread_start(eventthread, 0);
+	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
+	thread_start(&eventthread);
 
 	instance.env = lua_allocate();
 	state = lua_state(instance.env);
@@ -143,14 +151,12 @@ main_run(void* main_arg) {
 	else
 		result = _lua_interpreter(instance.env);
 
-	thread_terminate(eventthread);
-	thread_destroy(eventthread);
+	thread_signal(&eventthread);
 
 	lua_deallocate(instance.env);
 	string_deallocate(instance.input_file.str);
 
-	while (thread_is_running(eventthread))
-		thread_sleep(10);
+	thread_finalize(&eventthread);
 
 	FOUNDATION_UNUSED(main_arg);
 
@@ -159,6 +165,7 @@ main_run(void* main_arg) {
 
 void
 main_finalize(void) {
+	lua_module_finalize();
 	foundation_finalize();
 }
 

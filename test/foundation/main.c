@@ -36,7 +36,7 @@ application_t
 test_foundation_application(void) {
 	application_t app;
 	memset(&app, 0, sizeof(app));
-	app.name = string_const(STRING_CONST("Foundation tests"));
+	app.name = string_const(STRING_CONST("Lua foundation tests"));
 	app.short_name = string_const(STRING_CONST("test_lua_foundation"));
 	app.config_dir = string_const(STRING_CONST("test_lua_foundation"));
 	app.flags = APPLICATION_UTILITY;
@@ -57,7 +57,9 @@ test_foundation_config(void) {
 
 int
 test_foundation_initialize(void) {
-	return lua_module_initialize();
+	lua_config_t config;
+	memset(&config, 0, sizeof(config));
+	return lua_module_initialize(config);
 }
 
 void
@@ -111,21 +113,20 @@ DECLARE_TEST(foundation, environment) {
 	lua_load_foundation(lua_state(env));
 
 	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require( \"ffi\" )\n"
+	    "local ffi = require(\"ffi\")\n"
 	    "local C = ffi.C\n"
-	    "C.log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG )\n"
-	    "C.log_enable_prefix( false )\n"
-	    "log_info( \"Executable name: \" .. ffi.string( C.environment_executable_name() ) )\n"
+	    "C.log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG)\n"
+	    "C.log_enable_prefix(false)\n"
+	    "log_info(\"Executable name: \" .. tostring(C.environment_executable_name()))\n"
 	    "local cmdline = \"\"\n"
-	    "local cmdline_tab = environment_command_line()\n"
-	    "local i = 1\n"
-	    "while cmdline_tab[i] ~= nil do\n"
-	    "  cmdline = cmdline .. \" \" .. cmdline_tab[i]\n"
-	    "  i = i + 1\n"
+	    "local cmdline_tab = C.environment_command_line()\n"
+	    "local num = C.array_size(cmdline_tab)"
+	    "for i = 0, num-1 do\n"
+	    "  cmdline = cmdline .. \" \" .. tostring(cmdline_tab[i])\n"
 	    "end\n"
-	    "log_info( \"Command line:\" .. cmdline )\n"
-	    "C.log_enable_prefix( true )\n"
-	    "C.log_set_suppress( HASH_LUA, ERRORLEVEL_INFO )\n"
+	    "log_info(\"Command line:\" .. cmdline)\n"
+	    "C.log_enable_prefix(true)\n"
+	    "C.log_set_suppress(HASH_LUA, ERRORLEVEL_INFO)\n"
 	));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);

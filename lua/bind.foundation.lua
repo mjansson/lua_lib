@@ -74,6 +74,7 @@ typedef struct stream_buffer_t stream_buffer_t;
 typedef struct stream_pipe_t stream_pipe_t;
 typedef struct stream_ringbuffer_t stream_ringbuffer_t;
 typedef struct stream_vtable_t stream_vtable_t;
+typedef struct thread_t thread_t;
 typedef struct foundation_config_t foundation_config_t;
 
 typedef uint64_t object_t;
@@ -98,7 +99,7 @@ typedef void (* object_deallocate_fn )(object_t, void*);
 typedef void (* profile_write_fn )(void*, uint64_t);
 typedef void (* profile_read_fn )(void*, uint64_t);
 typedef stream_t* (* stream_open_fn )(const char*, size_t, unsigned int);
-typedef void* (* thread_fn )(object_t, void*);
+typedef void* (* thread_fn )(void*);
 typedef string_const_t (* string_map_fn)(hash_t);
 
 void* array_allocate_pointer(unsigned int);
@@ -336,8 +337,9 @@ string_const_t path_base_file_name_with_directory(const char*, size_t);
 string_const_t path_file_extension(const char*, size_t);
 string_const_t path_file_name(const char*, size_t);
 string_const_t path_directory_name(const char*, size_t);
-string_const_t path_subdirectory_name(const char*, size_t, const char*, size_t);
+string_const_t path_subpath(const char*, size_t, const char*, size_t);
 string_const_t path_protocol(const char*, size_t);
+string_const_t path_strip_protocol(const char*, size_t);
 string_t path_allocate_concat(const char*, size_t, ...);
 string_t path_concat(char*, size_t, const char*, size_t, ...);
 string_t path_append(char*, size_t, size_t, const char*, size_t, ...);
@@ -595,20 +597,21 @@ bool system_message_box(const char*, size_t, const char*, size_t, bool);
 event_stream_t* system_event_stream(void);
 void system_post_event(int);
 
-object_t thread_create(thread_fn, const char*, size_t, int, unsigned int);
-object_t thread_ref(object_t);
-void thread_destroy(object_t);
-bool thread_start(object_t, void*);
-void thread_terminate(object_t);
+thread_t* thread_allocate(thread_fn, void*, const char*, size_t, int, unsigned int);
+void thread_initialize(thread_t*, thread_fn, void*, const char*, size_t, int, unsigned int);
+void thread_finalize(thread_t*);
+void thread_deallocate(thread_t*);
+bool thread_start(thread_t*);
+void* thread_join(thread_t*);
+void thread_signal(thread_t*);
+bool thread_wait(void);
+bool thread_try_wait(unsigned int milliseconds);
 bool thread_is_started(object_t);
 bool thread_is_running(object_t);
-bool thread_is_thread(object_t);
 bool thread_is_main(void);
-bool thread_should_terminate(object_t);
 void thread_set_main(void);
 void thread_set_name(const char*, size_t);
 void thread_set_hardware(uint64_t);
-void* thread_result(object_t);
 object_t thread_self(void);
 string_const_t thread_name(void);
 uint64_t thread_id(void);
@@ -647,6 +650,7 @@ local string_meta_table = {
 	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length, nullptr) end,
 	__eq = function(lhs, rhs) return C.string_equal(lhs.str, lhs.length, rhs.str, rhs.length) end,
 	__len = function(str) return str.length end,
+	__tostring = function(str) return ffi.string(str.str, str.length) end,
 	__gc = function(str) C.string_deallocate(str.str) end
 }
 local string_meta_t = ffi.metatype("string_t", string_meta_table)
@@ -655,7 +659,8 @@ local string_const_meta_t
 local string_const_meta_table = {
 	__concat = string_meta_table.__concat,
 	__eq = string_meta_table.__eq,
-	__len = string_meta_table.__len
+	__len = string_meta_table.__len,
+	__tostring = string_meta_table.__tostring
 }
 local string_const_meta_t = ffi.metatype("string_const_t", string_const_meta_table)
 

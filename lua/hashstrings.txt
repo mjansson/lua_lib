@@ -236,8 +236,9 @@ HASH_SYM_PATH_BASE_FILE_NAME_WITH_DIRECTORY path_base_file_name_with_directory
 HASH_SYM_PATH_FILE_EXTENSION            path_file_extension
 HASH_SYM_PATH_FILE_NAME                 path_file_name
 HASH_SYM_PATH_DIRECTORY_NAME            path_directory_name
-HASH_SYM_PATH_SUBDIRECTORY_NAME         path_subdirectory_name
+HASH_SYM_PATH_SUBPATH                   path_subpath
 HASH_SYM_PATH_PROTOCOL                  path_protocol
+HASH_SYM_PATH_STRIP_PROTOCOL            path_strip_protocol
 HASH_SYM_PATH_ALLOCATE_CONCAT           path_allocate_concat
 HASH_SYM_PATH_CONCAT                    path_concat
 HASH_SYM_PATH_APPEND                    path_append
@@ -500,27 +501,27 @@ HASH_SYM_SYSTEM_SIZE_REAL               system_size_real
 HASH_SYM_SYSTEM_SIZE_POINTER            system_size_pointer
 HASH_SYM_SYSTEM_SIZE_WCHAR              system_size_wchar
 
-HASH_SYM_THREAD_CREATE                  thread_create
-HASH_SYM_THREAD_REF                     thread_ref
-HASH_SYM_THREAD_DESTROY                 thread_destroy
+HASH_SYM_THREAD_ALLOCATE                thread_allocate
+HASH_SYM_THREAD_INITIALIZE              thread_initialize
+HASH_SYM_THREAD_FINALIZE                thread_finalize
+HASH_SYM_THREAD_DEALLOCATE              thread_deallocate
 HASH_SYM_THREAD_START                   thread_start
-HASH_SYM_THREAD_TERMINATE               thread_terminate
+HASH_SYM_THREAD_JOIN                    thread_join
 HASH_SYM_THREAD_IS_STARTED              thread_is_started
 HASH_SYM_THREAD_IS_RUNNING              thread_is_running
-HASH_SYM_THREAD_IS_THREAD               thread_is_thread
+HASH_SYM_THREAD_SIGNAL                  thread_signal
+HASH_SYM_THREAD_WAIT                    thread_wait
+HASH_SYM_THREAD_TRY_WAIT                thread_try_wait
 HASH_SYM_THREAD_IS_MAIN                 thread_is_main
-HASH_SYM_THREAD_SHOULD_TERMINATE        thread_should_terminate
 HASH_SYM_THREAD_SET_MAIN                thread_set_main
 HASH_SYM_THREAD_SET_NAME                thread_set_name
 HASH_SYM_THREAD_SET_HARDWARE            thread_set_hardware
-HASH_SYM_THREAD_RESULT                  thread_result
 HASH_SYM_THREAD_SELF                    thread_self
 HASH_SYM_THREAD_NAME                    thread_name
 HASH_SYM_THREAD_ID                      thread_id
 HASH_SYM_THREAD_HARDWARE                thread_hardware
 HASH_SYM_THREAD_SLEEP                   thread_sleep
 HASH_SYM_THREAD_YIELD                   thread_yield
-HASH_SYM_THREAD_FINALIZE                thread_finalize
 HASH_SYM_THREAD_ATTACH_JVM              thread_attach_jvm
 HASH_SYM_THREAD_DETACH_JVM              thread_detach_jvm
 

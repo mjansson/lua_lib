@@ -1,6 +1,6 @@
 /*
 ** Package library.
-** Copyright (C) 2005-2014 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
 **
 ** Major portions taken verbatim or adapted from the Lua interpreter.
 ** Copyright (C) 1994-2012 Lua.org, PUC-Rio. See Copyright Notice in lua.h
@@ -32,7 +32,7 @@
 #define SYMPREFIX_CF		"luaopen_%s"
 #define SYMPREFIX_BC		"luaJIT_BC_%s"
 
-#if 0 //LJ_TARGET_DLOPEN
+#if LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
 
@@ -65,12 +65,9 @@ static const char *ll_bcsym(void *lib, const char *sym)
   return (const char *)dlsym(lib, sym);
 }
 
-#elif 0 //LJ_TARGET_WINDOWS
+#elif LJ_TARGET_WINDOWS
 
 #define WIN32_LEAN_AND_MEAN
-#ifndef WINVER
-#define WINVER 0x0500
-#endif
 #include <windows.h>
 
 #ifndef GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS
@@ -99,9 +96,17 @@ static void setprogdir(lua_State *L)
 static void pusherror(lua_State *L)
 {
   DWORD error = GetLastError();
+#if LJ_TARGET_XBOXONE
+  wchar_t wbuffer[128];
+  char buffer[128*2];
+  if (FormatMessageW(FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
+      NULL, error, 0, wbuffer, sizeof(wbuffer)/sizeof(wchar_t), NULL) &&
+      WideCharToMultiByte(CP_ACP, 0, wbuffer, 128, buffer, 128*2, NULL, NULL))
+#else
   char buffer[128];
   if (FormatMessageA(FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM,
       NULL, error, 0, buffer, sizeof(buffer), NULL))
+#endif
     lua_pushstring(L, buffer);
   else
     lua_pushfstring(L, "system error %d\n", error);
@@ -114,7 +119,7 @@ static void ll_unloadlib(void *lib)
 
 static void *ll_load(lua_State *L, const char *path, int gl)
 {
-  HINSTANCE lib = LoadLibraryA(path);
+  HINSTANCE lib = LoadLibraryExA(path, NULL, 0);
   if (lib == NULL) pusherror(L);
   UNUSED(gl);
   return lib;
@@ -153,7 +158,6 @@ static void ll_unloadlib(void *lib)
   UNUSED(lib);
 }
 
-#if 0
 static void *ll_load(lua_State *L, const char *path, int gl)
 {
   UNUSED(path); UNUSED(gl);
@@ -173,12 +177,11 @@ static const char *ll_bcsym(void *lib, const char *sym)
   UNUSED(lib); UNUSED(sym);
   return NULL;
 }
-#endif
 
 #endif
 
 /* ------------------------------------------------------------------------ */
-#if 0
+
 static void **ll_register(lua_State *L, const char *path)
 {
   void **plib;
@@ -231,7 +234,7 @@ static int ll_loadfunc(lua_State *L, const char *path, const char *name, int r)
       const char *bcdata = ll_bcsym(*reg, mksymname(L, name, SYMPREFIX_BC));
       lua_pop(L, 1);
       if (bcdata) {
-	if (luaL_loadbuffer(L, bcdata, ~(size_t)0, name) != 0)
+	if (luaL_loadbuffer(L, bcdata, LJ_MAX_BUF, name) != 0)
 	  return PACKAGE_ERR_LOAD;
 	return 0;
       }
@@ -254,7 +257,6 @@ static int lj_cf_package_loadlib(lua_State *L)
     return 3;  /* return nil, error message, and where */
   }
 }
-#endif
 
 static int lj_cf_package_unloadlib(lua_State *L)
 {
@@ -265,7 +267,7 @@ static int lj_cf_package_unloadlib(lua_State *L)
 }
 
 /* ------------------------------------------------------------------------ */
-#if 0
+
 static int readable(const char *filename)
 {
   FILE *f = fopen(filename, "r");  /* try to open file */
@@ -389,12 +391,11 @@ static int lj_cf_package_loader_preload(lua_State *L)
   if (lua_isnil(L, -1)) {  /* Not found? */
     const char *bcname = mksymname(L, name, SYMPREFIX_BC);
     const char *bcdata = ll_bcsym(NULL, bcname);
-    if (bcdata == NULL || luaL_loadbuffer(L, bcdata, ~(size_t)0, name) != 0)
+    if (bcdata == NULL || luaL_loadbuffer(L, bcdata, LJ_MAX_BUF, name) != 0)
       lua_pushfstring(L, "\n\tno field package.preload['%s']", name);
   }
   return 1;
 }
-#endif
 
 /* ------------------------------------------------------------------------ */
 
@@ -534,7 +535,7 @@ static int lj_cf_package_seeall(lua_State *L)
 static void setpath(lua_State *L, const char *fieldname, const char *envname,
 		    const char *def, int noenv)
 {
-#if 1 //LJ_TARGET_CONSOLE
+#if LJ_TARGET_CONSOLE
   const char *path = NULL;
   UNUSED(envname);
 #else
@@ -553,8 +554,8 @@ static void setpath(lua_State *L, const char *fieldname, const char *envname,
 }
 
 static const luaL_Reg package_lib[] = {
-	//{ "loadlib",	lj_cf_package_loadlib },
-	//{ "searchpath",  lj_cf_package_searchpath },
+  { "loadlib",	lj_cf_package_loadlib },
+  { "searchpath",  lj_cf_package_searchpath },
   { "seeall",	lj_cf_package_seeall },
   { NULL, NULL }
 };
@@ -567,10 +568,10 @@ static const luaL_Reg package_global[] = {
 
 static const lua_CFunction package_loaders[] =
 {
-	/*lj_cf_package_loader_preload,
+  lj_cf_package_loader_preload,
   lj_cf_package_loader_lua,
   lj_cf_package_loader_c,
-	lj_cf_package_loader_croot,*/
+  lj_cf_package_loader_croot,
   NULL
 };
 

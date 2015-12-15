@@ -1,6 +1,6 @@
 /*
 ** Auxiliary library for the Lua/C API.
-** Copyright (C) 2005-2014 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
 **
 ** Major parts taken verbatim or adapted from the Lua interpreter.
 ** Copyright (C) 1994-2008 Lua.org, PUC-Rio. See Copyright Notice in lua.h
@@ -302,10 +302,9 @@ static int panic(lua_State *L)
 
 #ifdef LUAJIT_USE_SYSMALLOC
 
-/*#if LJ_64
+#if LJ_64 && !defined(LUAJIT_USE_VALGRIND)
 #error "Must use builtin allocator for 64 bit target"
-#endif*/
-#error "Use custom allocator"
+#endif
 
 static void *mem_alloc(void *ud, void *ptr, size_t osize, size_t nsize)
 {
@@ -335,33 +334,21 @@ LUALIB_API lua_State *luaL_newstate(void)
   lua_State *L;
   void *ud = lj_alloc_create();
   if (ud == NULL) return NULL;
-//#if LJ_64
-//  L = lj_state_newstate(lj_alloc_f, ud);
-//#else
+#if 0//LJ_64
+  L = lj_state_newstate(lj_alloc_f, ud);
+#else
   L = lua_newstate(lj_alloc_f, ud);
-//#endif
+#endif
   if (L) G(L)->panic = panic;
   return L;
 }
 
-#if 0 //LJ_64
+#if 0//LJ_64
 LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
 {
-	/* Foundation allocator should meet the needs of luajit
-	UNUSED(f); UNUSED(ud);
+  UNUSED(f); UNUSED(ud);
   fputs("Must use luaL_newstate() for 64 bit target\n", stderr);
-	return NULL;*/
-	lua_State *L;
-	/* Must use external (foundation) allocator
-	if (!f)
-	{
-		f = lj_alloc_f;
-		ud = lj_alloc_create();
-		if (ud == NULL) return NULL;
-	}*/
-	L = lj_state_newstate(f, ud);
-	if (L) G(L)->panic = panic;
-	return L;
+  return NULL;
 }
 #endif
 
