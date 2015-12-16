@@ -20,6 +20,14 @@ HASH_SYM_ASSET_STREAM_OPEN              asset_stream_open
 HASH_SYM_BASE64_ENCODE                  base64_encode
 HASH_SYM_BASE64_DECODE                  base64_decode
 
+HASH_SYM_BEACON_ALLOCATE                beacon_allocate
+HASH_SYM_BEACON_INITIALIZE              beacon_initialize
+HASH_SYM_BEACON_FINALIZE                beacon_finalize
+HASH_SYM_BEACON_DEALLOCATE              beacon_deallocate
+HASH_SYM_BEACON_WAIT                    beacon_wait
+HASH_SYM_BEACON_TRY_WAIT                beacon_try_wait
+HASH_SYM_BEACON_FIRE                    beacon_fire
+
 HASH_SYM_BITBUFFER_ALLOCATE_BUFFER      bitbuffer_allocate_buffer
 HASH_SYM_BITBUFFER_ALLOCATE_STREAM      bitbuffer_allocate_stream
 HASH_SYM_BITBUFFER_DEALLOCATE           bitbuffer_deallocate
@@ -107,6 +115,7 @@ HASH_SYM_EVENT_STREAM_DEALLOCATE        event_stream_deallocate
 HASH_SYM_EVENT_STREAM_INITIALIZE        event_stream_initialize
 HASH_SYM_EVENT_STREAM_FINALIZE          event_stream_finalize
 HASH_SYM_EVENT_STREAM_PROCESS           event_stream_process
+HASH_SYM_EVENT_STREAM_SET_BEACON        event_stream_set_beacon
 
 HASH_SYM_FS_OPEN_FILE                   fs_open_file
 HASH_SYM_FS_COPY_FILE                   fs_copy_file

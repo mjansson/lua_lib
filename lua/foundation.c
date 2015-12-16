@@ -288,6 +288,14 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(base64_encode, BASE64_ENCODE);
 	FOUNDATION_SYM(base64_decode, BASE64_DECODE);
 
+	FOUNDATION_SYM(beacon_allocate, BEACON_ALLOCATE);
+	FOUNDATION_SYM(beacon_initialize, BEACON_INITIALIZE);
+	FOUNDATION_SYM(beacon_finalize, BEACON_FINALIZE);
+	FOUNDATION_SYM(beacon_deallocate, BEACON_DEALLOCATE);
+	FOUNDATION_SYM(beacon_wait, BEACON_WAIT);
+	FOUNDATION_SYM(beacon_try_wait, BEACON_TRY_WAIT);
+	FOUNDATION_SYM(beacon_fire, BEACON_FIRE);
+
 	FOUNDATION_SYM(bitbuffer_allocate_buffer, BITBUFFER_ALLOCATE_BUFFER);
 	FOUNDATION_SYM(bitbuffer_allocate_stream, BITBUFFER_ALLOCATE_STREAM);
 	FOUNDATION_SYM(bitbuffer_deallocate, BITBUFFER_DEALLOCATE);
@@ -384,6 +392,7 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(event_stream_initialize, EVENT_STREAM_INITIALIZE);
 	FOUNDATION_SYM(event_stream_finalize, EVENT_STREAM_FINALIZE);
 	FOUNDATION_SYM(event_stream_process, EVENT_STREAM_PROCESS);
+	FOUNDATION_SYM(event_stream_set_beacon, EVENT_STREAM_SET_BEACON);
 
 	FOUNDATION_SYM(fs_open_file, FS_OPEN_FILE);
 	FOUNDATION_SYM(fs_copy_file, FS_COPY_FILE);
@@ -907,6 +916,8 @@ lua_load_foundation(lua_State* state) {
 		lua_pop(state, 1);
 		return 0;
 	}
+
+	log_debug(HASH_LUA, STRING_CONST("Loaded foundation built-ins"));
 
 	return 0;
 }

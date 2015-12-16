@@ -44,6 +44,7 @@ ffi.cdef[[
 typedef struct application_t application_t;
 typedef struct bitbuffer_t bitbuffer_t;
 typedef struct blowfish_t blowfish_t;
+typedef struct beacon_t beacon_t;
 typedef struct error_frame_t error_frame_t;
 typedef struct error_context_t error_context_t;
 typedef struct event_t event_t;
@@ -119,6 +120,14 @@ stream_t* asset_stream_open(const char*, size_t, unsigned int);
 
 size_t base64_encode(const void*, size_t, char*, size_t);
 size_t base64_decode(const char*, size_t, void*, size_t);
+
+beacon_t* beacon_allocate(void);
+void beacon_initialize(beacon_t*);
+void beacon_finalize(beacon_t*);
+void beacon_deallocate(beacon_t*);
+int beacon_wait(beacon_t*);
+int beacon_try_wait(beacon_t*, unsigned int);
+void beacon_fire(beacon_t*);
 
 bitbuffer_t* bitbuffer_allocate_buffer(void*, size_t, bool);
 bitbuffer_t* bitbuffer_allocate_stream(stream_t*);
@@ -207,6 +216,7 @@ void event_stream_deallocate(event_stream_t*);
 void event_stream_initialize(event_stream_t*, size_t);
 void event_stream_finalize(event_stream_t*);
 event_block_t* event_stream_process(event_stream_t*);
+void event_stream_set_beacon(event_stream_t*, beacon_t*);
 
 stream_t* fs_open_file(const char*, size_t, unsigned int);
 void fs_copy_file(const char*, size_t, const char*, size_t);
