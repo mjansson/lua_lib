@@ -315,18 +315,18 @@ static CTSize clib_func_argsize(CTState *cts, CType *ct)
 #endif
 
 /* Get redirected or mangled external symbol. */
-static const char *clib_extsym(CTState *cts, CType *ct, GCstr *name)
+static GCstr *clib_extsym(CTState *cts, CType *ct, GCstr *name)
 {
   if (ct->sib) {
     CType *ctf = ctype_get(cts, ct->sib);
     if (ctype_isxattrib(ctf->info, CTA_REDIR))
-      return strdata(gco2str(gcref(ctf->name)));
+      return gco2str(gcref(ctf->name));
   }
-  return strdata(name);
+  return name;
 }
 
 /* Index a C library by name. */
-void* (*lj_clib_getsym_builtin)(lua_State*, const char*) = 0;
+void* (*lj_clib_getsym_builtin)(lua_State*, const char*, size_t) = 0;
 
 TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 {
@@ -345,11 +345,12 @@ TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
       else
 	setintV(tv, (int32_t)ct->size);
     } else {
-      const char *sym = clib_extsym(cts, ct, name);
+      GCstr *symstr = clib_extsym(cts, ct, name);
+      const char *sym = strdata(symstr);
 #if LJ_TARGET_WINDOWS
-      DWORD oldwerr = GetLastError();
+      unsigned int oldwerr = GetLastError();
 #endif
-      void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(L, sym) : 0;
+      void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(L, sym, symstr->len) : 0;
       //void *p = clib_getsym(cl, sym);
       GCcdata *cd;
       lua_assert(ctype_isfunc(ct->info) || ctype_isextern(ct->info));

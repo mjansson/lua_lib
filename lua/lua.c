@@ -27,7 +27,7 @@
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
-LUA_EXTERN void* (*lj_clib_getsym_builtin)(lua_State*, const char*);
+LUA_EXTERN void* (*lj_clib_getsym_builtin)(lua_State*, const char*, size_t);
 
 #undef LUA_API
 
@@ -51,7 +51,7 @@ typedef struct lua_op_t {
 } lua_op_t;
 
 static void*
-lua_lookup_builtin(lua_State* state, const char* sym);
+lua_lookup_builtin(lua_State* state, const char* sym, size_t length);
 
 static lua_result_t
 lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg);
@@ -983,8 +983,8 @@ lua_timed_gc(lua_t* env, int milliseconds) {
 }
 
 static void*
-lua_lookup_builtin(lua_State* state, const char* sym) {
-	hash_t symhash = hash(sym, string_length(sym));
+lua_lookup_builtin(lua_State* state, const char* sym, size_t length) {
+	hash_t symhash = hash(sym, length);
 	lua_t* env = lua_from_state(state);
 	void* fn = hashmap_lookup(&env->lookup_map, symhash);
 	//log_debugf(HASH_LUA, STRING_CONST("Built-in lookup: %.*s -> %p", (int)length, sym, fn);
