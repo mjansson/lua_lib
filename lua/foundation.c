@@ -892,23 +892,24 @@ lua_load_foundation_module(lua_State* state) {
 
 	stacksize = lua_gettop(state);
 
-	if (lua_load(state, lua_read_buffer, &read_buffer, "=eval") != 0) {
+	if (lua_load(state, lua_read_buffer, &read_buffer, "foundation") != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %.*s"),
 		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
-		return 0;
+		goto exit;
 	}
 
 	if (lua_pcall(state, 0, LUA_MULTRET, 0) != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %.*s"),
 		           STRING_FORMAT(errmsg));
-		return 1;
+		goto exit;
 	}
 
 	log_debug(HASH_LUA, STRING_CONST("Loaded foundation built-ins"));
 
+exit:
 	return lua_gettop(state) - stacksize;
 }
 
