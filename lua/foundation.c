@@ -882,12 +882,15 @@ lua_load_foundation_module(lua_State* state) {
 		.size   = sizeof(bytecode),
 		.offset = 0
 	};
+	int stacksize;
 
 	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
 	log_debugf(HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"),
 	           read_buffer.size);
 
 	lua_load_foundation_symbols();
+
+	stacksize = lua_gettop(state);
 
 	if (lua_load(state, lua_read_buffer, &read_buffer, "=eval") != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
@@ -906,7 +909,7 @@ lua_load_foundation_module(lua_State* state) {
 
 	log_debug(HASH_LUA, STRING_CONST("Loaded foundation built-ins"));
 
-	return 1;
+	return lua_gettop(state) - stacksize;
 }
 
 
