@@ -31,6 +31,7 @@ void*
 lj_clib_getsym_registry(lua_State* state, const char* sym, size_t length) {
 	hash_t symhash = hash(sym, length);
 	void* fn = hashmap_lookup(_lua_symbols, symhash);
+	FOUNDATION_UNUSED(state);
 	//log_debugf(HASH_LUA, STRING_CONST("Built-in lookup: %.*s -> %p", (int)length, sym, fn);
 	return fn;
 }

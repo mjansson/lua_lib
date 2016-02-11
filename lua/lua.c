@@ -430,9 +430,8 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 	if (lua_pcall(state, numargs, 0, 0) != 0) {
 		string_const_t errmsg = {0, 0};
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"), (int)length,
-		           method,
-		           STRING_FORMAT(errmsg));
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"),
+		           (int)length, method, STRING_FORMAT(errmsg));
 		result = LUA_ERROR;
 	}
 
@@ -659,39 +658,42 @@ lua_bind_value(lua_t* env, const char* property, size_t length, real value) {
 
 static FOUNDATION_NOINLINE void
 lua_push_integer(lua_State* state, const char* name, size_t length, int value) {
-	lua_pushstring(state, name);
+	lua_pushlstring(state, name, length);
 	lua_pushinteger(state, value);
 	lua_settable(state, -3);
 }
 
 static FOUNDATION_NOINLINE void
 lua_push_integer_global(lua_State* state, const char* name, size_t length, int value) {
+	FOUNDATION_UNUSED(length);
 	lua_pushinteger(state, value);
 	lua_setglobal(state, name);
 }
 
 static FOUNDATION_NOINLINE void
 lua_push_number(lua_State* state, const char* name, size_t length, real value) {
-	lua_pushstring(state, name);
+	lua_pushlstring(state, name, length);
 	lua_pushnumber(state, value);
 	lua_settable(state, -3);
 }
 
 static FOUNDATION_NOINLINE void
 lua_push_number_global(lua_State* state, const char* name, size_t length, real value) {
+	FOUNDATION_UNUSED(length);
 	lua_pushnumber(state, value);
 	lua_setglobal(state, name);
 }
 
 static FOUNDATION_NOINLINE void
 lua_push_method(lua_State* state, const char* name, size_t length, lua_CFunction fn) {
-	lua_pushstring(state, name);
+	lua_pushlstring(state, name, length);
 	lua_pushcclosure(state, fn, 0);
 	lua_settable(state, -3);
 }
 
 static FOUNDATION_NOINLINE void
 lua_push_method_global(lua_State* state, const char* name, size_t length, lua_CFunction fn) {
+	FOUNDATION_UNUSED(length);
 	lua_pushcclosure(state, fn, 0);
 	lua_setglobal(state, name);
 }
@@ -751,7 +753,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 				lua_pushstring(state, part.str);
 				lua_pushvalue(state, -2);
 				lua_settable(state, -4);
-				log_debugf(HASH_LUA, "Created table: %.*s", next, property);
+				log_debugf(HASH_LUA, STRING_CONST("Created table: %.*s"), next, property);
 			}
 			else if (!lua_istable(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -943,6 +945,8 @@ lua_execute(lua_t* env, int gc_time, bool force) {
 		return;
 
 	lua_execute_pending(env);
+#else
+	FOUNDATION_UNUSED(force);
 #endif
 
 	if (gc_time)

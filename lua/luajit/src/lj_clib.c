@@ -287,11 +287,11 @@ static void clib_unloadlib(CLibrary *cl)
   UNUSED(cl);
 }
 
-static void *clib_getsym(CLibrary *cl, const char *name)
+/*static void *clib_getsym(CLibrary *cl, const char *name)
 {
   UNUSED(cl); UNUSED(name);
   return NULL;
-}
+}*/
 
 #endif
 

@@ -118,14 +118,12 @@ int
 main_run(void* main_arg) {
 	int result = LUA_RESULT_OK;
 	thread_t eventthread;
-	lua_State* state = 0;
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
 	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
 	thread_start(&eventthread);
 
 	instance.env = lua_allocate();
-	state = lua_state(instance.env);
 
 	if (instance.input_file.length)
 		result = _lua_process_file(instance.env, STRING_ARGS(instance.input_file));

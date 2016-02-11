@@ -59,6 +59,16 @@ static void laction(int i)
 }
 #endif
 
+extern int
+lj_cf_package_loader_registry(lua_State* state) {
+  return 0;
+}
+
+extern void*
+lj_clib_getsym_registry(lua_State* state, const char* sym, size_t length) {
+  return 0;
+}
+
 static void print_usage(void)
 {
   fputs("usage: ", stderr);

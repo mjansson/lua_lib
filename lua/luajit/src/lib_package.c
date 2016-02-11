@@ -324,6 +324,7 @@ static int lj_cf_package_searchpath(lua_State *L)
   }
 }
 
+#if 0
 static const char *findfile(lua_State *L, const char *name,
 			    const char *pname)
 {
@@ -380,6 +381,7 @@ static int lj_cf_package_loader_croot(lua_State *L)
   }
   return 1;
 }
+#endif
 
 static int lj_cf_package_loader_preload(lua_State *L)
 {

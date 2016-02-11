@@ -34,6 +34,10 @@ lua_registry_initialize(void);
 LUA_EXTERN void
 lua_registry_finalize(void);
 
+#if FOUNDATION_COMPILER_GCC
+#  pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 //This is our custom callback point from luajit lib_package loader
 int
 lj_cf_package_loader_registry(lua_State* state) {
