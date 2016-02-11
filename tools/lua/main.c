@@ -127,9 +127,6 @@ main_run(void* main_arg) {
 	instance.env = lua_allocate();
 	state = lua_state(instance.env);
 
-	//Foundation bindings
-	lua_load_foundation(state);
-
 	if (instance.input_file.length)
 		result = _lua_process_file(instance.env, STRING_ARGS(instance.input_file));
 	else

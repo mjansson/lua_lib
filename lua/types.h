@@ -144,9 +144,6 @@ struct lua_t
 	//! Execution count (protected by execute semaphore)
 	unsigned int executing_count;
 #endif
-
-	//! Lookup hashmap
-	hashmap_t    lookup_map;
 };
 
 

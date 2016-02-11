@@ -142,10 +142,7 @@ main_run(void* main_arg) {
 	dump.env = lua_allocate();
 	state = lua_state(dump.env);
 
-	if (lua_load_foundation_builtins(state) < 0) {
-		result = LUADUMP_RESULT_UNABLE_TO_LOAD_FOUNDATION;
-		goto exit;
-	}
+	lua_load_foundation_symbols();
 
 	/*if( ( result = luadump_load_jitbc( dump.env ) ) != LUADUMP_RESULT_OK )
 		goto exit;

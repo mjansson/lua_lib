@@ -325,8 +325,8 @@ static GCstr *clib_extsym(CTState *cts, CType *ct, GCstr *name)
   return name;
 }
 
-/* Index a C library by name. */
-void* (*lj_clib_getsym_builtin)(lua_State*, const char*, size_t) = 0;
+/* Index registered C libraries by name */
+extern void* lj_clib_getsym_registry(lua_State*, const char*, size_t);
 
 TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 {
@@ -350,7 +350,7 @@ TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 #if LJ_TARGET_WINDOWS
       unsigned int oldwerr = GetLastError();
 #endif
-      void *p = lj_clib_getsym_builtin ? lj_clib_getsym_builtin(L, sym, symstr->len) : 0;
+      void *p = lj_clib_getsym_registry(L, sym, symstr->len);
       //void *p = clib_getsym(cl, sym);
       GCcdata *cd;
       lua_assert(ctype_isfunc(ct->info) || ctype_isextern(ct->info));

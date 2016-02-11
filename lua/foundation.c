@@ -14,6 +14,7 @@
 
 #include <lua/lua.h>
 #include <lua/read.h>
+#include <lua/symbol.h>
 #include <lua/foundation.h>
 #include <lua/hashstrings.h>
 
@@ -247,10 +248,15 @@ type_ssize_t(int val) {
 	return val;
 }
 
-int
-lua_load_foundation_builtins(lua_State* state) {
-	lua_t* env = lua_from_state(state);
-	hashmap_t* map = lua_lookup_map(env);
+static bool _symbols_loaded;
+
+void
+lua_load_foundation_symbols(void) {
+	hashmap_t* map = lua_symbol_lookup_map();
+
+	if (_symbols_loaded)
+		return;
+	_symbols_loaded = true;
 
 #define FOUNDATION_SYM(fn, name) hashmap_insert(map, HASH_SYM_##name, (void*)(uintptr_t)fn)
 
@@ -862,12 +868,10 @@ lua_load_foundation_builtins(lua_State* state) {
 
 	FOUNDATION_SYM(type_size_t, TYPE_SIZE_T);
 	FOUNDATION_SYM(type_ssize_t, TYPE_SSIZE_T);
-
-	return 0;
 }
 
 int
-lua_load_foundation(lua_State* state) {
+lua_load_foundation_module(lua_State* state) {
 	//TODO: When implemented lua compiled bytecode libraries, load from library resource instaed
 	static unsigned char bytecode[] = {
 #include "bind.foundation.hex"
@@ -883,7 +887,7 @@ lua_load_foundation(lua_State* state) {
 	log_debugf(HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"),
 	           read_buffer.size);
 
-	lua_load_foundation_builtins(state);
+	lua_load_foundation_symbols();
 
 	if (lua_load(state, lua_read_buffer, &read_buffer, "=eval") != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
@@ -893,17 +897,16 @@ lua_load_foundation(lua_State* state) {
 		return 0;
 	}
 
-	if (lua_pcall(state, 0, 0, 0) != 0) {
+	if (lua_pcall(state, 0, LUA_MULTRET, 0) != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %.*s"),
 		           STRING_FORMAT(errmsg));
-		lua_pop(state, 1);
-		return 0;
+		return 1;
 	}
 
 	log_debug(HASH_LUA, STRING_CONST("Loaded foundation built-ins"));
 
-	return 0;
+	return 1;
 }
 
 

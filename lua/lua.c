@@ -27,7 +27,6 @@
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
-LUA_EXTERN void* (*lj_clib_getsym_builtin)(lua_State*, const char*, size_t);
 
 #undef LUA_API
 
@@ -49,9 +48,6 @@ typedef struct lua_op_t {
 	} data;
 	lua_arg_t             arg;
 } lua_op_t;
-
-static void*
-lua_lookup_builtin(lua_State* state, const char* sym, size_t length);
 
 static lua_result_t
 lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg);
@@ -195,7 +191,8 @@ static FOUNDATION_NOINLINE int
 lua_panic(lua_State* state) {
 	string_const_t errmsg = {0, 0};
 	errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length, errmsg.str);
+	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length,
+	                             errmsg.str);
 	log_errorf(HASH_LUA, ERROR_EXCEPTION, STRING_CONST("unprotected error in call to Lua API: %.*s"),
 	           STRING_FORMAT(errmsg));
 	return 0;
@@ -217,8 +214,6 @@ lua_allocate(void) {
 
 	lua_atpanic(state, lua_panic);
 
-	lj_clib_getsym_builtin = lua_lookup_builtin;
-
 	//Disable automagic gc
 	lua_gc(state, LUA_GCCOLLECT, 0);
 
@@ -228,8 +223,6 @@ lua_allocate(void) {
 	env->state = state;
 	env->calldepth = 0;
 
-	hashmap_initialize(&env->lookup_map, BUILD_SIZE_LUA_LOOKUP_BUCKETS, 8);
-
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 	semaphore_initialize(&env->execution_right, 1);
 	env->queue_head = 0;
@@ -238,8 +231,6 @@ lua_allocate(void) {
 
 	int stacksize = lua_gettop(state);
 
-	//Libraries
-	log_debug(HASH_LUA, STRING_CONST("Loading Lua built-ins"));
 	luaL_openlibs(state);
 
 	lua_pop(state, lua_gettop(state) - stacksize);
@@ -261,8 +252,6 @@ lua_deallocate(lua_t* env) {
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 	semaphore_finalize(&env->execution_right);
 #endif
-
-	hashmap_finalize(&env->lookup_map);
 
 	memory_deallocate(env);
 }
@@ -441,7 +430,8 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 	if (lua_pcall(state, numargs, 0, 0) != 0) {
 		string_const_t errmsg = {0, 0};
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"), (int)length, method,
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"), (int)length,
+		           method,
 		           STRING_FORMAT(errmsg));
 		result = LUA_ERROR;
 	}
@@ -621,13 +611,6 @@ lua_bind(lua_t* env, const char* method, size_t length, lua_fn fn) {
 	lua_value_t val = { .fn = fn };
 	return lua_do_bind(env, method, length, LUACMD_BIND, val);
 #endif
-}
-
-lua_result_t
-lua_bind_native(lua_t* env, const char* symbol, size_t length, void* value) {
-	hash_t symhash = hash(symbol, length);
-	hashmap_insert(&env->lookup_map, symhash, value);
-	return LUA_OK;
 }
 
 lua_result_t
@@ -982,15 +965,6 @@ lua_timed_gc(lua_t* env, int milliseconds) {
 #endif
 }
 
-static void*
-lua_lookup_builtin(lua_State* state, const char* sym, size_t length) {
-	hash_t symhash = hash(sym, length);
-	lua_t* env = lua_from_state(state);
-	void* fn = hashmap_lookup(&env->lookup_map, symhash);
-	//log_debugf(HASH_LUA, STRING_CONST("Built-in lookup: %.*s -> %p", (int)length, sym, fn);
-	return fn;
-}
-
 lua_t*
 lua_from_state(lua_State* state) {
 	void* env;
@@ -1005,17 +979,35 @@ lua_state(lua_t* env) {
 	return env->state;
 }
 
-hashmap_t*
-lua_lookup_map(lua_t* env) {
-	return &env->lookup_map;
-}
+extern int
+lua_registry_initialize(void);
+
+extern void
+lua_registry_finalize(void);
+
+extern int
+lua_symbol_initialize(void);
+
+extern void
+lua_symbol_finalize(void);
 
 int
 lua_module_initialize(const lua_config_t config) {
 	FOUNDATION_UNUSED(config);
+
+	if (lua_symbol_initialize() < 0)
+		return -1;
+
+	if (lua_registry_initialize() < 0)
+		return -1;
+
+	lua_module_register(STRING_CONST("foundation"), lua_load_foundation_module);
+
 	return 0;
 }
 
 void
 lua_module_finalize(void) {
+	lua_registry_finalize();
+	lua_symbol_finalize();
 }

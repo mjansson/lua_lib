@@ -1,4 +1,4 @@
-# LuaJIT Library  -  MIT License
+# LuaJIT Library  -  Public Domain
 
 This library provides a cross-platform lua library in C11 for games and applications
 based on out foundation library. The latest source code is always available at

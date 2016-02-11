@@ -1,4 +1,4 @@
-/* types.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* build.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at

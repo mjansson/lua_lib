@@ -32,7 +32,7 @@
 #define SYMPREFIX_CF		"luaopen_%s"
 #define SYMPREFIX_BC		"luaJIT_BC_%s"
 
-#if LJ_TARGET_DLOPEN
+#if 0 //LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>
 
@@ -566,12 +566,15 @@ static const luaL_Reg package_global[] = {
   { NULL, NULL }
 };
 
+extern int lj_cf_package_loader_registry(lua_State *L);
+
 static const lua_CFunction package_loaders[] =
 {
   lj_cf_package_loader_preload,
-  lj_cf_package_loader_lua,
-  lj_cf_package_loader_c,
-  lj_cf_package_loader_croot,
+  lj_cf_package_loader_registry,
+  //lj_cf_package_loader_lua,
+  //lj_cf_package_loader_c,
+  //lj_cf_package_loader_croot,
   NULL
 };
 

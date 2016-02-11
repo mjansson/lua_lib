@@ -21,6 +21,7 @@
 
 #include <lua/types.h>
 #include <lua/hashstrings.h>
+#include <lua/module.h>
 #include <lua/foundation.h>
 
 LUA_API int
@@ -34,6 +35,7 @@ lua_module_is_initialized(void);
 
 LUA_API version_t
 lua_module_version(void);
+
 
 //! Allocate environment
 LUA_API lua_t*
@@ -51,10 +53,6 @@ lua_from_state(lua_State* state);
 LUA_API lua_State*
 lua_state(lua_t* env);
 
-//! Get built-in lookup map
-LUA_API hashmap_t*
-lua_lookup_map(lua_t* env);
-
 //! Bind custom method
 LUA_API lua_result_t
 lua_bind(lua_t* env, const char* method, size_t length, lua_fn fn);
@@ -66,10 +64,6 @@ lua_bind_int(lua_t* env, const char* property, size_t length, int value);
 //! Bind custom value
 LUA_API lua_result_t
 lua_bind_value(lua_t* env, const char* property, size_t length, real value);
-
-//! Bind native method available through FFI
-LUA_API lua_result_t
-lua_bind_native(lua_t* env, const char* symbol, size_t length, void* value);
 
 //! Load code from string
 LUA_API lua_result_t

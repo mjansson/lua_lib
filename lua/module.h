@@ -1,4 +1,4 @@
-/* foundation.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* module.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
@@ -14,15 +14,12 @@
 
 #pragma once
 
-/*! \file foundation.h
-    Lua scripting environment */
+/*! \file module.h
+    Registry for lua modules */
 
 #include <foundation/platform.h>
 
 #include <lua/types.h>
 
-LUA_API int
-lua_load_foundation_module(lua_State* state);
-
 LUA_API void
-lua_load_foundation_symbols(void);
+lua_module_register(const char* name, size_t length, lua_fn loader);
