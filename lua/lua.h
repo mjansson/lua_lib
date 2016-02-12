@@ -21,7 +21,11 @@
 
 #include <lua/types.h>
 #include <lua/hashstrings.h>
+#include <lua/bind.h>
 #include <lua/module.h>
+#include <lua/symbol.h>
+#include <lua/read.h>
+#include <lua/compile.h>
 #include <lua/foundation.h>
 
 LUA_API int
@@ -93,9 +97,9 @@ lua_call_real(lua_t* env, const char* method, size_t length, real arg);
 LUA_API lua_result_t
 lua_call_int(lua_t* env, const char* method, size_t length, int arg);
 
-//! Call method
+//! Call method (arglength must fit in a uint16_t)
 LUA_API lua_result_t
-lua_call_string(lua_t* env, const char* method, size_t length, const char* arg);
+lua_call_string(lua_t* env, const char* method, size_t length, const char* arg, size_t arglength);
 
 //! Call method
 LUA_API lua_result_t

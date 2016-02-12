@@ -1,4 +1,4 @@
-/* module.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* errorcodes.h  -  Lua library compiler  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
@@ -14,15 +14,7 @@
 
 #pragma once
 
-/*! \file module.h
-    Registry for lua modules */
-
-#include <foundation/platform.h>
-
-#include <lua/types.h>
-
-LUA_API void
-lua_module_register(const char* name, size_t length, uuid_t uuid, lua_fn loader, lua_preload_fn preload);
-
-LUA_API int
-lua_module_loader(lua_State* state);
+//Error codes returned by luacompile tool
+#define LUACOMPILE_RESULT_OK                           0
+#define LUACOMPILE_RESULT_UNSUPPORTED_INPUT           -1
+#define LUACOMPILE_RESULT_INVALID_INPUT               -2

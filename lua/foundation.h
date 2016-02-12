@@ -21,8 +21,5 @@
 
 #include <lua/types.h>
 
-LUA_API int
-lua_load_foundation_module(lua_State* state);
-
 LUA_API void
-lua_load_foundation_symbols(void);
+lua_symbol_load_foundation(void);

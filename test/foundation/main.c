@@ -13,6 +13,7 @@
  */
 
 #include <foundation/foundation.h>
+#include <resource/resource.h>
 #include <lua/lua.h>
 #include <test/test.h>
 
@@ -41,14 +42,26 @@ test_foundation_config(void) {
 
 int
 test_foundation_initialize(void) {
-	lua_config_t config;
-	memset(&config, 0, sizeof(config));
-	return lua_module_initialize(config);
+	lua_config_t lua_config;
+	resource_config_t resource_config;
+
+	memset(&lua_config, 0, sizeof(lua_config));
+	memset(&resource_config, 0, sizeof(resource_config));
+
+	resource_config.enable_local_source = true;
+	resource_config.enable_local_cache = true;
+	resource_config.enable_remote_source = true;
+
+	if (resource_module_initialize(resource_config) < 0)
+		return -1;
+
+	return lua_module_initialize(lua_config);
 }
 
 void
 test_foundation_finalize(void) {
 	lua_module_finalize();
+	resource_module_finalize();
 }
 
 DECLARE_TEST(foundation, log) {

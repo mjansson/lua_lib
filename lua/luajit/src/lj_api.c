@@ -747,10 +747,15 @@ LUA_API void lua_gettable(lua_State *L, int idx)
 
 LUA_API void lua_getfield(lua_State *L, int idx, const char *k)
 {
+  lua_getlfield(L, idx, k, strlen(k));
+}
+
+LUA_API void lua_getlfield(lua_State *L, int idx, const char *k, size_t n)
+{
   cTValue *v, *t = index2adr(L, idx);
   TValue key;
   api_checkvalidindex(L, t);
-  setstrV(L, &key, lj_str_newz(L, k));
+  setstrV(L, &key, lj_str_new(L, k, n));
   v = lj_meta_tget(L, t, &key);
   if (v == NULL) {
     L->top += 2;
@@ -910,12 +915,17 @@ LUA_API void lua_settable(lua_State *L, int idx)
 
 LUA_API void lua_setfield(lua_State *L, int idx, const char *k)
 {
+  lua_setlfield(L, idx, k, strlen(k));
+}
+
+LUA_API void lua_setlfield(lua_State *L, int idx, const char *k, size_t n)
+{
   TValue *o;
   TValue key;
   cTValue *t = index2adr(L, idx);
   api_checknelems(L, 1);
   api_checkvalidindex(L, t);
-  setstrV(L, &key, lj_str_newz(L, k));
+  setstrV(L, &key, lj_str_new(L, k, n));
   o = lj_meta_tset(L, t, &key);
   if (o) {
     /* NOBARRIER: lj_meta_tset ensures the table is not black. */

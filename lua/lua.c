@@ -12,6 +12,8 @@
  * http://luajit.org/
  */
 
+#define LUA_USE_INTERNAL_HEADER
+
 #include <lua/lua.h>
 #include <lua/hashstrings.h>
 #include <lua/foundation.h>
@@ -175,15 +177,18 @@ lua_run_gc(lua_t* env, int milliseconds) {
 
 static FOUNDATION_NOINLINE void*
 lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
-	if (!nsize && osize)
+	if (!nsize && osize) {
 		memory_deallocate(block);
-	else if (!block)
-		block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS);
-	else if (nsize)
-		block = memory_reallocate(block, nsize, 0, osize);
-	if (block == 0 && nsize > 0 && env && ((lua_t*)env)->state)
-		log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%u bytes)"),
-		           nsize);
+	}
+	else if (nsize) {
+		if (!block)
+			block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS);
+		else
+			block = memory_reallocate(block, nsize, 0, osize);
+		if (block == 0 && env && ((lua_t*)env)->state)
+			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%u bytes)"),
+			           nsize);
+	}
 	return block;
 }
 
@@ -200,8 +205,7 @@ lua_panic(lua_State* state) {
 
 lua_t*
 lua_allocate(void) {
-	lua_t* env = memory_allocate(HASH_LUA,
-	                             sizeof(lua_t) + sizeof(hashmap_node_t*) * BUILD_SIZE_LUA_LOOKUP_BUCKETS, 0,
+	lua_t* env = memory_allocate(HASH_LUA, sizeof(lua_t), 0,
 	                             MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS | MEMORY_ZERO_INITIALIZED);
 
 	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
@@ -218,7 +222,7 @@ lua_allocate(void) {
 	lua_gc(state, LUA_GCCOLLECT, 0);
 
 	lua_pushlightuserdata(state, env);
-	lua_setglobal(state, "__environment");
+	lua_setlglobal(state, "__environment", 13);
 
 	env->state = state;
 	env->calldepth = 0;
@@ -298,7 +302,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 	next = string_find(method, length, '.', 0);
 	if (next != STRING_NPOS) {
 		part = string_copy(buffer, sizeof(buffer), method, next);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
 			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
 			           STRING_CONST("Invalid script call, '%.*s' is not set (%.*s)"),
@@ -323,7 +327,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 		next = string_find(method, length, '.', next);
 		while (next != STRING_NPOS) {
 			part = string_copy(buffer, sizeof(buffer), method + start, next - start);
-			lua_pushstring(state, part.str);
+			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -350,12 +354,12 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 		}
 
 		part = string_copy(buffer, sizeof(buffer), method + start, length - start);
-		lua_pushstring(state, part.str);
+		lua_pushlstring(state, part.str, part.length);
 		lua_gettable(state, -2);
 	}
 	else {
 		part = string_copy(buffer, sizeof(buffer), method, length);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 	}
 
 	if (lua_isnil(state, -1)) {
@@ -390,7 +394,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 				break;
 
 			case LUADATA_STR:
-				lua_pushstring(state, arg->value[i].str);
+				lua_pushlstring(state, arg->value[i].str, arg->size[i]);
 				break;
 
 			case LUADATA_BOOL:
@@ -466,8 +470,8 @@ lua_call_bool(lua_t* env, const char* method, size_t length, bool val) {
 }
 
 lua_result_t
-lua_call_string(lua_t* env, const char* method, size_t length, const char* str) {
-	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_STR, .value[0].str = str };
+lua_call_string(lua_t* env, const char* method, size_t length, const char* str, size_t arglength) {
+	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_STR, .size[0] = (uint16_t)arglength, .value[0].str = str };
 	return lua_call_custom(env, method, length, &arg);
 }
 
@@ -665,9 +669,8 @@ lua_push_integer(lua_State* state, const char* name, size_t length, int value) {
 
 static FOUNDATION_NOINLINE void
 lua_push_integer_global(lua_State* state, const char* name, size_t length, int value) {
-	FOUNDATION_UNUSED(length);
 	lua_pushinteger(state, value);
-	lua_setglobal(state, name);
+	lua_setlglobal(state, name, length);
 }
 
 static FOUNDATION_NOINLINE void
@@ -679,9 +682,8 @@ lua_push_number(lua_State* state, const char* name, size_t length, real value) {
 
 static FOUNDATION_NOINLINE void
 lua_push_number_global(lua_State* state, const char* name, size_t length, real value) {
-	FOUNDATION_UNUSED(length);
 	lua_pushnumber(state, value);
-	lua_setglobal(state, name);
+	lua_setlglobal(state, name, length);
 }
 
 static FOUNDATION_NOINLINE void
@@ -693,9 +695,8 @@ lua_push_method(lua_State* state, const char* name, size_t length, lua_CFunction
 
 static FOUNDATION_NOINLINE void
 lua_push_method_global(lua_State* state, const char* name, size_t length, lua_CFunction fn) {
-	FOUNDATION_UNUSED(length);
 	lua_pushcclosure(state, fn, 0);
-	lua_setglobal(state, name);
+	lua_setlglobal(state, name, length);
 }
 
 static lua_result_t
@@ -718,13 +719,13 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 		unsigned int numtables = 0;
 		part = string_copy(buffer, sizeof(buffer), property, next);
 
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
 			//Create global table
 			lua_pop(state, 1);
 			lua_newtable(state);
 			lua_pushvalue(state, -1);
-			lua_setglobal(state, part.str);
+			lua_setlglobal(state, part.str, part.length);
 			log_debugf(HASH_LUA, STRING_CONST("Created global table: %.*s"), STRING_FORMAT(part));
 		}
 		else if (!lua_istable(state, -1)) {
@@ -744,13 +745,13 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 		next = string_find(property, length, '.', next);
 		while (next != STRING_NPOS) {
 			part = string_copy(buffer, sizeof(buffer), property + start, next - start);
-			lua_pushstring(state, part.str);
+			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
 				//Create sub-table
 				lua_pop(state, 1);
 				lua_newtable(state);
-				lua_pushstring(state, part.str);
+				lua_pushlstring(state, part.str, part.length);
 				lua_pushvalue(state, -2);
 				lua_settable(state, -4);
 				log_debugf(HASH_LUA, STRING_CONST("Created table: %.*s"), next, property);
@@ -872,7 +873,7 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 	next = string_find(property, length, '.', 0);
 	if (next != STRING_NPOS) {
 		part = string_copy(buffer, sizeof(buffer), property, next);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
 			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
 			           STRING_CONST("Invalid script get, '%.*s' is not set (%.*s)"),
@@ -893,7 +894,7 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 		next = string_find(property, length, '.', next);
 		while (next != STRING_NPOS) {
 			part = string_copy(buffer, sizeof(buffer), property + start, next - start);
-			lua_pushstring(state, part.str);
+			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -916,12 +917,12 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 		}
 
 		part = string_copy(buffer, sizeof(buffer), property + start, length - start);
-		lua_pushstring(state, part.str);
+		lua_pushlstring(state, part.str, part.length);
 		lua_gettable(state, -2);
 	}
 	else {
 		part = string_copy(buffer, sizeof(buffer), property, length);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 	}
 
 	if (lua_isnil(state, -1)) {
@@ -972,7 +973,7 @@ lua_timed_gc(lua_t* env, int milliseconds) {
 lua_t*
 lua_from_state(lua_State* state) {
 	void* env;
-	lua_getglobal(state, "__environment");
+	lua_getlglobal(state, "__environment", 13);
 	env = lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	return env;
@@ -1005,7 +1006,8 @@ lua_module_initialize(const lua_config_t config) {
 	if (lua_registry_initialize() < 0)
 		return -1;
 
-	lua_module_register(STRING_CONST("foundation"), lua_load_foundation_module);
+	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
+	                    lua_symbol_load_foundation);
 
 	return 0;
 }

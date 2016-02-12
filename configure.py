@@ -9,7 +9,7 @@ sys.path.insert( 0, os.path.join( 'build', 'ninja' ) )
 
 import generator
 
-dependlibs = [ 'foundation' ]
+dependlibs = [ 'resource', 'foundation' ]
 
 generator = generator.Generator( project = 'lua', dependlibs = dependlibs, variables = [ ( 'bundleidentifier', 'com.rampantpixels.lua.$(binname)' ) ] )
 target = generator.target
@@ -17,13 +17,15 @@ writer = generator.writer
 toolchain = generator.toolchain
 
 lua_lib = generator.lib( module = 'lua', sources = [
-  'foundation.c', 'lua.c', 'module.c', 'read.c', 'symbol.c', 'version.c' ] )
+  'compile.c', 'foundation.c', 'lua.c', 'module.c', 'read.c', 'symbol.c', 'version.c' ] )
 
 if not target.is_ios() and not target.is_android():
   configs = [ config for config in toolchain.configs if config not in [ 'profile', 'deploy' ] ]
   if not configs == []:
     generator.bin( 'lua', [ 'main.c' ], 'lua', basepath = 'tools', implicit_deps = [ lua_lib ], libs = [ 'lua', 'foundation', 'luajit' ], configs = configs )
     generator.bin( 'luadump', [ 'main.c' ], 'luadump', basepath = 'tools', implicit_deps = [ lua_lib ], libs = [ 'lua', 'foundation', 'luajit' ], configs = configs )
+    generator.bin( 'luaimport', [ 'main.c' ], 'luaimport', basepath = 'tools', implicit_deps = [ lua_lib ], libs = [ 'lua', 'resource', 'foundation', 'luajit' ], configs = configs )
+    generator.bin( 'luacompile', [ 'main.c' ], 'luacompile', basepath = 'tools', implicit_deps = [ lua_lib ], libs = [ 'lua', 'resource', 'foundation', 'luajit' ], configs = configs )
 
 includepaths = generator.test_includepaths()
 

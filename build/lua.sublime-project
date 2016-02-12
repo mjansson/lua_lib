@@ -1,4 +1,12 @@
 {
+	"build_systems":
+	[
+		{
+			"name": "Ninja",
+			"shell_cmd": "ninja",
+			"working_dir": "${project_path:${folder:${file_path}}}/.."
+		}
+	],
 	"folders":
 	[
 		{
@@ -16,36 +24,36 @@
 		{
 			"follow_symlinks": true,
 			"path": "../doc"
-		}
-	],
-	"build_systems":
-	[
+		},
 		{
-			"name": "Ninja",
-			"shell_cmd": "ninja",
-			"working_dir": "${project_path:${folder:${file_path}}}/..",
+			"follow_symlinks": true,
+			"path": "../config"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "../resource"
 		}
 	],
-	"translate_tabs_to_spaces": false,
-	"use_tab_stops": true,
-	"trim_trailing_white_space_on_save": true,
 	"settings":
 	{
 		"AStyleFormatter":
 		{
 			"options_default":
 			{
-				"style" : "attach",
-				"pad-oper": true,
-				"indent-switches" : false,
-				"indent-cases" : true,
-				"unpad-paren": true,
-				"break-closing-brackets": true,
 				"align-pointer": "type",
+				"break-after-logical": true,
+				"break-closing-brackets": true,
+				"indent-cases": true,
+				"indent-switches": false,
 				"max-code-length": 100,
 				"max-instatement-indent": 60,
-				"break-after-logical": true
+				"pad-oper": true,
+				"style": "attach",
+				"unpad-paren": true
 			}
 		}
-	}
+	},
+	"translate_tabs_to_spaces": false,
+	"trim_trailing_white_space_on_save": true,
+	"use_tab_stops": true
 }

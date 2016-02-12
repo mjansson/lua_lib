@@ -15,12 +15,14 @@
 #pragma once
 
 /*! \file luajit.h
-    Stripped down internal Lua table for binding access */
+    Stripped down internal Lua definitions for binding access */
 
 #include <foundation/platform.h>
 #include <foundation/types.h>
 
-#include <lua/lua.h>
+#include <lua/types.h>
+
+#ifndef LUA_USE_INTERNAL_HEADER
 
 #define LUA_NUMBER         double
 #define LUA_INTEGER        uintptr_t
@@ -80,6 +82,7 @@ LUA_EXTERN int             (lua_pushthread) (lua_State *L);
 
 LUA_EXTERN void            (lua_gettable) (lua_State *L, int idx);
 LUA_EXTERN void            (lua_getfield) (lua_State *L, int idx, const char *k);
+LUA_EXTERN void            (lua_getlfield) (lua_State *L, int idx, const char *k, size_t n);
 LUA_EXTERN void            (lua_rawget) (lua_State *L, int idx);
 LUA_EXTERN void            (lua_rawgeti) (lua_State *L, int idx, int n);
 LUA_EXTERN void            (lua_createtable) (lua_State *L, int narr, int nrec);
@@ -89,6 +92,7 @@ LUA_EXTERN void            (lua_getfenv) (lua_State *L, int idx);
 
 LUA_EXTERN void            (lua_settable) (lua_State *L, int idx);
 LUA_EXTERN void            (lua_setfield) (lua_State *L, int idx, const char *k);
+LUA_EXTERN void            (lua_setlfield) (lua_State *L, int idx, const char *k, size_t n);
 LUA_EXTERN void            (lua_rawset) (lua_State *L, int idx);
 LUA_EXTERN void            (lua_rawseti) (lua_State *L, int idx, int n);
 LUA_EXTERN int             (lua_setmetatable) (lua_State *L, int objindex);
@@ -141,6 +145,8 @@ LUA_EXTERN int             (lua_setfenv) (lua_State *L, int idx);
 
 #define lua_setglobal(L,s)        lua_setfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_getglobal(L,s)        lua_getfield(L, LUA_GLOBALSINDEX, (s))
+#define lua_setlglobal(L,s,n)     lua_setlfield(L, LUA_GLOBALSINDEX, (s), (n))
+#define lua_getlglobal(L,s,n)     lua_getlfield(L, LUA_GLOBALSINDEX, (s), (n))
 
 #define lua_tostring(L,i)         lua_tolstring(L, (i), 0)
 
@@ -166,3 +172,5 @@ LUA_EXTERN int             (lua_setfenv) (lua_State *L, int idx);
 * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ******************************************************************************/
+
+#endif

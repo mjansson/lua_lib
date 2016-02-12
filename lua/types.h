@@ -69,7 +69,8 @@ typedef enum {
 } lua_data_t;
 
 typedef struct lua_State lua_State;
-typedef int (*lua_fn)(struct lua_State*);
+typedef int (*lua_fn)(lua_State*);
+typedef void (*lua_preload_fn)(void);
 
 typedef union lua_value_t lua_value_t;
 
@@ -146,4 +147,4 @@ struct lua_t
 #endif
 };
 
-
+#define LUA_FOUNDATION_UUID uuid_make(0x4666006cd11e65efULL, 0x291433d0785ef08dULL)

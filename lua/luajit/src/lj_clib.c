@@ -364,7 +364,8 @@ TValue *lj_clib_index(lua_State *L, CLibrary *cl, GCstr *name)
 			       cconv == CTCC_FASTCALL ? "@%s@%d" : "_%s@%d",
 			       sym, sz);
 	  L->top--;
-	  p = clib_getsym(cl, symd);
+    p = lj_clib_getsym_registry(L, symd, strlen(symd));
+	  //p = clib_getsym(cl, symd);
 	}
       }
 #endif
