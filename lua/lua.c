@@ -290,8 +290,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 	int numargs, i;
 	int stacksize;
 	size_t start, next;
-	char buffer[BUILD_SIZE_LUA_NAME_MAXLENGTH];
-	string_t part;
+	string_const_t part;
 
 	state = env->state;
 	stacksize = lua_gettop(state);
@@ -301,7 +300,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 
 	next = string_find(method, length, '.', 0);
 	if (next != STRING_NPOS) {
-		part = string_copy(buffer, sizeof(buffer), method, next);
+		part = string_const(method, next);
 		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
 			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -326,7 +325,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 
 		next = string_find(method, length, '.', next);
 		while (next != STRING_NPOS) {
-			part = string_copy(buffer, sizeof(buffer), method + start, next - start);
+			part = string_const(method + start, next - start);
 			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
@@ -353,13 +352,12 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 			next = string_find(method, length, '.', next);
 		}
 
-		part = string_copy(buffer, sizeof(buffer), method + start, length - start);
+		part = string_const(method + start, length - start);
 		lua_pushlstring(state, part.str, part.length);
 		lua_gettable(state, -2);
 	}
 	else {
-		part = string_copy(buffer, sizeof(buffer), method, length);
-		lua_getlglobal(state, part.str, part.length);
+		lua_getlglobal(state, method, length);
 	}
 
 	if (lua_isnil(state, -1)) {
@@ -704,8 +702,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 	lua_State* state;
 	int stacksize;
 	size_t start, next;
-	char buffer[BUILD_SIZE_LUA_NAME_MAXLENGTH];
-	string_t part;
+	string_const_t part;
 
 	if (!env || !length)
 		return LUA_ERROR;
@@ -717,7 +714,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 	if (next != STRING_NPOS) {
 		int tables;
 		unsigned int numtables = 0;
-		part = string_copy(buffer, sizeof(buffer), property, next);
+		part = string_const(property, next);
 
 		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
@@ -744,7 +741,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 
 		next = string_find(property, length, '.', next);
 		while (next != STRING_NPOS) {
-			part = string_copy(buffer, sizeof(buffer), property + start, next - start);
+			part = string_const(property + start, next - start);
 			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
@@ -772,7 +769,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 			++numtables;
 		}
 
-		part = string_copy(buffer, sizeof(buffer), property + start, length - start);
+		part = string_const(property + start, length - start);
 
 		switch (cmd) {
 		case LUACMD_BIND:
@@ -794,7 +791,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 		FOUNDATION_ASSERT(tables == (int)numtables);
 	}
 	else {
-		part = string_copy(buffer, sizeof(buffer), property, length);
+		part = string_const(property, length);
 		switch (cmd) {
 		case LUACMD_BIND:
 			lua_push_method_global(state, STRING_ARGS(part), val.fn);
