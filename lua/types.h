@@ -68,6 +68,16 @@ typedef enum {
 	LUADATA_REALARR
 } lua_data_t;
 
+typedef enum {
+	LUACMD_WAIT = 0,
+	LUACMD_LOAD,
+	LUACMD_EVAL,
+	LUACMD_CALL,
+	LUACMD_BIND,
+	LUACMD_BIND_INT,
+	LUACMD_BIND_VAL
+} lua_command_t;
+
 typedef struct lua_State lua_State;
 typedef int (*lua_fn)(lua_State*);
 typedef void (*lua_preload_fn)(void);
@@ -75,11 +85,16 @@ typedef void (*lua_preload_fn)(void);
 typedef union lua_value_t lua_value_t;
 
 typedef struct lua_arg_t lua_arg_t;
+typedef struct lua_op_t lua_op_t;
 typedef struct lua_readstream_t lua_readstream_t;
 typedef struct lua_readbuffer_t lua_readbuffer_t;
 typedef struct lua_readstring_t lua_readstring_t;
 typedef struct lua_config_t lua_config_t;
 typedef struct lua_t lua_t;
+
+struct lua_config_t {
+	unsigned int __unused;
+};
 
 union lua_value_t {
 	void*       ptr;
@@ -91,15 +106,20 @@ union lua_value_t {
 	lua_fn      fn;
 };
 
-struct lua_config_t {
-	unsigned int __unused;
-};
-
 struct lua_arg_t {
 	int32_t     num;
 	uint8_t     type[LUA_MAX_ARGS];
 	uint16_t    size[LUA_MAX_ARGS];
 	lua_value_t value[LUA_MAX_ARGS];
+};
+
+struct lua_op_t {
+	lua_command_t         cmd;
+	union {
+		const char*       name;
+		void*             ptr;
+	} data;
+	lua_arg_t             arg;
 };
 
 struct lua_readstream_t {

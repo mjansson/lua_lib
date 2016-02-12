@@ -17,7 +17,7 @@ writer = generator.writer
 toolchain = generator.toolchain
 
 lua_lib = generator.lib( module = 'lua', sources = [
-  'compile.c', 'foundation.c', 'lua.c', 'module.c', 'read.c', 'symbol.c', 'version.c' ] )
+  'bind.c', 'compile.c', 'foundation.c', 'lua.c', 'module.c', 'read.c', 'symbol.c', 'version.c' ] )
 
 if not target.is_ios() and not target.is_android():
   configs = [ config for config in toolchain.configs if config not in [ 'profile', 'deploy' ] ]
@@ -30,7 +30,7 @@ if not target.is_ios() and not target.is_android():
 includepaths = generator.test_includepaths()
 
 test_cases = [
-  'foundation'
+  'bind', 'foundation'
 ]
 if target.is_ios() or target.is_android():
   #Build one fat binary with all test cases

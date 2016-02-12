@@ -31,13 +31,25 @@
 #define LUABIND_GET_OBJECT(x)    (lua_toobject(state, (x)))
 #define LUABIND_GET_DATA(t,x)    ((t*)lua_touserdata(state, (x)))
 
-#define LUABIND_PUT_NIL()       (lua_pushnil(state))
-#define LUABIND_PUT_CSTR(x)     (lua_pushstring(state, (x)))
-#define LUABIND_PUT_STRING(x)   (lua_pushlstring(state, (x).str, (x).length))
-#define LUABIND_PUT_INT(x)      (lua_pushinteger(state, (x)))
-#define LUABIND_PUT_UINT(x)     (lua_pushinteger(state, (x)))
-#define LUABIND_PUT_REAL(x)     (lua_pushnumber(state, (x)))
-#define LUABIND_PUT_BOOL(x)     (lua_pushboolean(state, (x)))
-#define LUABIND_PUT_OBJECT(x)   (lua_pushobject(state, (uint64_t)(x)))
-#define LUABIND_PUT_DATA(x)     (lua_pushlightuserdata(state, (x)))
+#define LUABIND_PUT_NIL()        (lua_pushnil(state))
+#define LUABIND_PUT_CSTR(x)      (lua_pushstring(state, (x)))
+#define LUABIND_PUT_STRING(x)    (lua_pushlstring(state, (x).str, (x).length))
+#define LUABIND_PUT_INT(x)       (lua_pushinteger(state, (x)))
+#define LUABIND_PUT_UINT(x)      (lua_pushinteger(state, (x)))
+#define LUABIND_PUT_REAL(x)      (lua_pushnumber(state, (x)))
+#define LUABIND_PUT_BOOL(x)      (lua_pushboolean(state, (x)))
+#define LUABIND_PUT_OBJECT(x)    (lua_pushobject(state, (uint64_t)(x)))
+#define LUABIND_PUT_DATA(x)      (lua_pushlightuserdata(state, (x)))
 
+
+//! Bind custom function
+LUA_API lua_result_t
+lua_bind_function(lua_t* env, const char* method, size_t length, lua_fn fn);
+
+//! Bind custom integer
+LUA_API lua_result_t
+lua_bind_int(lua_t* env, const char* property, size_t length, int value);
+
+//! Bind custom value
+LUA_API lua_result_t
+lua_bind_real(lua_t* env, const char* property, size_t length, real value);

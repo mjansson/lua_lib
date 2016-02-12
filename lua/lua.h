@@ -57,18 +57,6 @@ lua_from_state(lua_State* state);
 LUA_API lua_State*
 lua_state(lua_t* env);
 
-//! Bind custom method
-LUA_API lua_result_t
-lua_bind(lua_t* env, const char* method, size_t length, lua_fn fn);
-
-//! Bind custom integer
-LUA_API lua_result_t
-lua_bind_int(lua_t* env, const char* property, size_t length, int value);
-
-//! Bind custom value
-LUA_API lua_result_t
-lua_bind_value(lua_t* env, const char* property, size_t length, real value);
-
 //! Load code from string
 LUA_API lua_result_t
 lua_eval_string(lua_t* env, const char* code, size_t length);
