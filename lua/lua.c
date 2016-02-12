@@ -112,27 +112,23 @@ lua_execute_pending(lua_t* env) {
 	while (env->queue[head].cmd != LUACMD_WAIT) {
 		//Execute
 		switch (env->queue[head].cmd) {
-		case LUACMD_LOAD: {
-				lua_do_eval_stream(env, env->queue[head].data.ptr);
-				break;
-			}
+		case LUACMD_LOAD:
+			lua_do_eval_stream(env, env->queue[head].data.ptr);
+			break;
 
-		case LUACMD_EVAL: {
-				lua_do_eval_string(env, env->queue[head].data.name);
-				break;
-			}
+		case LUACMD_EVAL:
+			lua_do_eval_string(env, env->queue[head].data.name);
+			break;
 
-		case LUACMD_CALL: {
-				lua_do_call_custom(env, env->queue[head].data.name, &env->queue[head].arg);
-				break;
-			}
+		case LUACMD_CALL:
+			lua_do_call_custom(env, env->queue[head].data.name, &env->queue[head].arg);
+			break;
 
 		case LUACMD_BIND:
 		case LUACMD_BIND_INT:
-		case LUACMD_BIND_VAL: {
-				lua_do_bind(env, env->queue[head].data.name, env->queue[head].cmd, env->queue[head].arg.value[0]);
-				break;
-			}
+		case LUACMD_BIND_VAL:
+			lua_do_bind(env, env->queue[head].data.name, env->queue[head].cmd, env->queue[head].arg.value[0]);
+			break;
 
 		default:
 			break;
