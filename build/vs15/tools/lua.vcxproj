@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,13 +22,14 @@
     <ProjectGuid>{6a2a0216-08dd-472c-93fa-99a49ccc9094}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>lua</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>Intel C++ Compiler XE 14.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseIntelIPP>Sequential</UseIntelIPP>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
@@ -36,7 +37,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>Intel C++ Compiler XE 14.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseIntelIPP>Sequential</UseIntelIPP>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
@@ -45,7 +46,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>Intel C++ Compiler XE 14.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseIntelIPP>Sequential</UseIntelIPP>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -53,7 +54,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>Intel C++ Compiler XE 14.0</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <UseIntelIPP>Sequential</UseIntelIPP>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -74,22 +75,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\bin\win32\debug\</OutDir>
+    <OutDir>..\..\bin\windows\debug\x86\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\..\bin\win64\debug\</OutDir>
+    <OutDir>..\..\bin\windows\debug\x86-64\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\bin\win32\release\</OutDir>
+    <OutDir>..\..\bin\windows\release\x86\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\..\bin\win64\release\</OutDir>
+    <OutDir>..\..\bin\windows\release\x86-64\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -98,7 +99,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..\..\resource_lib;..\..;..\..\..</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -128,8 +129,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\win32\debug;..\..\..\lib\win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>luajit.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\windows\debug\x86;..\..\..\..\resource_lib\lib\windows\debug\x86;..\..\..\lib\windows\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luajit.lib;resource.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -138,7 +139,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..\..\resource_lib;..\..;..\..\..</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -168,8 +169,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\win64\debug;..\..\..\lib\win64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>luajit.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\windows\debug\x86-64;..\..\..\..\resource_lib\lib\windows\debug\x86-64;..\..\..\lib\windows\x86-64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luajit.lib;resource.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -181,7 +182,7 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>BUILD_RELEASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..\..\resource_lib;..\..;..\..\..</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -211,8 +212,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\win32\release;..\..\..\lib\win32</AdditionalLibraryDirectories>
-      <AdditionalDependencies>luajit.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\windows\release\x86;..\..\..\..\resource_lib\lib\windows\release\x86;..\..\..\lib\windows\x86</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luajit.lib;resource.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -224,7 +225,7 @@
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>BUILD_RELEASE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\..\foundation_lib;..\..\..\..\resource_lib;..\..;..\..\..</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAsManaged>false</CompileAsManaged>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -254,8 +255,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\win64\release;..\..\..\lib\win64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>luajit.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\..\foundation_lib\lib\windows\release\x86-64;..\..\..\..\resource_lib\lib\windows\release\x86-64;..\..\..\lib\windows\x86-64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>luajit.lib;resource.lib;foundation.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

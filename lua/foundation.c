@@ -86,6 +86,40 @@ _error_context_buffer_disabled(char* str, size_t length) {
 
 #endif
 
+#if !BUILD_ENABLE_MEMORY_CONTEXT
+
+#undef memory_context_push
+#undef memory_context_pop
+#undef memory_context
+
+static void
+memory_context_push(hash_t context) {
+	FOUNDATION_UNUSED(context);
+}
+
+static void
+memory_context_pop(void) {
+}
+
+static hash_t
+memory_context(void) {
+	return 0;
+}
+
+#endif
+
+#if !BUILD_ENABLE_STATIC_HASH_DEBUG
+
+#undef hash_to_string
+
+static string_const_t
+hash_to_string(hash_t value) {
+	FOUNDATION_UNUSED(value);
+	return string_empty();
+}
+
+#endif
+
 static void*
 _array_allocate_pointer(int size) {
 	void** arr = 0;
@@ -585,7 +619,7 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(profile_signal, PROFILE_SIGNAL);
 #else
 	FOUNDATION_SYM(_profile_initialize, PROFILE_INITIALIZE);
-	FOUNDATION_SYM(_profile_void, PROFILE_SHUTDOWN);
+	FOUNDATION_SYM(_profile_void, PROFILE_FINALIZE);
 	FOUNDATION_SYM(_profile_bool, PROFILE_ENABLE);
 	FOUNDATION_SYM(_profile_fn, PROFILE_SET_OUTPUT);
 	FOUNDATION_SYM(_profile_int, PROFILE_SET_OUTPUT_WAIT);
