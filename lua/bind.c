@@ -72,6 +72,7 @@ lua_bind_function(lua_t* env, const char* method, size_t length, lua_fn fn) {
 		lua_op_t op;
 		op.cmd = LUACMD_BIND;
 		op.data.name = method;
+		op.size = length;
 		op.arg.value[0].fn = fn;
 		lua_push_op(env, &op);
 		return LUA_QUEUED;
@@ -94,6 +95,7 @@ lua_bind_int(lua_t* env, const char* property, size_t length, int value) {
 		lua_op_t op;
 		op.cmd = LUACMD_BIND_INT;
 		op.data.name = property;
+		op.size = length;
 		op.arg.value[0].ival = value;
 		lua_push_op(env, &op);
 		return LUA_QUEUED;
@@ -116,6 +118,7 @@ lua_bind_real(lua_t* env, const char* property, size_t length, real value) {
 		lua_op_t op;
 		op.cmd = LUACMD_BIND_VAL;
 		op.data.name = property;
+		op.size = length;
 		op.arg.value[0].val = value;
 		lua_push_op(env, &op);
 		return LUA_QUEUED;

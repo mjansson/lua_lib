@@ -23,7 +23,7 @@
 #include <foundation/stream.h>
 #include <foundation/log.h>
 
-#include <resource/local.h>
+#include <resource/stream.h>
 #include <resource/platform.h>
 
 #undef LUA_API
@@ -121,14 +121,12 @@ lua_module_register(const char* name, size_t length, uuid_t uuid, lua_fn loader,
 static lua_module_t
 lua_module_load(const uuid_t uuid) {
 	lua_module_t module = {0, 0};
-
-#if RESOURCE_ENABLE_LOCAL_CACHE
+	bool success = false;
 	const uint32_t expected_version = 1;
 	uint64_t platform = 0;
 	stream_t* stream;
-	bool success = false;
 
-	stream = resource_local_open_static(uuid, platform);
+	stream = resource_stream_open_static(uuid, platform);
 	if (stream) {
 		hash_t type_hash = stream_read_uint64(stream);
 		uint32_t version = stream_read_uint32(stream);
@@ -144,7 +142,7 @@ lua_module_load(const uuid_t uuid) {
 		stream = nullptr;
 	}
 	if (success)
-		stream = resource_local_open_dynamic(uuid, platform);
+		stream = resource_stream_open_dynamic(uuid, platform);
 	if (stream) {
 		uint32_t version = stream_read_uint32(stream);
 		size_t size = (size_t)stream_read_uint64(stream);
@@ -166,9 +164,8 @@ lua_module_load(const uuid_t uuid) {
 		stream_deallocate(stream);
 		stream = nullptr;
 	}
-#endif
 
-	return module;
+	return module;	
 }
 
 int
@@ -186,6 +183,8 @@ lua_module_loader(lua_State* state) {
 			string_const_t uuidstr = string_from_uuid_static(entry->uuid);
 			log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Unable to load Lua module %.*s"),
 			           STRING_FORMAT(uuidstr));
+			lua_pushfstring(state, "unable to load module '%s'", uuidstr.str);
+			lua_error(state);
 			goto exit;
 		}
 	}

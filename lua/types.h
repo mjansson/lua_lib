@@ -119,6 +119,7 @@ struct lua_op_t {
 		const char*       name;
 		void*             ptr;
 	} data;
+	size_t                size;
 	lua_arg_t             arg;
 };
 

@@ -20,6 +20,7 @@
 #include <lua/read.h>
 
 #include <foundation/foundation.h>
+#include <resource/compile.h>
 
 #include <setjmp.h>
 
@@ -49,27 +50,27 @@ lua_do_get(lua_t* env, const char* property, size_t length);
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 
-/*static FOUNDATION_FORCEINLINE bool lua_has_execution_right( lua_t* env )
-{
-	return ( env->executing_thread == thread_id() );
-}*/
+bool
+lua_has_execution_right(lua_t* env) {
+	return (atomic_load64(&env->executing_thread) == thread_id());
+}
 
-static FOUNDATION_NOINLINE bool
+bool
 lua_acquire_execution_right(lua_t* env, bool force) {
 	uint64_t self = thread_id();
-	if (env->executing_thread == self) {
+	if (atomic_load64(&env->executing_thread) == self) {
 		++env->executing_count;
 		return true;
 	}
 	if (force) {
 		semaphore_wait(&env->execution_right);
-		env->executing_thread = self;
+		atomic_store64(&env->executing_thread, self);
 		FOUNDATION_ASSERT(env->executing_count == 0);
 		++env->executing_count;
 		return true;
 	}
 	if (semaphore_try_wait(&env->execution_right, 0)) {
-		env->executing_thread = self;
+		atomic_store64(&env->executing_thread, self);
 		FOUNDATION_ASSERT(env->executing_count == 0);
 		++env->executing_count;
 		return true;
@@ -77,23 +78,23 @@ lua_acquire_execution_right(lua_t* env, bool force) {
 	return false;
 }
 
-static void
+void
 lua_release_execution_right(lua_t* env) {
-	FOUNDATION_ASSERT(env->executing_thread == thread_id());
+	FOUNDATION_ASSERT(atomic_load64(&env->executing_thread) == thread_id());
 	FOUNDATION_ASSERT(env->executing_count > 0);
 	if (!--env->executing_count) {
-		env->executing_thread = 0;
+		atomic_store64(&env->executing_thread, 0);
 		semaphore_post(&env->execution_right);
 	}
 }
 
-static void
+void
 lua_push_op(lua_t* env, lua_op_t* op) {
 	unsigned int ofs, old;
 	do {
 		old = atomic_load32(&env->queue_tail);
 		ofs = old + 1;
-		if (ofs >= LUA_CALL_QUEUE_SIZE)
+		if (ofs >= BUILD_LUA_CALL_QUEUE_SIZE)
 			ofs = 0;
 	}
 	while (!atomic_cas32(&env->queue_tail, ofs, old));
@@ -104,9 +105,9 @@ lua_push_op(lua_t* env, lua_op_t* op) {
 	env->queue[ofs].cmd = op->cmd;
 }
 
-static void
+void
 lua_execute_pending(lua_t* env) {
-	profile_begin_block("lua exec");
+	profile_begin_block(STRING_CONST("lua exec"));
 
 	unsigned int head = env->queue_head;
 	while (env->queue[head].cmd != LUACMD_WAIT) {
@@ -117,17 +118,17 @@ lua_execute_pending(lua_t* env) {
 			break;
 
 		case LUACMD_EVAL:
-			lua_do_eval_string(env, env->queue[head].data.name);
+			lua_do_eval_string(env, env->queue[head].data.name, env->queue[head].size);
 			break;
 
 		case LUACMD_CALL:
-			lua_do_call_custom(env, env->queue[head].data.name, &env->queue[head].arg);
+			lua_do_call_custom(env, env->queue[head].data.name, env->queue[head].size, &env->queue[head].arg);
 			break;
 
 		case LUACMD_BIND:
 		case LUACMD_BIND_INT:
 		case LUACMD_BIND_VAL:
-			lua_do_bind(env, env->queue[head].data.name, env->queue[head].cmd, env->queue[head].arg.value[0]);
+			lua_do_bind(env, env->queue[head].data.name, env->queue[head].size, env->queue[head].cmd, env->queue[head].arg.value[0]);
 			break;
 
 		default:
@@ -137,7 +138,7 @@ lua_execute_pending(lua_t* env) {
 		//Mark as executed
 		env->queue[head].cmd = LUACMD_WAIT;
 
-		if (++head == LUA_CALL_QUEUE_SIZE)
+		if (++head == BUILD_LUA_CALL_QUEUE_SIZE)
 			head = 0;
 	}
 	env->queue_head = head;
@@ -244,6 +245,7 @@ lua_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg) {
 		lua_op_t op;
 		op.cmd = LUACMD_CALL;
 		op.data.name = method;
+		op.size = length;
 		if (arg)
 			op.arg = *arg;
 		else
@@ -469,6 +471,7 @@ lua_eval_string(lua_t* env, const char* code, size_t length) {
 		lua_op_t op;
 		op.cmd = LUACMD_EVAL;
 		op.data.name = code;
+		op.size = length;
 		lua_push_op(env, &op);
 		return LUA_QUEUED;
 	}
@@ -765,6 +768,10 @@ lua_module_initialize(const lua_config_t config) {
 
 	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
 	                    lua_symbol_load_foundation);
+
+#if RESOURCE_ENABLE_LOCAL_CACHE && RESOURCE_ENABLE_LOCAL_SOURCE
+	resource_compile_register(lua_compile);
+#endif
 
 	return 0;
 }

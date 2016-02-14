@@ -113,3 +113,22 @@ lua_execute(lua_t* env, int gc_time, bool force);
 LUA_API void
 lua_timed_gc(lua_t* env, int milliseconds);
 
+
+#if BUILD_ENABLE_LUA_THREAD_SAFE
+
+bool
+lua_has_execution_right(lua_t* env);
+
+bool
+lua_acquire_execution_right(lua_t* env, bool force);
+
+void
+lua_release_execution_right(lua_t* env);
+
+void
+lua_push_op(lua_t* env, lua_op_t* op);
+
+void
+lua_execute_pending(lua_t* env);
+
+#endif
