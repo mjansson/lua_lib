@@ -162,6 +162,8 @@ main_initialize(void) {
 		memset(&lua_config, 0, sizeof(lua_config));
 		ret = lua_module_initialize(lua_config);
 	}
+
+	test_set_suitable_working_directory();
 #endif
 	return ret;
 }

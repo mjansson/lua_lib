@@ -128,15 +128,14 @@ lua_module_load(const uuid_t uuid) {
 
 	stream = resource_stream_open_static(uuid, platform);
 	if (stream) {
-		hash_t type_hash = stream_read_uint64(stream);
-		uint32_t version = stream_read_uint32(stream);
-		if ((type_hash == HASH_LUA) && (version == expected_version)) {
+		resource_header_t header = resource_stream_read_header(stream);
+		if ((header.type == HASH_LUA) && (header.version == expected_version)) {
 			success = true;
 		}
 		else {
 			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
 			          STRING_CONST("Got unexpected type/version when loading Lua module: %" PRIx64 " : %u"),
-			          type_hash, version);
+			          header.type, header.version);
 		}
 		stream_deallocate(stream);
 		stream = nullptr;

@@ -37,7 +37,7 @@ resource_source_platform_reduce(resource_change_t* change, resource_change_t* be
 
 int
 lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
-               const char* type, size_t type_length) {
+            const uint256_t source_hash, const char* type, size_t type_length) {
 	int result = 0;
 	uint64_t* subplatforms = 0;
 	size_t iplat, psize;
@@ -80,9 +80,13 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 
 		stream = resource_local_create_static(uuid, subplatform);
 		if (stream) {
-			uint32_t version = 1;
-			stream_write_uint64(stream, resource_type_hash);
-			stream_write_uint32(stream, version);
+			const uint32_t version = 1;
+			resource_header_t header = {
+				.type = resource_type_hash,
+				.version = version,
+				.source_hash = source_hash
+			};
+			resource_stream_write_header(stream, header);
 			stream_deallocate(stream);
 
 			if (compiled_size > 0) {
@@ -110,6 +114,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 	}
 
 	array_deallocate(subplatforms);
+	hashmap_finalize(map);
 
 	return result;
 }
