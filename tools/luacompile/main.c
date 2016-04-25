@@ -26,6 +26,10 @@ typedef struct {
 	string_const_t*   input_files;
 } luacompile_input_t;
 
+static void
+luacompile_parse_config(const char* buffer, size_t size, json_token_t* tokens,
+                        size_t numtokens);
+
 static luacompile_input_t
 luacompile_parse_command_line(const string_const_t* cmdline);
 
@@ -79,7 +83,7 @@ main_run(void* main_arg) {
 	FOUNDATION_UNUSED(main_arg);
 
 	for (size_t cfgfile = 0, fsize = array_size(input.config_files); cfgfile < fsize; ++cfgfile)
-		sjson_parse_path(STRING_ARGS(input.config_files[cfgfile]), resource_module_parse_config);
+		sjson_parse_path(STRING_ARGS(input.config_files[cfgfile]), luacompile_parse_config);
 
 	if (input.source_path.length)
 		resource_source_set_path(STRING_ARGS(input.source_path));
@@ -139,7 +143,14 @@ main_finalize(void) {
 	foundation_finalize();
 }
 
-luacompile_input_t
+static void
+luacompile_parse_config(const char* buffer, size_t size, json_token_t* tokens,
+                        size_t numtokens) {
+	resource_module_parse_config(buffer, size, tokens, numtokens);
+	lua_module_parse_config(buffer, size, tokens, numtokens);
+}
+
+static luacompile_input_t
 luacompile_parse_command_line(const string_const_t* cmdline) {
 	luacompile_input_t input;
 	size_t arg, asize;

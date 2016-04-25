@@ -119,6 +119,14 @@ test_exception_handler(const char* dump_file, size_t length) {
 	process_exit(-1);
 }
 
+#else
+
+static void test_parse_config(const char* buffer, size_t size,
+                              const json_token_t* tokens, size_t num_tokens) {
+	resource_module_parse_config(buffer, size, tokens, num_tokens);
+	lua_module_parse_config(buffer, size, tokens, num_tokens);
+}
+
 #endif
 
 bool
@@ -176,6 +184,7 @@ main_initialize(void) {
 	}
 
 	test_set_suitable_working_directory();
+	test_load_config(test_parse_config);
 #endif
 	return ret;
 }

@@ -41,6 +41,12 @@ test_foundation_config(void) {
 	return config;
 }
 
+static void test_parse_config(const char* buffer, size_t size,
+                              const json_token_t* tokens, size_t num_tokens) {
+	resource_module_parse_config(buffer, size, tokens, num_tokens);
+	lua_module_parse_config(buffer, size, tokens, num_tokens);
+}
+
 int
 test_foundation_initialize(void) {
 	lua_config_t lua_config;
@@ -56,7 +62,13 @@ test_foundation_initialize(void) {
 	if (resource_module_initialize(resource_config) < 0)
 		return -1;
 
-	return lua_module_initialize(lua_config);
+	if (lua_module_initialize(lua_config) < 0)
+		return -1;
+
+	test_set_suitable_working_directory();
+	test_load_config(test_parse_config);
+
+	return 0;
 }
 
 void

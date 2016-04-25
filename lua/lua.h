@@ -40,6 +40,15 @@ lua_module_is_initialized(void);
 LUA_API version_t
 lua_module_version(void);
 
+/*! Parse config declarations from JSON buffer
+\param buffer Data buffer
+\param size Size of data buffer
+\param tokens JSON tokens
+\param num_tokens Number of JSON tokens */
+LUA_API void
+lua_module_parse_config(const char* buffer, size_t size,
+                        const json_token_t* tokens, size_t num_tokens);
+
 
 //! Allocate environment
 LUA_API lua_t*

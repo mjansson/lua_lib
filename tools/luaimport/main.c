@@ -41,6 +41,10 @@ lua_dump(lua_State* L, lua_Writer writer, void* data);
 LUA_API int
 lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 
+static void
+luaimport_parse_config(const char* buffer, size_t size, json_token_t* tokens,
+                       size_t numtokens);
+
 static luaimport_input_t
 luaimport_parse_command_line(const string_const_t* cmdline);
 
@@ -237,7 +241,7 @@ main_run(void* main_arg) {
 	FOUNDATION_UNUSED(main_arg);
 
 	for (size_t cfgfile = 0, fsize = array_size(input.config_files); cfgfile < fsize; ++cfgfile)
-		sjson_parse_path(STRING_ARGS(input.config_files[cfgfile]), resource_module_parse_config);
+		sjson_parse_path(STRING_ARGS(input.config_files[cfgfile]), luaimport_parse_config);
 
 	if (input.source_path.length)
 		resource_source_set_path(STRING_ARGS(input.source_path));
@@ -277,6 +281,13 @@ main_finalize(void) {
 	lua_module_finalize();
 	resource_module_finalize();
 	foundation_finalize();
+}
+
+static void
+luaimport_parse_config(const char* buffer, size_t size, json_token_t* tokens,
+                       size_t numtokens) {
+	resource_module_parse_config(buffer, size, tokens, numtokens);
+	lua_module_parse_config(buffer, size, tokens, numtokens);
 }
 
 static luaimport_input_t

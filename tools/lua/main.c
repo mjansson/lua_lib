@@ -47,6 +47,10 @@ _lua_process_file(lua_t* lua, const char* filename, size_t length);
 static int
 _lua_interpreter(lua_t* lua);
 
+static void
+_lua_parse_config(const char* buffer, size_t size, json_token_t* tokens,
+                  size_t numtokens);
+
 //static int
 //_lua_load_jitbc( lua_t* env );
 
@@ -129,11 +133,12 @@ main_run(void* main_arg) {
 	thread_t eventthread;
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
-	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
+	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"),
+	                  THREAD_PRIORITY_NORMAL, 0);
 	thread_start(&eventthread);
 
 	for (size_t cfgfile = 0, fsize = array_size(instance.config_files); cfgfile < fsize; ++cfgfile)
-		sjson_parse_path(STRING_ARGS(instance.config_files[cfgfile]), resource_module_parse_config);
+		sjson_parse_path(STRING_ARGS(instance.config_files[cfgfile]), _lua_parse_config);
 
 	instance.env = lua_allocate();
 
@@ -185,7 +190,8 @@ _lua_interpreter(lua_t* lua) {
 		if (entry.length) {
 			if (collated.length) {
 				string_t last = collated;
-				collated = string_allocate_concat_varg(STRING_ARGS(last), STRING_CONST("\n"), STRING_ARGS(entry), nullptr);
+				collated = string_allocate_concat_varg(STRING_ARGS(last), STRING_CONST("\n"), STRING_ARGS(entry),
+				                                       nullptr);
 				read_string.string = collated.str;
 				read_string.size = collated.length;
 				string_deallocate(last.str);
@@ -259,14 +265,16 @@ _lua_process_file(lua_t* lua, const char* filename, size_t length) {
 	lua_State* state = lua_state(lua);
 
 	if (lua_load(state, lua_read_stream, &read_stream, "=eval") != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed: %s"), lua_tostring(state, -1));
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed: %s"),
+		           lua_tostring(state, -1));
 		lua_pop(state, 1);
 		result = LUA_RESULT_FAILED_EVAL;
 		goto exit;
 	}
 
 	if (lua_pcall(state, 0, 0, 0) != 0) {
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed: %s"), lua_tostring(state, -1));
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed: %s"),
+		           lua_tostring(state, -1));
 		lua_pop(state, 1);
 	}
 	else {
@@ -315,17 +323,24 @@ _lua_parse_command_line(const string_const_t* cmdline) {
 }
 
 static void
+_lua_parse_config(const char* buffer, size_t size, json_token_t* tokens,
+                  size_t numtokens) {
+	resource_module_parse_config(buffer, size, tokens, numtokens);
+	lua_module_parse_config(buffer, size, tokens, numtokens);
+}
+
+static void
 _lua_print_usage(void) {
 	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
 	log_info(HASH_LUA, STRING_CONST(
-	         "lua usage:\n"
-	         "  lua [--config <path> ...] [--help] [file]\n"
-	         "    Optional arguments:\n"
-             "      --config <file>  Read and parse config file given by <path>\n"
-             "                       Loads all .json/.sjson files in <path> if it is a directory\n"
-	         "      --help           Show this message\n"
-	         "      <file>           Read <file> instead of stdin\n"
-	        ));
+	             "lua usage:\n"
+	             "  lua [--config <path> ...] [--help] [file]\n"
+	             "    Optional arguments:\n"
+	             "      --config <file>  Read and parse config file given by <path>\n"
+	             "                       Loads all .json/.sjson files in <path> if it is a directory\n"
+	             "      --help           Show this message\n"
+	             "      <file>           Read <file> instead of stdin\n"
+	         ));
 	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
 }
 
