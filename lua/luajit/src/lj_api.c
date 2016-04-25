@@ -1,6 +1,6 @@
 /*
 ** Public Lua/C API.
-** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2016 Mike Pall. See Copyright Notice in luajit.h
 **
 ** Major portions taken verbatim or adapted from the Lua interpreter.
 ** Copyright (C) 1994-2008 Lua.org, PUC-Rio. See Copyright Notice in lua.h
@@ -747,15 +747,10 @@ LUA_API void lua_gettable(lua_State *L, int idx)
 
 LUA_API void lua_getfield(lua_State *L, int idx, const char *k)
 {
-  lua_getlfield(L, idx, k, strlen(k));
-}
-
-LUA_API void lua_getlfield(lua_State *L, int idx, const char *k, size_t n)
-{
   cTValue *v, *t = index2adr(L, idx);
   TValue key;
   api_checkvalidindex(L, t);
-  setstrV(L, &key, lj_str_new(L, k, n));
+  setstrV(L, &key, lj_str_newz(L, k));
   v = lj_meta_tget(L, t, &key);
   if (v == NULL) {
     L->top += 2;
@@ -915,17 +910,12 @@ LUA_API void lua_settable(lua_State *L, int idx)
 
 LUA_API void lua_setfield(lua_State *L, int idx, const char *k)
 {
-  lua_setlfield(L, idx, k, strlen(k));
-}
-
-LUA_API void lua_setlfield(lua_State *L, int idx, const char *k, size_t n)
-{
   TValue *o;
   TValue key;
   cTValue *t = index2adr(L, idx);
   api_checknelems(L, 1);
   api_checkvalidindex(L, t);
-  setstrV(L, &key, lj_str_new(L, k, n));
+  setstrV(L, &key, lj_str_newz(L, k));
   o = lj_meta_tset(L, t, &key);
   if (o) {
     /* NOBARRIER: lj_meta_tset ensures the table is not black. */
@@ -1216,6 +1206,9 @@ LUA_API int lua_gc(lua_State *L, int what, int data)
   case LUA_GCSETSTEPMUL:
     res = (int)(g->gc.stepmul);
     g->gc.stepmul = (MSize)data;
+    break;
+  case LUA_GCISRUNNING:
+    res = (g->gc.threshold != LJ_MAX_MEM);
     break;
   default:
     res = -1;  /* Invalid option. */

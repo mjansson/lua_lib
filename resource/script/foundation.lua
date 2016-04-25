@@ -12,12 +12,6 @@ int system_size_pointer(void);
 int system_size_wchar(void);
 ]]
 
-if C.system_size_size_t() > 4 then
-	ffi.cdef( "typedef int64_t ssize_t;" );
-else
-	ffi.cdef( "typedef int32_t ssize_t;" );
-end
-
 if C.system_size_real() > 4 then
 	ffi.cdef( "typedef float64_t real;" );
 else
