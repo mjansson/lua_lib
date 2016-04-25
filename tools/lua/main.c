@@ -1,34 +1,19 @@
-/* main.c  -  Lua interpreter for lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Lua interpreter for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <foundation/foundation.h>
+#include <resource/resource.h>
 #include <lua/lua.h>
 #include <lua/bind.h>
 #include <lua/read.h>
@@ -42,9 +27,10 @@
 typedef struct lua_instance_t lua_instance_t;
 
 struct lua_instance_t {
-	string_t       input_file;
-	lua_t*         env;
-	error_level_t  suppress_level;
+	string_const_t* config_files;
+	string_t        input_file;
+	lua_t*          env;
+	error_level_t   suppress_level;
 };
 
 static bool _lua_terminate = false;
@@ -71,13 +57,15 @@ LUA_API int
 lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 
 static void*
-event_thread(object_t thread, void* arg) {
+event_thread(void* arg) {
 	event_block_t* block;
 	event_t* event = 0;
 
 	FOUNDATION_UNUSED(arg);
 
-	while (!thread_should_terminate(thread)) {
+	event_stream_set_beacon(system_event_stream(), &thread_self()->beacon);
+
+	while (!_lua_terminate) {
 		block = event_stream_process(system_event_stream());
 		event = 0;
 
@@ -93,7 +81,7 @@ event_thread(object_t thread, void* arg) {
 			}
 		}
 
-		thread_sleep(10);
+		thread_wait();
 	}
 
 	return 0;
@@ -104,8 +92,8 @@ main_initialize(void) {
 	int ret = 0;
 
 	log_enable_prefix(false);
-	log_set_suppress(0, ERRORLEVEL_DEBUG);
-	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
+	log_set_suppress(0, ERRORLEVEL_INFO);
+	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
 
 	foundation_config_t config;
 	memset(&config, 0, sizeof(config));
@@ -114,10 +102,22 @@ main_initialize(void) {
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("lua"));
 	application.short_name = application.name;
-	application.config_dir = application.name;
+	application.company = string_const(STRING_CONST("Rampant Pixels"));
 	application.flags = APPLICATION_UTILITY;
 
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
+		return ret;
+
+	resource_config_t resource_config;
+	memset(&resource_config, 0, sizeof(resource_config_t));
+	resource_config.enable_local_cache = true;
+	resource_config.enable_local_source = true;
+	if ((ret = resource_module_initialize(resource_config)) < 0)
+		return ret;
+
+	lua_config_t lua_config;
+	memset(&lua_config, 0, sizeof(lua_config_t));
+	if ((ret = lua_module_initialize(lua_config)) < 0)
 		return ret;
 
 	return 0;
@@ -126,31 +126,29 @@ main_initialize(void) {
 int
 main_run(void* main_arg) {
 	int result = LUA_RESULT_OK;
-	lua_State* state = 0;
+	thread_t eventthread;
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
-	object_t eventthread = thread_create(event_thread, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
-	thread_start(eventthread, 0);
+	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
+	thread_start(&eventthread);
+
+	for (size_t cfgfile = 0, fsize = array_size(instance.config_files); cfgfile < fsize; ++cfgfile)
+		sjson_parse_path(STRING_ARGS(instance.config_files[cfgfile]), resource_module_parse_config);
 
 	instance.env = lua_allocate();
-	state = lua_state(instance.env);
-
-	//Foundation bindings
-	lua_load_foundation(state);
 
 	if (instance.input_file.length)
 		result = _lua_process_file(instance.env, STRING_ARGS(instance.input_file));
 	else
 		result = _lua_interpreter(instance.env);
 
-	thread_terminate(eventthread);
-	thread_destroy(eventthread);
+	thread_signal(&eventthread);
 
 	lua_deallocate(instance.env);
 	string_deallocate(instance.input_file.str);
+	array_deallocate(instance.config_files);
 
-	while (thread_is_running(eventthread))
-		thread_sleep(10);
+	thread_finalize(&eventthread);
 
 	FOUNDATION_UNUSED(main_arg);
 
@@ -159,6 +157,7 @@ main_run(void* main_arg) {
 
 void
 main_finalize(void) {
+	lua_module_finalize();
 	foundation_finalize();
 }
 
@@ -292,7 +291,11 @@ _lua_parse_command_line(const string_const_t* cmdline) {
 
 	error_context_push(STRING_CONST("parsing command line"), STRING_CONST(""));
 	for (arg = 1, asize = array_size(cmdline); arg < asize; ++arg) {
-		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--help")))
+		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--config"))) {
+			if (arg < asize - 1)
+				array_push(instance.config_files, cmdline[++arg]);
+		}
+		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--help")))
 			display_help = true;
 		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--debug")))
 			instance.suppress_level = ERRORLEVEL_NONE;
@@ -316,8 +319,10 @@ _lua_print_usage(void) {
 	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
 	log_info(HASH_LUA, STRING_CONST(
 	         "lua usage:\n"
-	         "  lua [--help] [file]\n"
+	         "  lua [--config <path> ...] [--help] [file]\n"
 	         "    Optional arguments:\n"
+             "      --config <file>  Read and parse config file given by <path>\n"
+             "                       Loads all .json/.sjson files in <path> if it is a directory\n"
 	         "      --help           Show this message\n"
 	         "      <file>           Read <file> instead of stdin\n"
 	        ));

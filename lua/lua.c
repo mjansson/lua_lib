@@ -1,32 +1,18 @@
-/* lua.c  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* lua.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+#define LUA_USE_INTERNAL_HEADER
 
 #include <lua/lua.h>
 #include <lua/hashstrings.h>
@@ -34,6 +20,7 @@
 #include <lua/read.h>
 
 #include <foundation/foundation.h>
+#include <resource/compile.h>
 
 #include <setjmp.h>
 
@@ -43,37 +30,14 @@
 #include "luajit/src/lua.h"
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
-LUA_EXTERN void* (*lj_clib_getsym_builtin)(lua_State*, const char*);
 
 #undef LUA_API
 
-typedef enum {
-	LUACMD_WAIT = 0,
-	LUACMD_LOAD,
-	LUACMD_EVAL,
-	LUACMD_CALL,
-	LUACMD_BIND,
-	LUACMD_BIND_INT,
-	LUACMD_BIND_VAL
-} lua_command_t;
-
-typedef struct lua_op_t {
-	lua_command_t         cmd;
-	union {
-		const char*       name;
-		void*             ptr;
-	} data;
-	lua_arg_t             arg;
-} lua_op_t;
-
-static void*
-lua_lookup_builtin(lua_State* state, const char* sym);
+lua_result_t
+lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, lua_value_t val);
 
 static lua_result_t
 lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg);
-
-static lua_result_t
-lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, lua_value_t val);
 
 static lua_result_t
 lua_do_eval_string(lua_t* env, const char* code, size_t length);
@@ -86,27 +50,27 @@ lua_do_get(lua_t* env, const char* property, size_t length);
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 
-/*static FOUNDATION_FORCEINLINE bool lua_has_execution_right( lua_t* env )
-{
-	return ( env->executing_thread == thread_id() );
-}*/
+bool
+lua_has_execution_right(lua_t* env) {
+	return (atomic_load64(&env->executing_thread) == thread_id());
+}
 
-static FOUNDATION_NOINLINE bool
+bool
 lua_acquire_execution_right(lua_t* env, bool force) {
 	uint64_t self = thread_id();
-	if (env->executing_thread == self) {
+	if (atomic_load64(&env->executing_thread) == self) {
 		++env->executing_count;
 		return true;
 	}
 	if (force) {
 		semaphore_wait(&env->execution_right);
-		env->executing_thread = self;
+		atomic_store64(&env->executing_thread, self);
 		FOUNDATION_ASSERT(env->executing_count == 0);
 		++env->executing_count;
 		return true;
 	}
 	if (semaphore_try_wait(&env->execution_right, 0)) {
-		env->executing_thread = self;
+		atomic_store64(&env->executing_thread, self);
 		FOUNDATION_ASSERT(env->executing_count == 0);
 		++env->executing_count;
 		return true;
@@ -114,23 +78,23 @@ lua_acquire_execution_right(lua_t* env, bool force) {
 	return false;
 }
 
-static void
+void
 lua_release_execution_right(lua_t* env) {
-	FOUNDATION_ASSERT(env->executing_thread == thread_id());
+	FOUNDATION_ASSERT(atomic_load64(&env->executing_thread) == thread_id());
 	FOUNDATION_ASSERT(env->executing_count > 0);
 	if (!--env->executing_count) {
-		env->executing_thread = 0;
+		atomic_store64(&env->executing_thread, 0);
 		semaphore_post(&env->execution_right);
 	}
 }
 
-static void
+void
 lua_push_op(lua_t* env, lua_op_t* op) {
 	unsigned int ofs, old;
 	do {
 		old = atomic_load32(&env->queue_tail);
 		ofs = old + 1;
-		if (ofs >= LUA_CALL_QUEUE_SIZE)
+		if (ofs >= BUILD_LUA_CALL_QUEUE_SIZE)
 			ofs = 0;
 	}
 	while (!atomic_cas32(&env->queue_tail, ofs, old));
@@ -141,35 +105,31 @@ lua_push_op(lua_t* env, lua_op_t* op) {
 	env->queue[ofs].cmd = op->cmd;
 }
 
-static void
+void
 lua_execute_pending(lua_t* env) {
-	profile_begin_block("lua exec");
+	profile_begin_block(STRING_CONST("lua exec"));
 
 	unsigned int head = env->queue_head;
 	while (env->queue[head].cmd != LUACMD_WAIT) {
 		//Execute
 		switch (env->queue[head].cmd) {
-		case LUACMD_LOAD: {
-				lua_do_eval_stream(env, env->queue[head].data.ptr);
-				break;
-			}
+		case LUACMD_LOAD:
+			lua_do_eval_stream(env, env->queue[head].data.ptr);
+			break;
 
-		case LUACMD_EVAL: {
-				lua_do_eval_string(env, env->queue[head].data.name);
-				break;
-			}
+		case LUACMD_EVAL:
+			lua_do_eval_string(env, env->queue[head].data.name, env->queue[head].size);
+			break;
 
-		case LUACMD_CALL: {
-				lua_do_call_custom(env, env->queue[head].data.name, &env->queue[head].arg);
-				break;
-			}
+		case LUACMD_CALL:
+			lua_do_call_custom(env, env->queue[head].data.name, env->queue[head].size, &env->queue[head].arg);
+			break;
 
 		case LUACMD_BIND:
 		case LUACMD_BIND_INT:
-		case LUACMD_BIND_VAL: {
-				lua_do_bind(env, env->queue[head].data.name, env->queue[head].cmd, env->queue[head].arg.value[0]);
-				break;
-			}
+		case LUACMD_BIND_VAL:
+			lua_do_bind(env, env->queue[head].data.name, env->queue[head].size, env->queue[head].cmd, env->queue[head].arg.value[0]);
+			break;
 
 		default:
 			break;
@@ -178,7 +138,7 @@ lua_execute_pending(lua_t* env) {
 		//Mark as executed
 		env->queue[head].cmd = LUACMD_WAIT;
 
-		if (++head == LUA_CALL_QUEUE_SIZE)
+		if (++head == BUILD_LUA_CALL_QUEUE_SIZE)
 			head = 0;
 	}
 	env->queue_head = head;
@@ -195,15 +155,18 @@ lua_run_gc(lua_t* env, int milliseconds) {
 
 static FOUNDATION_NOINLINE void*
 lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
-	if (!nsize && osize)
+	if (!nsize && osize) {
 		memory_deallocate(block);
-	else if (!block)
-		block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS);
-	else if (nsize)
-		block = memory_reallocate(block, nsize, 0, osize);
-	if (block == 0 && nsize > 0 && env && ((lua_t*)env)->state)
-		log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%u bytes)"),
-		           nsize);
+	}
+	else if (nsize) {
+		if (!block)
+			block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS);
+		else
+			block = memory_reallocate(block, nsize, 0, osize);
+		if (block == 0 && env && ((lua_t*)env)->state)
+			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%u bytes)"),
+			           nsize);
+	}
 	return block;
 }
 
@@ -211,7 +174,8 @@ static FOUNDATION_NOINLINE int
 lua_panic(lua_State* state) {
 	string_const_t errmsg = {0, 0};
 	errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length, errmsg.str);
+	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length,
+	                             errmsg.str);
 	log_errorf(HASH_LUA, ERROR_EXCEPTION, STRING_CONST("unprotected error in call to Lua API: %.*s"),
 	           STRING_FORMAT(errmsg));
 	return 0;
@@ -219,8 +183,7 @@ lua_panic(lua_State* state) {
 
 lua_t*
 lua_allocate(void) {
-	lua_t* env = memory_allocate(HASH_LUA,
-	                             sizeof(lua_t) + sizeof(hashmap_node_t*) * BUILD_SIZE_LUA_LOOKUP_BUCKETS, 0,
+	lua_t* env = memory_allocate(HASH_LUA, sizeof(lua_t), 0,
 	                             MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS | MEMORY_ZERO_INITIALIZED);
 
 	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
@@ -233,18 +196,14 @@ lua_allocate(void) {
 
 	lua_atpanic(state, lua_panic);
 
-	lj_clib_getsym_builtin = lua_lookup_builtin;
-
 	//Disable automagic gc
 	lua_gc(state, LUA_GCCOLLECT, 0);
 
 	lua_pushlightuserdata(state, env);
-	lua_setglobal(state, "__environment");
+	lua_setlglobal(state, "__environment", 13);
 
 	env->state = state;
 	env->calldepth = 0;
-
-	hashmap_initialize(&env->lookup_map, BUILD_SIZE_LUA_LOOKUP_BUCKETS, 8);
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 	semaphore_initialize(&env->execution_right, 1);
@@ -254,8 +213,6 @@ lua_allocate(void) {
 
 	int stacksize = lua_gettop(state);
 
-	//Libraries
-	log_debug(HASH_LUA, STRING_CONST("Loading Lua built-ins"));
 	luaL_openlibs(state);
 
 	lua_pop(state, lua_gettop(state) - stacksize);
@@ -278,8 +235,6 @@ lua_deallocate(lua_t* env) {
 	semaphore_finalize(&env->execution_right);
 #endif
 
-	hashmap_finalize(&env->lookup_map);
-
 	memory_deallocate(env);
 }
 
@@ -290,6 +245,7 @@ lua_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg) {
 		lua_op_t op;
 		op.cmd = LUACMD_CALL;
 		op.data.name = method;
+		op.size = length;
 		if (arg)
 			op.arg = *arg;
 		else
@@ -313,8 +269,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 	int numargs, i;
 	int stacksize;
 	size_t start, next;
-	char buffer[BUILD_SIZE_LUA_NAME_MAXLENGTH];
-	string_t part;
+	string_const_t part;
 
 	state = env->state;
 	stacksize = lua_gettop(state);
@@ -324,8 +279,8 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 
 	next = string_find(method, length, '.', 0);
 	if (next != STRING_NPOS) {
-		part = string_copy(buffer, sizeof(buffer), method, next);
-		lua_getglobal(state, part.str);
+		part = string_const(method, next);
+		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
 			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
 			           STRING_CONST("Invalid script call, '%.*s' is not set (%.*s)"),
@@ -349,8 +304,8 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 
 		next = string_find(method, length, '.', next);
 		while (next != STRING_NPOS) {
-			part = string_copy(buffer, sizeof(buffer), method + start, next - start);
-			lua_pushstring(state, part.str);
+			part = string_const(method + start, next - start);
+			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -376,13 +331,12 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 			next = string_find(method, length, '.', next);
 		}
 
-		part = string_copy(buffer, sizeof(buffer), method + start, length - start);
-		lua_pushstring(state, part.str);
+		part = string_const(method + start, length - start);
+		lua_pushlstring(state, part.str, part.length);
 		lua_gettable(state, -2);
 	}
 	else {
-		part = string_copy(buffer, sizeof(buffer), method, length);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, method, length);
 	}
 
 	if (lua_isnil(state, -1)) {
@@ -417,7 +371,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 				break;
 
 			case LUADATA_STR:
-				lua_pushstring(state, arg->value[i].str);
+				lua_pushlstring(state, arg->value[i].str, arg->size[i]);
 				break;
 
 			case LUADATA_BOOL:
@@ -457,8 +411,8 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 	if (lua_pcall(state, numargs, 0, 0) != 0) {
 		string_const_t errmsg = {0, 0};
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"), (int)length, method,
-		           STRING_FORMAT(errmsg));
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Calling %.*s : %.*s"),
+		           (int)length, method, STRING_FORMAT(errmsg));
 		result = LUA_ERROR;
 	}
 
@@ -493,8 +447,8 @@ lua_call_bool(lua_t* env, const char* method, size_t length, bool val) {
 }
 
 lua_result_t
-lua_call_string(lua_t* env, const char* method, size_t length, const char* str) {
-	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_STR, .value[0].str = str };
+lua_call_string(lua_t* env, const char* method, size_t length, const char* str, size_t arglength) {
+	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_STR, .size[0] = (uint16_t)arglength, .value[0].str = str };
 	return lua_call_custom(env, method, length, &arg);
 }
 
@@ -517,6 +471,7 @@ lua_eval_string(lua_t* env, const char* code, size_t length) {
 		lua_op_t op;
 		op.cmd = LUACMD_EVAL;
 		op.data.name = code;
+		op.size = length;
 		lua_push_op(env, &op);
 		return LUA_QUEUED;
 	}
@@ -617,231 +572,6 @@ lua_do_eval_stream(lua_t* env, stream_t* stream) {
 	return LUA_OK;
 }
 
-lua_result_t
-lua_bind(lua_t* env, const char* method, size_t length, lua_fn fn) {
-#if BUILD_ENABLE_LUA_THREAD_SAFE
-	if (!lua_acquire_execution_right(env, false)) {
-		lua_op_t op;
-		op.cmd = LUACMD_BIND;
-		op.data.name = method;
-		op.arg.value[0].fn = fn;
-		lua_push_op(env, &op);
-		return LUA_QUEUED;
-	}
-	lua_value_t val = { .fn = fn };
-	lua_result_t res = lua_do_bind(env, method, length, LUACMD_BIND, val);
-	lua_execute_pending(env);
-	lua_release_execution_right(env);
-	return res;
-#else
-	lua_value_t val = { .fn = fn };
-	return lua_do_bind(env, method, length, LUACMD_BIND, val);
-#endif
-}
-
-lua_result_t
-lua_bind_native(lua_t* env, const char* symbol, size_t length, void* value) {
-	hash_t symhash = hash(symbol, length);
-	hashmap_insert(&env->lookup_map, symhash, value);
-	return LUA_OK;
-}
-
-lua_result_t
-lua_bind_int(lua_t* env, const char* property, size_t length, int value) {
-#if BUILD_ENABLE_LUA_THREAD_SAFE
-	if (!lua_acquire_execution_right(env, false)) {
-		lua_op_t op;
-		op.cmd = LUACMD_BIND_INT;
-		op.data.name = property;
-		op.arg.value[0].ival = value;
-		lua_push_op(env, &op);
-		return LUA_QUEUED;
-	}
-	lua_value_t val = { .ival = value };
-	lua_result_t res = lua_do_bind(env, property, length, LUACMD_BIND_INT, val);
-	lua_execute_pending(env);
-	lua_release_execution_right(env);
-	return res;
-#else
-	lua_value_t val = { .ival = value };
-	return lua_do_bind(env, property, length, LUACMD_BIND_INT, val);
-#endif
-}
-
-lua_result_t
-lua_bind_value(lua_t* env, const char* property, size_t length, real value) {
-#if BUILD_ENABLE_LUA_THREAD_SAFE
-	if (!lua_acquire_execution_right(env, false)) {
-		lua_op_t op;
-		op.cmd = LUACMD_BIND_VAL;
-		op.data.name = property;
-		op.arg.value[0].val = value;
-		lua_push_op(env, &op);
-		return LUA_QUEUED;
-	}
-	lua_value_t val = { .val = value };
-	lua_result_t res = lua_do_bind(env, property, length, LUACMD_BIND_VAL, val);
-	lua_execute_pending(env);
-	lua_release_execution_right(env);
-	return res;
-#else
-	lua_value_t val = { .val = value };
-	return lua_do_bind(env, property, length, LUACMD_BIND_VAL, val);
-#endif
-}
-
-static FOUNDATION_NOINLINE void
-lua_push_integer(lua_State* state, const char* name, size_t length, int value) {
-	lua_pushstring(state, name);
-	lua_pushinteger(state, value);
-	lua_settable(state, -3);
-}
-
-static FOUNDATION_NOINLINE void
-lua_push_integer_global(lua_State* state, const char* name, size_t length, int value) {
-	lua_pushinteger(state, value);
-	lua_setglobal(state, name);
-}
-
-static FOUNDATION_NOINLINE void
-lua_push_number(lua_State* state, const char* name, size_t length, real value) {
-	lua_pushstring(state, name);
-	lua_pushnumber(state, value);
-	lua_settable(state, -3);
-}
-
-static FOUNDATION_NOINLINE void
-lua_push_number_global(lua_State* state, const char* name, size_t length, real value) {
-	lua_pushnumber(state, value);
-	lua_setglobal(state, name);
-}
-
-static FOUNDATION_NOINLINE void
-lua_push_method(lua_State* state, const char* name, size_t length, lua_CFunction fn) {
-	lua_pushstring(state, name);
-	lua_pushcclosure(state, fn, 0);
-	lua_settable(state, -3);
-}
-
-static FOUNDATION_NOINLINE void
-lua_push_method_global(lua_State* state, const char* name, size_t length, lua_CFunction fn) {
-	lua_pushcclosure(state, fn, 0);
-	lua_setglobal(state, name);
-}
-
-static lua_result_t
-lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, lua_value_t val) {
-	lua_State* state;
-	int stacksize;
-	size_t start, next;
-	char buffer[BUILD_SIZE_LUA_NAME_MAXLENGTH];
-	string_t part;
-
-	if (!env || !length)
-		return LUA_ERROR;
-
-	state = env->state;
-	stacksize = lua_gettop(state);
-
-	next = string_find(property, length, '.', 0);
-	if (next != STRING_NPOS) {
-		int tables;
-		unsigned int numtables = 0;
-		part = string_copy(buffer, sizeof(buffer), property, next);
-
-		lua_getglobal(state, part.str);
-		if (lua_isnil(state, -1)) {
-			//Create global table
-			lua_pop(state, 1);
-			lua_newtable(state);
-			lua_pushvalue(state, -1);
-			lua_setglobal(state, part.str);
-			log_debugf(HASH_LUA, STRING_CONST("Created global table: %.*s"), STRING_FORMAT(part));
-		}
-		else if (!lua_istable(state, -1)) {
-			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
-			           STRING_CONST("Invalid script bind call, existing data '%.*s' in '%.*s' is not a table"),
-			           STRING_FORMAT(part), (int)length, property);
-			lua_pop(state, lua_gettop(state) - stacksize);
-			return LUA_ERROR;
-		}
-		//Top of stack is now table
-		FOUNDATION_ASSERT(lua_istable(state, -1));
-
-		++next;
-		start = next;
-		++numtables;
-
-		next = string_find(property, length, '.', next);
-		while (next != STRING_NPOS) {
-			part = string_copy(buffer, sizeof(buffer), property + start, next - start);
-			lua_pushstring(state, part.str);
-			lua_gettable(state, -2);
-			if (lua_isnil(state, -1)) {
-				//Create sub-table
-				lua_pop(state, 1);
-				lua_newtable(state);
-				lua_pushstring(state, part.str);
-				lua_pushvalue(state, -2);
-				lua_settable(state, -4);
-				log_debugf(HASH_LUA, "Created table: %.*s", next, property);
-			}
-			else if (!lua_istable(state, -1)) {
-				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
-				           STRING_CONST("Invalid script bind call, existing data '%.*s' in '%.*s' is not a table"),
-				           STRING_FORMAT(part), (int)next, property);
-				lua_pop(state, lua_gettop(state) - stacksize);
-				return LUA_ERROR;
-			}
-			//Top of stack is now table
-			FOUNDATION_ASSERT(lua_istable(state, -1));
-
-			++next;
-			start = next;
-			next = string_find(property, length, '.', next);
-			++numtables;
-		}
-
-		part = string_copy(buffer, sizeof(buffer), property + start, length - start);
-
-		switch (cmd) {
-		case LUACMD_BIND:
-			lua_push_method(state, STRING_ARGS(part), val.fn);
-			break;
-		case LUACMD_BIND_INT:
-			lua_push_integer(state, STRING_ARGS(part), val.ival);
-			break;
-		case LUACMD_BIND_VAL:
-			lua_push_number(state, STRING_ARGS(part), val.val);
-			break;
-		default:
-			break;
-		}
-
-		tables = lua_gettop(state) - stacksize;
-		lua_pop(state, tables);
-
-		FOUNDATION_ASSERT(tables == (int)numtables);
-	}
-	else {
-		part = string_copy(buffer, sizeof(buffer), property, length);
-		switch (cmd) {
-		case LUACMD_BIND:
-			lua_push_method_global(state, STRING_ARGS(part), val.fn);
-			break;
-		case LUACMD_BIND_INT:
-			lua_push_integer_global(state, STRING_ARGS(part), val.ival);
-			break;
-		case LUACMD_BIND_VAL:
-			lua_push_number_global(state, STRING_ARGS(part), val.val);
-			break;
-		default:
-			break;
-		}
-	}
-	return LUA_OK;
-}
-
 string_const_t
 lua_get_string(lua_t* env, const char* property, size_t length) {
 	string_const_t value = {0, 0};
@@ -903,7 +633,7 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 	next = string_find(property, length, '.', 0);
 	if (next != STRING_NPOS) {
 		part = string_copy(buffer, sizeof(buffer), property, next);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
 			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
 			           STRING_CONST("Invalid script get, '%.*s' is not set (%.*s)"),
@@ -924,7 +654,7 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 		next = string_find(property, length, '.', next);
 		while (next != STRING_NPOS) {
 			part = string_copy(buffer, sizeof(buffer), property + start, next - start);
-			lua_pushstring(state, part.str);
+			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -947,12 +677,12 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 		}
 
 		part = string_copy(buffer, sizeof(buffer), property + start, length - start);
-		lua_pushstring(state, part.str);
+		lua_pushlstring(state, part.str, part.length);
 		lua_gettable(state, -2);
 	}
 	else {
 		part = string_copy(buffer, sizeof(buffer), property, length);
-		lua_getglobal(state, part.str);
+		lua_getlglobal(state, part.str, part.length);
 	}
 
 	if (lua_isnil(state, -1)) {
@@ -976,6 +706,8 @@ lua_execute(lua_t* env, int gc_time, bool force) {
 		return;
 
 	lua_execute_pending(env);
+#else
+	FOUNDATION_UNUSED(force);
 #endif
 
 	if (gc_time)
@@ -998,19 +730,10 @@ lua_timed_gc(lua_t* env, int milliseconds) {
 #endif
 }
 
-static void*
-lua_lookup_builtin(lua_State* state, const char* sym) {
-	hash_t symhash = hash(sym, string_length(sym));
-	lua_t* env = lua_from_state(state);
-	void* fn = hashmap_lookup(&env->lookup_map, symhash);
-	//log_debugf(HASH_LUA, STRING_CONST("Built-in lookup: %.*s -> %p", (int)length, sym, fn);
-	return fn;
-}
-
 lua_t*
 lua_from_state(lua_State* state) {
 	void* env;
-	lua_getglobal(state, "__environment");
+	lua_getlglobal(state, "__environment", 13);
 	env = lua_touserdata(state, -1);
 	lua_pop(state, 1);
 	return env;
@@ -1021,16 +744,40 @@ lua_state(lua_t* env) {
 	return env->state;
 }
 
-hashmap_t*
-lua_lookup_map(lua_t* env) {
-	return &env->lookup_map;
-}
+extern int
+lua_registry_initialize(void);
+
+extern void
+lua_registry_finalize(void);
+
+extern int
+lua_symbol_initialize(void);
+
+extern void
+lua_symbol_finalize(void);
 
 int
-lua_module_initialize(void) {
+lua_module_initialize(const lua_config_t config) {
+	FOUNDATION_UNUSED(config);
+
+	if (lua_symbol_initialize() < 0)
+		return -1;
+
+	if (lua_registry_initialize() < 0)
+		return -1;
+
+	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
+	                    lua_symbol_load_foundation);
+
+#if RESOURCE_ENABLE_LOCAL_CACHE && RESOURCE_ENABLE_LOCAL_SOURCE
+	resource_compile_register(lua_compile);
+#endif
+
 	return 0;
 }
 
 void
 lua_module_finalize(void) {
+	lua_registry_finalize();
+	lua_symbol_finalize();
 }

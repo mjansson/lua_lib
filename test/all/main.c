@@ -14,20 +14,22 @@
 #include <lua/lua.h>
 #include <test/test.h>
 
-static volatile bool _test_should_start = false;
-static volatile bool _test_have_focus = false;
-static volatile bool _test_should_terminate = false;
+static volatile bool _test_should_start;
+static volatile bool _test_have_focus;
+static volatile bool _test_should_terminate;
+static volatile bool _test_memory_tracker;
 
 static void*
-event_thread(object_t thread, void* arg) {
+event_loop(void* arg) {
 	event_block_t* block;
 	event_t* event = 0;
 	FOUNDATION_UNUSED(arg);
 
-	while (!thread_should_terminate(thread)) {
+	event_stream_set_beacon(system_event_stream(), &thread_self()->beacon);
+
+	while (!_test_should_terminate) {
 		block = event_stream_process(system_event_stream());
 		event = 0;
-
 		while ((event = event_next(block, event))) {
 			switch (event->id) {
 			case FOUNDATIONEVENT_START:
@@ -59,8 +61,7 @@ event_thread(object_t thread, void* arg) {
 				break;
 			}
 		}
-
-		thread_sleep(10);
+		thread_wait();
 	}
 
 	log_debug(HASH_TEST, STRING_CONST("Application event thread exiting"));
@@ -79,7 +80,7 @@ event_thread(object_t thread, void* arg) {
 #include <test/test.h>
 
 static void
-test_log_callback(hash_t context, error_level_t severity, const char* msg, size_t length) {
+test_log_handler(hash_t context, error_level_t severity, const char* msg, size_t length) {
 	FOUNDATION_UNUSED(context);
 	FOUNDATION_UNUSED(severity);
 
@@ -111,10 +112,10 @@ test_log_callback(hash_t context, error_level_t severity, const char* msg, size_
 #if !BUILD_MONOLITHIC
 
 void
-test_crash_handler(const char* dump_file, size_t length) {
+test_exception_handler(const char* dump_file, size_t length) {
 	FOUNDATION_UNUSED(dump_file);
 	FOUNDATION_UNUSED(length);
-	log_error(HASH_TEST, ERROR_EXCEPTION, STRING_CONST("Test crashed"));
+	log_error(HASH_TEST, ERROR_EXCEPTION, STRING_CONST("Test raised exception"));
 	process_exit(-1);
 }
 
@@ -129,22 +130,34 @@ int
 main_initialize(void) {
 	foundation_config_t config;
 	application_t application;
+	int ret;
+	size_t iarg, asize;
+	const string_const_t* cmdline = environment_command_line();
+
+	_test_memory_tracker = true;
+	for (iarg = 0, asize = array_size(cmdline); iarg < asize; ++iarg) {
+		if (string_equal(STRING_ARGS(cmdline[iarg]), STRING_CONST("--no-memory-tracker")))
+			_test_memory_tracker = false;
+	}
+
+	if (_test_memory_tracker)
+		memory_set_tracker(memory_tracker_local());
 
 	memset(&config, 0, sizeof(config));
 
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("Lua library test suite"));
 	application.short_name = string_const(STRING_CONST("test_all"));
-	application.config_dir = string_const(STRING_CONST("test_all"));
+	application.company = string_const(STRING_CONST("Rampant Pixels"));
 	application.version = lua_module_version();
 	application.flags = APPLICATION_UTILITY;
-	application.dump_callback = test_crash_handler;
+	application.exception_handler = test_exception_handler;
 
 	log_set_suppress(0, ERRORLEVEL_INFO);
 	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
 
 #if ( FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID ) && BUILD_ENABLE_LOG
-	log_set_callback(test_log_callback);
+	log_set_handler(test_log_handler);
 #endif
 
 #if !FOUNDATION_PLATFORM_IOS && !FOUNDATION_PLATFORM_ANDROID && !FOUNDATION_PLATFORM_PNACL
@@ -153,14 +166,18 @@ main_initialize(void) {
 
 #endif
 
-	if (foundation_initialize(memory_system_malloc(), application, config) < 0)
-		return -1;
+	ret = foundation_initialize(memory_system_malloc(), application, config);
 
 #if BUILD_MONOLITHIC
-	return lua_module_initialize();
-#else
-	return 0;
+	if (ret == 0) {
+		lua_config_t lua_config;
+		memset(&lua_config, 0, sizeof(lua_config));
+		ret = lua_module_initialize(lua_config);
+	}
+
+	test_set_suitable_working_directory();
 #endif
+	return ret;
 }
 
 #if FOUNDATION_PLATFORM_ANDROID
@@ -168,12 +185,12 @@ main_initialize(void) {
 #endif
 
 #if BUILD_MONOLITHIC
+extern int test_bind_run(void);
 extern int test_foundation_run(void);
 typedef int (*test_run_fn)(void);
 
 static void*
-test_runner(object_t obj, void* arg) {
-	FOUNDATION_UNUSED(obj);
+test_runner(void* arg) {
 	test_run_fn* tests = (test_run_fn*)arg;
 	int test_fn = 0;
 	int process_result = 0;
@@ -213,24 +230,29 @@ main_run(void* main_arg) {
 #elif BUILD_DEPLOY
 	const string_const_t build_name = string_const(STRING_CONST("deploy"));
 #endif
+#if BUILD_MONOLITHIC
+	const string_const_t build_type = string_const(STRING_CONST(" monolithic"));
+#else
+	const string_const_t build_type = string_empty();
+#endif
 	char* pathbuf;
 	int process_result = 0;
-	object_t thread = 0;
+	thread_t event_thread;
 	FOUNDATION_UNUSED(main_arg);
 	FOUNDATION_UNUSED(build_name);
 
 	log_set_suppress(HASH_TEST, ERRORLEVEL_DEBUG);
 
-	log_infof(HASH_TEST, STRING_CONST("Lua library v%s built for %s using %s (%s)"),
+	log_infof(HASH_TEST, STRING_CONST("Lua library v%s built for %s using %s (%.*s%.*s)"),
 	          string_from_version_static(lua_module_version()).str, FOUNDATION_PLATFORM_DESCRIPTION,
-	          FOUNDATION_COMPILER_DESCRIPTION, build_name.str);
+	          FOUNDATION_COMPILER_DESCRIPTION, STRING_FORMAT(build_name), STRING_FORMAT(build_type));
 
-	thread = thread_create(event_thread, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
-	thread_start(thread, 0);
+	thread_initialize(&event_thread, event_loop, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
+	thread_start(&event_thread);
 
 	pathbuf = memory_allocate(HASH_STRING, BUILD_MAX_PATHLEN, 0, MEMORY_PERSISTENT);
 
-	while (!thread_is_running(thread))
+	while (!thread_is_running(&event_thread))
 		thread_sleep(10);
 
 #if FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID || FOUNDATION_PLATFORM_PNACL
@@ -247,40 +269,38 @@ main_run(void* main_arg) {
 #if BUILD_MONOLITHIC
 
 	test_run_fn tests[] = {
+		test_bind_run,
 		test_foundation_run,
 		0
 	};
 
 #if FOUNDATION_PLATFORM_ANDROID
 
-	object_t test_thread = thread_create(test_runner, STRING_CONST("test_runner"),
-	                                     THREAD_PRIORITY_NORMAL, 0);
-	thread_start(test_thread, tests);
+	thread_t test_thread;
+	thread_initialize(&test_thread, test_runner, tests, STRING_CONST("test_runner"),
+	                  THREAD_PRIORITY_NORMAL, 0);
+	thread_start(&test_thread);
 
 	log_debug(HASH_TEST, STRING_CONST("Starting test runner thread"));
 
-	while (!thread_is_running(test_thread)) {
+	while (!thread_is_running(&test_thread)) {
 		system_process_events();
 		thread_sleep(10);
 	}
 
-	while (thread_is_running(test_thread)) {
+	while (thread_is_running(&test_thread)) {
 		system_process_events();
 		thread_sleep(10);
 	}
 
-	test_result = thread_result(test_thread);
+	test_result = thread_join(&test_thread);
 	process_result = (int)(intptr_t)test_result;
-	thread_destroy(test_thread);
 
-	while (thread_is_thread(test_thread)) {
-		system_process_events();
-		thread_sleep(10);
-	}
+	thread_finalize(&test_thread);
 
 #else
 
-	test_result = test_runner(0, tests);
+	test_result = test_runner(tests);
 	process_result = (int)(intptr_t)test_result;
 
 #endif
@@ -333,6 +353,7 @@ main_run(void* main_arg) {
 	regex_deallocate(app_regex);
 #endif
 	for (iexe = 0, exesize = array_size(exe_paths); iexe < exesize; ++iexe) {
+		string_const_t* process_args = 0;
 		string_const_t exe_file_name = path_base_file_name(STRING_ARGS(exe_paths[iexe]));
 		if (string_equal(STRING_ARGS(exe_file_name), STRING_ARGS(environment_executable_name())))
 			continue; //Don't run self
@@ -346,6 +367,10 @@ main_run(void* main_arg) {
 		process_set_working_directory(process, STRING_ARGS(environment_executable_directory()));
 		process_set_flags(process, PROCESS_ATTACHED | exe_flags[iexe]);
 
+		if (!_test_memory_tracker)
+			array_push(process_args, string_const(STRING_CONST("--no-memory-tracker")));
+		process_set_arguments(process, process_args, array_size(process_args));
+
 		log_infof(HASH_TEST, STRING_CONST("Running test executable: %.*s"),
 		          STRING_FORMAT(exe_paths[iexe]));
 
@@ -355,6 +380,7 @@ main_run(void* main_arg) {
 			process_result = process_wait(process);
 		}
 		process_deallocate(process);
+		array_deallocate(process_args);
 
 		if (process_result != 0) {
 			if (process_result >= PROCESS_INVALID_ARGS)
@@ -382,16 +408,18 @@ exit:
 
 #endif
 
-	thread_terminate(thread);
-	thread_destroy(thread);
-	while (thread_is_running(thread))
-		thread_sleep(10);
-	while (thread_is_thread(thread))
-		thread_sleep(10);
+	_test_should_terminate = true;
+
+	thread_signal(&event_thread);
+	thread_finalize(&event_thread);
 
 	memory_deallocate(pathbuf);
 
-	log_infof(HASH_TEST, STRING_CONST("Tests exiting: %d"), process_result);
+	log_infof(HASH_TEST, STRING_CONST("Tests exiting: %s (%d)"),
+	          process_result ? "FAILED" : "PASSED", process_result);
+
+	if (process_result)
+		memory_set_tracker(memory_tracker_none());
 
 	return process_result;
 }

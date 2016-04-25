@@ -1,44 +1,20 @@
-/* foundation.c  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* foundation.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <lua/lua.h>
-#include <lua/read.h>
-#include <lua/foundation.h>
-#include <lua/hashstrings.h>
 
 #include <foundation/foundation.h>
-
-#undef LUA_API
-#define LUA_HAS_LUA_STATE_TYPE
-
-#include "luajit/src/lua.h"
 
 #if !BUILD_ENABLE_DEBUG_LOG
 
@@ -53,14 +29,14 @@ _log_debugf_disabled(uint64_t context, const char* format, size_t format_size, .
 
 #if !BUILD_ENABLE_LOG
 
-static log_callback_fn
-_log_callback(void) {
-	return (log_callback_fn)nullptr;
+static log_handler_fn
+_log_handler(void) {
+	return (log_handler_fn)nullptr;
 }
 
 static void
-_log_set_callback(log_callback_fn callback) {
-	FOUNDATION_UNUSED(callback);
+_log_set_handler(log_handler_fn handler) {
+	FOUNDATION_UNUSED(handler);
 }
 
 static void
@@ -106,6 +82,40 @@ static error_context_t* _error_context_disabled() {
 static string_t
 _error_context_buffer_disabled(char* str, size_t length) {
 	return string_copy(str, length, 0, 0);
+}
+
+#endif
+
+#if !BUILD_ENABLE_MEMORY_CONTEXT
+
+#undef memory_context_push
+#undef memory_context_pop
+#undef memory_context
+
+static void
+memory_context_push(hash_t context) {
+	FOUNDATION_UNUSED(context);
+}
+
+static void
+memory_context_pop(void) {
+}
+
+static hash_t
+memory_context(void) {
+	return 0;
+}
+
+#endif
+
+#if !BUILD_ENABLE_STATIC_HASH_DEBUG
+
+#undef hash_to_string
+
+static string_const_t
+hash_to_string(hash_t value) {
+	FOUNDATION_UNUSED(value);
+	return string_empty();
 }
 
 #endif
@@ -263,10 +273,15 @@ type_ssize_t(int val) {
 	return val;
 }
 
-int
-lua_load_foundation_builtins(lua_State* state) {
-	lua_t* env = lua_from_state(state);
-	hashmap_t* map = lua_lookup_map(env);
+static bool _symbols_loaded;
+
+void
+lua_symbol_load_foundation(void) {
+	hashmap_t* map = lua_symbol_lookup_map();
+
+	if (_symbols_loaded)
+		return;
+	_symbols_loaded = true;
 
 #define FOUNDATION_SYM(fn, name) hashmap_insert(map, HASH_SYM_##name, (void*)(uintptr_t)fn)
 
@@ -287,6 +302,14 @@ lua_load_foundation_builtins(lua_State* state) {
 
 	FOUNDATION_SYM(base64_encode, BASE64_ENCODE);
 	FOUNDATION_SYM(base64_decode, BASE64_DECODE);
+
+	FOUNDATION_SYM(beacon_allocate, BEACON_ALLOCATE);
+	FOUNDATION_SYM(beacon_initialize, BEACON_INITIALIZE);
+	FOUNDATION_SYM(beacon_finalize, BEACON_FINALIZE);
+	FOUNDATION_SYM(beacon_deallocate, BEACON_DEALLOCATE);
+	FOUNDATION_SYM(beacon_wait, BEACON_WAIT);
+	FOUNDATION_SYM(beacon_try_wait, BEACON_TRY_WAIT);
+	FOUNDATION_SYM(beacon_fire, BEACON_FIRE);
 
 	FOUNDATION_SYM(bitbuffer_allocate_buffer, BITBUFFER_ALLOCATE_BUFFER);
 	FOUNDATION_SYM(bitbuffer_allocate_stream, BITBUFFER_ALLOCATE_STREAM);
@@ -341,8 +364,7 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(config_set_int, CONFIG_SET_INT);
 	FOUNDATION_SYM(config_set_real, CONFIG_SET_REAL);
 	FOUNDATION_SYM(config_set_string, CONFIG_SET_STRING);
-	FOUNDATION_SYM(config_load, CONFIG_LOAD);
-	FOUNDATION_SYM(config_parse, CONFIG_PARSE);
+	FOUNDATION_SYM(config_read, CONFIG_READ);
 	FOUNDATION_SYM(config_write, CONFIG_WRITE);
 	FOUNDATION_SYM(config_parse_commandline, CONFIG_PARSE_COMMANDLINE);
 
@@ -354,14 +376,14 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(environment_current_working_directory, ENVIRONMENT_CURRENT_WORKING_DIRECTORY);
 	FOUNDATION_SYM(environment_set_current_working_directory,
 	               ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
-	FOUNDATION_SYM(environment_home_directory, ENVIRONMENT_HOME_DIRECTORY);
+	FOUNDATION_SYM(environment_application_directory, ENVIRONMENT_APPLICATION_DIRECTORY);
 	FOUNDATION_SYM(environment_temporary_directory, ENVIRONMENT_TEMPORARY_DIRECTORY);
 	FOUNDATION_SYM(environment_variable, ENVIRONMENT_VARIABLE);
 
 	FOUNDATION_SYM(error, ERROR);
 	FOUNDATION_SYM(error_report, ERROR_REPORT);
-	FOUNDATION_SYM(error_callback, ERROR_CALLBACK);
-	FOUNDATION_SYM(error_set_callback, ERROR_SET_CALLBACK);
+	FOUNDATION_SYM(error_handler, ERROR_HANDLER);
+	FOUNDATION_SYM(error_set_handler, ERROR_SET_HANDLER);
 #if BUILD_ENABLE_ERROR_CONTEXT
 	FOUNDATION_SYM(_error_context_push, ERROR_CONTEXT_PUSH);
 	FOUNDATION_SYM(_error_context_pop, ERROR_CONTEXT_POP);
@@ -384,6 +406,7 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(event_stream_initialize, EVENT_STREAM_INITIALIZE);
 	FOUNDATION_SYM(event_stream_finalize, EVENT_STREAM_FINALIZE);
 	FOUNDATION_SYM(event_stream_process, EVENT_STREAM_PROCESS);
+	FOUNDATION_SYM(event_stream_set_beacon, EVENT_STREAM_SET_BEACON);
 
 	FOUNDATION_SYM(fs_open_file, FS_OPEN_FILE);
 	FOUNDATION_SYM(fs_copy_file, FS_COPY_FILE);
@@ -461,6 +484,13 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(hashtable64_size, HASHTABLE64_SIZE);
 	FOUNDATION_SYM(hashtable64_clear, HASHTABLE64_CLEAR);
 
+	FOUNDATION_SYM(json_parse, JSON_PARSE);
+	FOUNDATION_SYM(sjson_parse, SJSON_PARSE);
+	FOUNDATION_SYM(json_token_identifier, JSON_TOKEN_IDENTIFIER);
+	FOUNDATION_SYM(json_token_value, JSON_TOKEN_VALUE);
+	FOUNDATION_SYM(json_unescape, JSON_UNESCAPE);
+	FOUNDATION_SYM(json_escape, JSON_ESCAPE);
+
 	FOUNDATION_SYM(library_load, LIBRARY_LOAD);
 	FOUNDATION_SYM(library_ref, LIBRARY_REF);
 	FOUNDATION_SYM(library_unload, LIBRARY_UNLOAD);
@@ -480,8 +510,8 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(log_panicf, LOG_PANICF);
 	FOUNDATION_SYM(log_enable_prefix, LOG_ENABLE_PREFIX);
 	FOUNDATION_SYM(log_enable_stdout, LOG_ENABLE_STDOUT);
-	FOUNDATION_SYM(log_callback, LOG_CALLBACK);
-	FOUNDATION_SYM(log_set_callback, LOG_SET_CALLBACK);
+	FOUNDATION_SYM(log_handler, LOG_HANDLER);
+	FOUNDATION_SYM(log_set_handler, LOG_SET_HANDLER);
 	FOUNDATION_SYM(log_set_suppress, LOG_SET_SUPPRESS);
 	FOUNDATION_SYM(log_suppress, LOG_SUPPRESS);
 	FOUNDATION_SYM(log_suppress_clear, LOG_SUPPRESS_CLEAR);
@@ -492,8 +522,8 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(_log_debugf_disabled, LOG_PANICF);
 	FOUNDATION_SYM(_log_enable, LOG_ENABLE_PREFIX);
 	FOUNDATION_SYM(_log_enable, LOG_ENABLE_STDOUT);
-	FOUNDATION_SYM(_log_callback, LOG_CALLBACK);
-	FOUNDATION_SYM(_log_set_callback, LOG_SET_CALLBACK);
+	FOUNDATION_SYM(_log_handler, LOG_HANDLER);
+	FOUNDATION_SYM(_log_set_handler, LOG_SET_HANDLER);
 	FOUNDATION_SYM(_log_set_suppress, LOG_SET_SUPPRESS);
 	FOUNDATION_SYM(_log_suppress, LOG_SUPPRESS);
 	FOUNDATION_SYM(_log_suppress_clear, LOG_SUPPRESS_CLEAR);
@@ -542,8 +572,9 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(path_file_extension, PATH_FILE_EXTENSION);
 	FOUNDATION_SYM(path_file_name, PATH_FILE_NAME);
 	FOUNDATION_SYM(path_directory_name, PATH_DIRECTORY_NAME);
-	FOUNDATION_SYM(path_subdirectory_name, PATH_SUBDIRECTORY_NAME);
+	FOUNDATION_SYM(path_subpath, PATH_SUBPATH);
 	FOUNDATION_SYM(path_protocol, PATH_PROTOCOL);
+	FOUNDATION_SYM(path_strip_protocol, PATH_STRIP_PROTOCOL);
 	FOUNDATION_SYM(path_allocate_concat_varg, PATH_ALLOCATE_CONCAT);
 	FOUNDATION_SYM(path_concat_varg, PATH_CONCAT);
 	FOUNDATION_SYM(path_append_varg, PATH_APPEND);
@@ -594,7 +625,7 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(profile_signal, PROFILE_SIGNAL);
 #else
 	FOUNDATION_SYM(_profile_initialize, PROFILE_INITIALIZE);
-	FOUNDATION_SYM(_profile_void, PROFILE_SHUTDOWN);
+	FOUNDATION_SYM(_profile_void, PROFILE_FINALIZE);
 	FOUNDATION_SYM(_profile_bool, PROFILE_ENABLE);
 	FOUNDATION_SYM(_profile_fn, PROFILE_SET_OUTPUT);
 	FOUNDATION_SYM(_profile_int, PROFILE_SET_OUTPUT_WAIT);
@@ -644,6 +675,20 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(ringbuffer_total_written, RINGBUFFER_TOTAL_WRITTEN);
 	FOUNDATION_SYM(ringbuffer_stream_allocate, RINGBUFFER_STREAM_ALLOCATE);
 	FOUNDATION_SYM(ringbuffer_stream_initialize, RINGBUFFER_STREAM_INITIALIZE);
+
+	FOUNDATION_SYM(sha256_allocate, SHA256_ALLOCATE);
+	FOUNDATION_SYM(sha256_deallocate, SHA256_DEALLOCATE);
+	FOUNDATION_SYM(sha256_digest, SHA256_DIGEST);
+	FOUNDATION_SYM(sha256_digest_finalize, SHA256_DIGEST_FINALIZE);
+	FOUNDATION_SYM(sha256_get_digest, SHA256_GET_DIGEST);
+	FOUNDATION_SYM(sha256_get_digest_raw, SHA256_GET_DIGEST_RAW);
+
+	FOUNDATION_SYM(sha512_allocate, SHA512_ALLOCATE);
+	FOUNDATION_SYM(sha512_deallocate, SHA512_DEALLOCATE);
+	FOUNDATION_SYM(sha512_digest, SHA512_DIGEST);
+	FOUNDATION_SYM(sha512_digest_finalize, SHA512_DIGEST_FINALIZE);
+	FOUNDATION_SYM(sha512_get_digest, SHA512_GET_DIGEST);
+	FOUNDATION_SYM(sha512_get_digest_raw, SHA512_GET_DIGEST_RAW);
 
 	FOUNDATION_SYM(semaphore_initialize, SEMAPHORE_INITIALIZE);
 	FOUNDATION_SYM(semaphore_initialize_named, SEMAPHORE_INITIALIZE_NAMED);
@@ -824,20 +869,21 @@ lua_load_foundation_builtins(lua_State* state) {
 	FOUNDATION_SYM(system_size_pointer, SYSTEM_SIZE_POINTER);
 	FOUNDATION_SYM(system_size_wchar, SYSTEM_SIZE_WCHAR);
 
-	FOUNDATION_SYM(thread_create, THREAD_CREATE);
-	FOUNDATION_SYM(thread_ref, THREAD_REF);
-	FOUNDATION_SYM(thread_destroy, THREAD_DESTROY);
+	FOUNDATION_SYM(thread_allocate, THREAD_ALLOCATE);
+	FOUNDATION_SYM(thread_initialize, THREAD_INITIALIZE);
+	FOUNDATION_SYM(thread_finalize, THREAD_FINALIZE);
+	FOUNDATION_SYM(thread_deallocate, THREAD_DEALLOCATE);
 	FOUNDATION_SYM(thread_start, THREAD_START);
-	FOUNDATION_SYM(thread_terminate, THREAD_TERMINATE);
+	FOUNDATION_SYM(thread_join, THREAD_JOIN);
+	FOUNDATION_SYM(thread_signal, THREAD_SIGNAL);
+	FOUNDATION_SYM(thread_wait, THREAD_WAIT);
+	FOUNDATION_SYM(thread_try_wait, THREAD_TRY_WAIT);
 	FOUNDATION_SYM(thread_is_started, THREAD_IS_STARTED);
 	FOUNDATION_SYM(thread_is_running, THREAD_IS_RUNNING);
-	FOUNDATION_SYM(thread_is_thread, THREAD_IS_THREAD);
 	FOUNDATION_SYM(thread_is_main, THREAD_IS_MAIN);
-	FOUNDATION_SYM(thread_should_terminate, THREAD_SHOULD_TERMINATE);
 	FOUNDATION_SYM(thread_set_main, THREAD_SET_MAIN);
 	FOUNDATION_SYM(thread_set_name, THREAD_SET_NAME);
 	FOUNDATION_SYM(thread_set_hardware, THREAD_SET_HARDWARE);
-	FOUNDATION_SYM(thread_result, THREAD_RESULT);
 	FOUNDATION_SYM(thread_self, THREAD_SELF);
 	FOUNDATION_SYM(thread_name, THREAD_NAME);
 	FOUNDATION_SYM(thread_id, THREAD_ID);
@@ -867,46 +913,4 @@ lua_load_foundation_builtins(lua_State* state) {
 
 	FOUNDATION_SYM(type_size_t, TYPE_SIZE_T);
 	FOUNDATION_SYM(type_ssize_t, TYPE_SSIZE_T);
-
-	return 0;
 }
-
-int
-lua_load_foundation(lua_State* state) {
-	//TODO: When implemented lua compiled bytecode libraries, load from library resource instaed
-	static unsigned char bytecode[] = {
-#include "bind.foundation.hex"
-	};
-	string_const_t errmsg = {0, 0};
-	lua_readbuffer_t read_buffer = {
-		.buffer = bytecode,
-		.size   = sizeof(bytecode),
-		.offset = 0
-	};
-
-	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
-	log_debugf(HASH_LUA, STRING_CONST("Loading foundation built-ins (%u bytes of bytecode)"),
-	           read_buffer.size);
-
-	lua_load_foundation_builtins(state);
-
-	if (lua_load(state, lua_read_buffer, &read_buffer, "=eval") != 0) {
-		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (foundation): %.*s"),
-		           STRING_FORMAT(errmsg));
-		lua_pop(state, 1);
-		return 0;
-	}
-
-	if (lua_pcall(state, 0, 0, 0) != 0) {
-		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (foundation): %.*s"),
-		           STRING_FORMAT(errmsg));
-		lua_pop(state, 1);
-		return 0;
-	}
-
-	return 0;
-}
-
-

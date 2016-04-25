@@ -1,31 +1,15 @@
-/* bind.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* bind.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #pragma once
@@ -47,13 +31,25 @@
 #define LUABIND_GET_OBJECT(x)    (lua_toobject(state, (x)))
 #define LUABIND_GET_DATA(t,x)    ((t*)lua_touserdata(state, (x)))
 
-#define LUABIND_PUT_NIL()       (lua_pushnil(state))
-#define LUABIND_PUT_CSTR(x)     (lua_pushstring(state, (x)))
-#define LUABIND_PUT_STRING(x)   (lua_pushlstring(state, (x).str, (x).length))
-#define LUABIND_PUT_INT(x)      (lua_pushinteger(state, (x)))
-#define LUABIND_PUT_UINT(x)     (lua_pushinteger(state, (x)))
-#define LUABIND_PUT_REAL(x)     (lua_pushnumber(state, (x)))
-#define LUABIND_PUT_BOOL(x)     (lua_pushboolean(state, (x)))
-#define LUABIND_PUT_OBJECT(x)   (lua_pushobject(state, (uint64_t)(x)))
-#define LUABIND_PUT_DATA(x)     (lua_pushlightuserdata(state, (x)))
+#define LUABIND_PUT_NIL()        (lua_pushnil(state))
+#define LUABIND_PUT_CSTR(x)      (lua_pushstring(state, (x)))
+#define LUABIND_PUT_STRING(x)    (lua_pushlstring(state, (x).str, (x).length))
+#define LUABIND_PUT_INT(x)       (lua_pushinteger(state, (x)))
+#define LUABIND_PUT_UINT(x)      (lua_pushinteger(state, (x)))
+#define LUABIND_PUT_REAL(x)      (lua_pushnumber(state, (x)))
+#define LUABIND_PUT_BOOL(x)      (lua_pushboolean(state, (x)))
+#define LUABIND_PUT_OBJECT(x)    (lua_pushobject(state, (uint64_t)(x)))
+#define LUABIND_PUT_DATA(x)      (lua_pushlightuserdata(state, (x)))
 
+
+//! Bind custom function
+LUA_API lua_result_t
+lua_bind_function(lua_t* env, const char* method, size_t length, lua_fn fn);
+
+//! Bind custom integer
+LUA_API lua_result_t
+lua_bind_int(lua_t* env, const char* property, size_t length, int value);
+
+//! Bind custom value
+LUA_API lua_result_t
+lua_bind_real(lua_t* env, const char* property, size_t length, real value);

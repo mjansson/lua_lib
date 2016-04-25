@@ -1,31 +1,15 @@
-/* types.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* types.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #pragma once
@@ -84,16 +68,33 @@ typedef enum {
 	LUADATA_REALARR
 } lua_data_t;
 
+typedef enum {
+	LUACMD_WAIT = 0,
+	LUACMD_LOAD,
+	LUACMD_EVAL,
+	LUACMD_CALL,
+	LUACMD_BIND,
+	LUACMD_BIND_INT,
+	LUACMD_BIND_VAL
+} lua_command_t;
+
 typedef struct lua_State lua_State;
-typedef int (*lua_fn)(struct lua_State*);
+typedef int (*lua_fn)(lua_State*);
+typedef void (*lua_preload_fn)(void);
 
 typedef union lua_value_t lua_value_t;
 
 typedef struct lua_arg_t lua_arg_t;
+typedef struct lua_op_t lua_op_t;
 typedef struct lua_readstream_t lua_readstream_t;
 typedef struct lua_readbuffer_t lua_readbuffer_t;
 typedef struct lua_readstring_t lua_readstring_t;
+typedef struct lua_config_t lua_config_t;
 typedef struct lua_t lua_t;
+
+struct lua_config_t {
+	unsigned int __unused;
+};
 
 union lua_value_t {
 	void*       ptr;
@@ -110,6 +111,16 @@ struct lua_arg_t {
 	uint8_t     type[LUA_MAX_ARGS];
 	uint16_t    size[LUA_MAX_ARGS];
 	lua_value_t value[LUA_MAX_ARGS];
+};
+
+struct lua_op_t {
+	lua_command_t         cmd;
+	union {
+		const char*       name;
+		void*             ptr;
+	} data;
+	size_t                size;
+	lua_arg_t             arg;
 };
 
 struct lua_readstream_t {
@@ -155,9 +166,6 @@ struct lua_t
 	//! Execution count (protected by execute semaphore)
 	unsigned int executing_count;
 #endif
-
-	//! Lookup hashmap
-	hashmap_t    lookup_map;
 };
 
-
+#define LUA_FOUNDATION_UUID uuid_make(0x4666006cd11e65efULL, 0x291433d0785ef08dULL)

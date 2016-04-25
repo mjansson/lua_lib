@@ -11,7 +11,7 @@
 
 #include <stdarg.h>
 #include <stddef.h>
-
+#include <stdint.h>
 
 #include "luaconf.h"
 
@@ -179,6 +179,7 @@ LUA_API int   (lua_pushthread) (lua_State *L);
 */
 LUA_API void  (lua_gettable) (lua_State *L, int idx);
 LUA_API void  (lua_getfield) (lua_State *L, int idx, const char *k);
+LUA_API void  (lua_getlfield) (lua_State *L, int idx, const char *k, size_t n);
 LUA_API void  (lua_rawget) (lua_State *L, int idx);
 LUA_API void  (lua_rawgeti) (lua_State *L, int idx, int n);
 LUA_API void  (lua_createtable) (lua_State *L, int narr, int nrec);
@@ -192,6 +193,7 @@ LUA_API void  (lua_getfenv) (lua_State *L, int idx);
 */
 LUA_API void  (lua_settable) (lua_State *L, int idx);
 LUA_API void  (lua_setfield) (lua_State *L, int idx, const char *k);
+LUA_API void  (lua_setlfield) (lua_State *L, int idx, const char *k, size_t n);
 LUA_API void  (lua_rawset) (lua_State *L, int idx);
 LUA_API void  (lua_rawseti) (lua_State *L, int idx, int n);
 LUA_API int   (lua_setmetatable) (lua_State *L, int objindex);
@@ -229,6 +231,7 @@ LUA_API int  (lua_status) (lua_State *L);
 #define LUA_GCSTEP		5
 #define LUA_GCSETPAUSE		6
 #define LUA_GCSETSTEPMUL	7
+#define LUA_GCISRUNNING		9
 
 LUA_API int (lua_gc) (lua_State *L, int what, int data);
 
@@ -278,6 +281,8 @@ LUA_API void lua_setallocf (lua_State *L, lua_Alloc f, void *ud);
 
 #define lua_setglobal(L,s)	lua_setfield(L, LUA_GLOBALSINDEX, (s))
 #define lua_getglobal(L,s)	lua_getfield(L, LUA_GLOBALSINDEX, (s))
+#define lua_setlglobal(L,s,n)  lua_setlfield(L, LUA_GLOBALSINDEX, (s), (n))
+#define lua_getlglobal(L,s,n)  lua_getlfield(L, LUA_GLOBALSINDEX, (s), (n))
 
 #define lua_tostring(L,i)	lua_tolstring(L, (i), NULL)
 

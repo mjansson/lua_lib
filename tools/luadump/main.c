@@ -1,31 +1,15 @@
-/* main.c  -  Lua dump tool for lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Lua dump tool for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <foundation/foundation.h>
@@ -129,13 +113,18 @@ main_initialize(void) {
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("luadump"));
 	application.short_name = application.name;
-	application.config_dir = application.name;
+	application.company = string_const(STRING_CONST("Rampant Pixels"));
 	application.flags = APPLICATION_UTILITY;
 
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
 		return ret;
 
-	return lua_module_initialize();
+	lua_config_t lua_config;
+	memset(&lua_config, 0, sizeof(lua_config));
+	if ((ret = lua_module_initialize(lua_config)) < 0)
+		return ret;
+
+	return 0;
 }
 
 int
@@ -153,10 +142,7 @@ main_run(void* main_arg) {
 	dump.env = lua_allocate();
 	state = lua_state(dump.env);
 
-	if (lua_load_foundation_builtins(state) < 0) {
-		result = LUADUMP_RESULT_UNABLE_TO_LOAD_FOUNDATION;
-		goto exit;
-	}
+	lua_symbol_load_foundation();
 
 	/*if( ( result = luadump_load_jitbc( dump.env ) ) != LUADUMP_RESULT_OK )
 		goto exit;

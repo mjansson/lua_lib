@@ -1,31 +1,15 @@
-/* lua.h  -  Lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* lua.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #pragma once
@@ -37,10 +21,15 @@
 
 #include <lua/types.h>
 #include <lua/hashstrings.h>
+#include <lua/bind.h>
+#include <lua/module.h>
+#include <lua/symbol.h>
+#include <lua/read.h>
+#include <lua/compile.h>
 #include <lua/foundation.h>
 
 LUA_API int
-lua_module_initialize(void);
+lua_module_initialize(const lua_config_t config);
 
 LUA_API void
 lua_module_finalize(void);
@@ -50,6 +39,7 @@ lua_module_is_initialized(void);
 
 LUA_API version_t
 lua_module_version(void);
+
 
 //! Allocate environment
 LUA_API lua_t*
@@ -66,26 +56,6 @@ lua_from_state(lua_State* state);
 //! Get lua state associated with environment
 LUA_API lua_State*
 lua_state(lua_t* env);
-
-//! Get built-in lookup map
-LUA_API hashmap_t*
-lua_lookup_map(lua_t* env);
-
-//! Bind custom method
-LUA_API lua_result_t
-lua_bind(lua_t* env, const char* method, size_t length, lua_fn fn);
-
-//! Bind custom integer
-LUA_API lua_result_t
-lua_bind_int(lua_t* env, const char* property, size_t length, int value);
-
-//! Bind custom value
-LUA_API lua_result_t
-lua_bind_value(lua_t* env, const char* property, size_t length, real value);
-
-//! Bind native method available through FFI
-LUA_API lua_result_t
-lua_bind_native(lua_t* env, const char* symbol, size_t length, void* value);
 
 //! Load code from string
 LUA_API lua_result_t
@@ -115,9 +85,9 @@ lua_call_real(lua_t* env, const char* method, size_t length, real arg);
 LUA_API lua_result_t
 lua_call_int(lua_t* env, const char* method, size_t length, int arg);
 
-//! Call method
+//! Call method (arglength must fit in a uint16_t)
 LUA_API lua_result_t
-lua_call_string(lua_t* env, const char* method, size_t length, const char* arg);
+lua_call_string(lua_t* env, const char* method, size_t length, const char* arg, size_t arglength);
 
 //! Call method
 LUA_API lua_result_t
@@ -143,3 +113,22 @@ lua_execute(lua_t* env, int gc_time, bool force);
 LUA_API void
 lua_timed_gc(lua_t* env, int milliseconds);
 
+
+#if BUILD_ENABLE_LUA_THREAD_SAFE
+
+bool
+lua_has_execution_right(lua_t* env);
+
+bool
+lua_acquire_execution_right(lua_t* env, bool force);
+
+void
+lua_release_execution_right(lua_t* env);
+
+void
+lua_push_op(lua_t* env, lua_op_t* op);
+
+void
+lua_execute_pending(lua_t* env);
+
+#endif

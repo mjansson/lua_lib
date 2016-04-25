@@ -12,12 +12,6 @@ int system_size_pointer(void);
 int system_size_wchar(void);
 ]]
 
-if C.system_size_size_t() > 4 then
-	ffi.cdef( "typedef int64_t ssize_t;" );
-else
-	ffi.cdef( "typedef int32_t ssize_t;" );
-end
-
 if C.system_size_real() > 4 then
 	ffi.cdef( "typedef float64_t real;" );
 else
@@ -44,6 +38,8 @@ ffi.cdef[[
 typedef struct application_t application_t;
 typedef struct bitbuffer_t bitbuffer_t;
 typedef struct blowfish_t blowfish_t;
+typedef struct beacon_t beacon_t;
+typedef struct config_node_t config_node_t;
 typedef struct error_frame_t error_frame_t;
 typedef struct error_context_t error_context_t;
 typedef struct event_t event_t;
@@ -57,6 +53,7 @@ typedef struct hashtable64_entry_t hashtable64_entry_t;
 typedef struct hashtable_t hashtable_t;
 typedef struct hashtable32_t hashtable32_t;
 typedef struct hashtable64_t hashtable64_t;
+typedef struct json_token_t json_token_t;
 typedef struct md5_t md5_t;
 typedef struct memory_context_t memory_context_t;
 typedef struct memory_system_t memory_system_t;
@@ -68,12 +65,15 @@ typedef struct process_t process_t;
 typedef struct radixsort_t radixsort_t;
 typedef struct regex_t regex_t;
 typedef struct ringbuffer_t ringbuffer_t;
+typedef struct sha256_t sha256_t;
+typedef struct sha512_t sha512_t;
 typedef struct semaphore_t semaphore_t;
 typedef struct stream_t stream_t;
 typedef struct stream_buffer_t stream_buffer_t;
 typedef struct stream_pipe_t stream_pipe_t;
 typedef struct stream_ringbuffer_t stream_ringbuffer_t;
 typedef struct stream_vtable_t stream_vtable_t;
+typedef struct thread_t thread_t;
 typedef struct foundation_config_t foundation_config_t;
 
 typedef uint64_t object_t;
@@ -84,6 +84,7 @@ typedef uint16_t radixsort_index_t;
 
 typedef struct { uint64_t word[2]; } uint128_t;
 typedef struct { uint64_t word[4]; } uint256_t;
+typedef struct { uint64_t word[8]; } uint512_t;
 
 typedef uint128_t uuid_t;
 typedef uint128_t version_t;
@@ -91,14 +92,14 @@ typedef uint128_t version_t;
 typedef struct { char* str; size_t length; } string_t;
 typedef struct { const char* str; size_t length; } string_const_t;
 
-typedef int (* error_callback_fn)(int, int);
+typedef int (* error_handler_fn)(int, int);
 typedef int (* assert_handler_fn)(hash_t, const char*, size_t, const char*, size_t, int, const char*, size_t);
-typedef void (* log_callback_fn)(uint64_t, int, const char*, size_t);
+typedef void (* log_handler_fn)(uint64_t, int, const char*, size_t);
 typedef void (* object_deallocate_fn )(object_t, void*);
 typedef void (* profile_write_fn )(void*, uint64_t);
 typedef void (* profile_read_fn )(void*, uint64_t);
 typedef stream_t* (* stream_open_fn )(const char*, size_t, unsigned int);
-typedef void* (* thread_fn )(object_t, void*);
+typedef void* (* thread_fn )(void*);
 typedef string_const_t (* string_map_fn)(hash_t);
 
 void* array_allocate_pointer(unsigned int);
@@ -118,6 +119,14 @@ stream_t* asset_stream_open(const char*, size_t, unsigned int);
 
 size_t base64_encode(const void*, size_t, char*, size_t);
 size_t base64_decode(const char*, size_t, void*, size_t);
+
+beacon_t* beacon_allocate(void);
+void beacon_initialize(beacon_t*);
+void beacon_finalize(beacon_t*);
+void beacon_deallocate(beacon_t*);
+int beacon_wait(beacon_t*);
+int beacon_try_wait(beacon_t*, unsigned int);
+void beacon_fire(beacon_t*);
 
 bitbuffer_t* bitbuffer_allocate_buffer(void*, size_t, bool);
 bitbuffer_t* bitbuffer_allocate_stream(stream_t*);
@@ -163,19 +172,21 @@ void blowfish_decrypt(const blowfish_t*, void*, size_t, int, uint64_t);
 stream_t* buffer_stream_allocate(void*, unsigned int, size_t, size_t, bool, bool);
 void buffer_stream_initialize(stream_buffer_t*, void*, unsigned int, size_t, size_t, bool, bool);
 
-bool config_bool(hash_t, hash_t);
-int64_t config_int(hash_t, hash_t);
-real config_real(hash_t, hash_t);
-const char* config_string(hash_t, hash_t);
-hash_t config_string_hash(hash_t, hash_t);
-void config_set_bool(hash_t, hash_t, bool);
-void config_set_int(hash_t, hash_t, int64_t);
-void config_set_real(hash_t, hash_t, real);
-void config_set_string(hash_t, hash_t key, const char*, size_t);
-void config_load(const char*, size_t length, hash_t, bool, bool);
-void config_parse(stream_t*, hash_t, bool);
-void config_write(stream_t*, hash_t, string_map_fn);
-void config_parse_commandline(const string_const_t*, size_t);
+config_node_t* config_allocate(void);
+void config_deallocate(config_node_t*);
+bool config_bool(config_node_t*, ...);
+int64_t config_int(config_node_t*, ...);
+real config_real(config_node_t*, ...);
+const char* config_string(config_node_t*, ...);
+hash_t config_hash(config_node_t*, ...);
+config_node_t* config_node(config_node_t*, ...);
+void config_set_bool(config_node_t*, bool, ...);
+void config_set_int(config_node_t*, int64_t, ...);
+void config_set_real(config_node_t*, real, ...);
+void config_set_string(config_node_t*, const char*, size_t, ...);
+void config_read(config_node_t*, stream_t*, bool);
+void config_write(config_node_t*, stream_t*, string_map_fn);
+void config_parse_commandline(config_node_t*, const string_const_t*, size_t);
 
 const string_const_t* environment_command_line(void);
 string_const_t environment_executable_name(void);
@@ -195,8 +206,8 @@ void error_context_pop(void);
 void error_context_clear(void);
 string_t error_context_buffer(char*, size_t);
 error_context_t* error_context(void);
-error_callback_fn error_callback(void);
-void error_set_callback(error_callback_fn);
+error_handler_fn error_handerl(void);
+void error_set_handler(error_handler_fn);
 
 void event_post(event_stream_t*, uint16_t, object_t, tick_t, const void*, size_t, ...);
 event_t* event_next(const event_block_t*, event_t*);
@@ -206,6 +217,7 @@ void event_stream_deallocate(event_stream_t*);
 void event_stream_initialize(event_stream_t*, size_t);
 void event_stream_finalize(event_stream_t*);
 event_block_t* event_stream_process(event_stream_t*);
+void event_stream_set_beacon(event_stream_t*, beacon_t*);
 
 stream_t* fs_open_file(const char*, size_t, unsigned int);
 void fs_copy_file(const char*, size_t, const char*, size_t);
@@ -272,6 +284,13 @@ uint64_t hashtable64_get(hashtable64_t*, uint64_t);
 size_t hashtable64_size(hashtable64_t*);
 void hashtable64_clear(hashtable64_t*);
 
+size_t json_parse(const char*, size_t, json_token_t*, size_t);
+size_t sjson_parse(const char*, size_t, json_token_t*, size_t);
+string_const_t json_token_identifier(const char*, const json_token_t*);
+string_const_t json_token_value(const char*, const json_token_t*);
+string_t json_unescape(char*, size_t, const char*, size_t);
+string_t json_escape(char*, size_t, const char*, size_t);
+
 object_t library_load(const char*, size_t);
 object_t library_ref(object_t);
 void library_unload(object_t);
@@ -290,8 +309,8 @@ void log_set_suppress(hash_t, int);
 int log_suppress(hash_t);
 void log_suppress_clear(void);
 void log_error_context(hash_t, int);
-log_callback_fn log_callback(void);
-void log_set_callback(log_callback_fn);
+log_handler_fn log_handler(void);
+void log_set_handler(log_handler_fn);
 
 md5_t* md5_allocate(void);
 void md5_deallocate(md5_t*);
@@ -336,8 +355,9 @@ string_const_t path_base_file_name_with_directory(const char*, size_t);
 string_const_t path_file_extension(const char*, size_t);
 string_const_t path_file_name(const char*, size_t);
 string_const_t path_directory_name(const char*, size_t);
-string_const_t path_subdirectory_name(const char*, size_t, const char*, size_t);
+string_const_t path_subpath(const char*, size_t, const char*, size_t);
 string_const_t path_protocol(const char*, size_t);
+string_const_t path_strip_protocol(const char*, size_t);
 string_t path_allocate_concat(const char*, size_t, ...);
 string_t path_concat(char*, size_t, const char*, size_t, ...);
 string_t path_append(char*, size_t, size_t, const char*, size_t, ...);
@@ -419,6 +439,20 @@ uint64_t ringbuffer_total_read( ringbuffer_t*);
 uint64_t ringbuffer_total_written( ringbuffer_t* );
 stream_t* ringbuffer_stream_allocate(size_t, size_t);
 void ringbuffer_stream_initialize(stream_ringbuffer_t*, size_t, size_t);
+
+sha256_t* sha256_allocate(void);
+void sha256_deallocate(sha256_t*);
+sha256_t* sha256_digest(sha256_t*, const void*, size_t);
+void sha256_digest_finalize(sha256_t*);
+string_t sha256_get_digest(const sha256_t*, char*, size_t);
+uint256_t sha256_get_digest_raw(const sha256_t*);
+
+sha512_t* sha512_allocate(void);
+void sha512_deallocate(sha512_t*);
+sha512_t* sha512_digest(sha512_t*, const void*, size_t);
+void sha512_digest_finalize(sha512_t*);
+string_t sha512_get_digest(const sha512_t*, char*, size_t);
+uint512_t sha512_get_digest_raw(const sha512_t*);
 
 void semaphore_initialize(semaphore_t*, unsigned int);
 void semaphore_initialize_named(semaphore_t*, const char*, size_t, unsigned int);
@@ -595,20 +629,21 @@ bool system_message_box(const char*, size_t, const char*, size_t, bool);
 event_stream_t* system_event_stream(void);
 void system_post_event(int);
 
-object_t thread_create(thread_fn, const char*, size_t, int, unsigned int);
-object_t thread_ref(object_t);
-void thread_destroy(object_t);
-bool thread_start(object_t, void*);
-void thread_terminate(object_t);
+thread_t* thread_allocate(thread_fn, void*, const char*, size_t, int, unsigned int);
+void thread_initialize(thread_t*, thread_fn, void*, const char*, size_t, int, unsigned int);
+void thread_finalize(thread_t*);
+void thread_deallocate(thread_t*);
+bool thread_start(thread_t*);
+void* thread_join(thread_t*);
+void thread_signal(thread_t*);
+bool thread_wait(void);
+bool thread_try_wait(unsigned int milliseconds);
 bool thread_is_started(object_t);
 bool thread_is_running(object_t);
-bool thread_is_thread(object_t);
 bool thread_is_main(void);
-bool thread_should_terminate(object_t);
 void thread_set_main(void);
 void thread_set_name(const char*, size_t);
 void thread_set_hardware(uint64_t);
-void* thread_result(object_t);
 object_t thread_self(void);
 string_const_t thread_name(void);
 uint64_t thread_id(void);
@@ -647,6 +682,7 @@ local string_meta_table = {
 	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length, nullptr) end,
 	__eq = function(lhs, rhs) return C.string_equal(lhs.str, lhs.length, rhs.str, rhs.length) end,
 	__len = function(str) return str.length end,
+	__tostring = function(str) return ffi.string(str.str, str.length) end,
 	__gc = function(str) C.string_deallocate(str.str) end
 }
 local string_meta_t = ffi.metatype("string_t", string_meta_table)
@@ -655,16 +691,17 @@ local string_const_meta_t
 local string_const_meta_table = {
 	__concat = string_meta_table.__concat,
 	__eq = string_meta_table.__eq,
-	__len = string_meta_table.__len
+	__len = string_meta_table.__len,
+	__tostring = string_meta_table.__tostring
 }
 local string_const_meta_t = ffi.metatype("string_const_t", string_const_meta_table)
 
 -- Helper functions
-function hash(str)
+local function wrap_string_hash(str)
 	return C.hash(str, #str)
 end
 
-function string_array_to_table(arr)
+local function wrap_string_array_to_table(arr)
 	local tab = {}
 	local arr_size = C.array_size(arr)
 	for i = 0, arr_size-1 do
@@ -674,7 +711,7 @@ function string_array_to_table(arr)
 	return tab, arr_size
 end
 
-function string_table_to_array(tab)
+local function wrap_string_table_to_array(tab)
 	local num = 0
 	while tab[num+1] ~= nil do num = num + 1 end
 	local arr = C.array_allocate_string(num)
@@ -684,158 +721,182 @@ function string_table_to_array(tab)
 	return ffi.gc(arr, C.string_array_deallocate), num
 end
 
+local PREHASH_LUA = wrap_string_hash("lua")
+
+local function log_debug(message) C.log_debugf(PREHASH_LUA, "%s", 2, message) end
+local function log_info(message) C.log_infof(PREHASH_LUA, "%s", 2, message) end
+local function log_warn(message) C.log_warnf(PREHASH_LUA, 8, "%s", 2, message) end -- 8 = WARNING_SCRIPT
+local function log_error(message) C.log_errorf(PREHASH_LUA, 15, "%s", 2, message) end -- 15 = ERROR_SCRIPT
+local function log_panic(message) C.log_panicf(PREHASH_LUA, 15, "%s", 2, message) end -- 15 = ERROR_SCRIPT
+
+local function size_t(val) return C.type_size_t(val) end
+local function ssize_t(val) return C.type_ssize_t(val) end
+
+return {
+
 -- Constants
-PLATFORM_WINDOWS = 0
-PLATFORM_LINUX = 1
-PLATFORM_MACOSX = 2
-PLATFORM_IOS = 3
-PLATFORM_ANDROID = 4
-PLATFORM_RASPBERRYPI = 5
-PLATFORM_PNACL = 6
-PLATFORM_BSD = 7
-PLATFORM_TIZEN = 8
+PLATFORM_WINDOWS = 0,
+PLATFORM_LINUX = 1,
+PLATFORM_MACOSX = 2,
+PLATFORM_IOS = 3,
+PLATFORM_ANDROID = 4,
+PLATFORM_RASPBERRYPI = 5,
+PLATFORM_PNACL = 6,
+PLATFORM_BSD = 7,
+PLATFORM_TIZEN = 8,
 
-ARCHITECTURE_X86 = 0
-ARCHITECTURE_X86_64 = 1
-ARCHITECTURE_PPC = 2
-ARCHITECTURE_PPC_64 = 3
-ARCHITECTURE_ARM5 = 4
-ARCHITECTURE_ARM6 = 5
-ARCHITECTURE_ARM7 = 6
-ARCHITECTURE_ARM8 = 7
-ARCHITECTURE_ARM8_64 = 8
-ARCHITECTURE_MIPS = 9
-ARCHITECTURE_MIPS_64 = 10
-ARCHITECTURE_GENERIC = 11
+ARCHITECTURE_X86 = 0,
+ARCHITECTURE_X86_64 = 1,
+ARCHITECTURE_PPC = 2,
+ARCHITECTURE_PPC_64 = 3,
+ARCHITECTURE_ARM5 = 4,
+ARCHITECTURE_ARM6 = 5,
+ARCHITECTURE_ARM7 = 6,
+ARCHITECTURE_ARM8 = 7,
+ARCHITECTURE_ARM8_64 = 8,
+ARCHITECTURE_MIPS = 9,
+ARCHITECTURE_MIPS_64 = 10,
+ARCHITECTURE_GENERIC = 11,
 
-BYTEORDER_LITTLEENDIAN = 0
-BYTEORDER_BIGENDIAN = 1
+BYTEORDER_LITTLEENDIAN = 0,
+BYTEORDER_BIGENDIAN = 1,
 
-FOUNDATIONEVENT_START = 1
-FOUNDATIONEVENT_TERMINATE = 2
-FOUNDATIONEVENT_PAUSE = 3
-FOUNDATIONEVENT_RESUME = 4
-FOUNDATIONEVENT_FOCUS_GAIN = 5
-FOUNDATIONEVENT_FOCUS_LOST = 6
-FOUNDATIONEVENT_FILE_CREATED = 7
-FOUNDATIONEVENT_FILE_DELETED = 8
-FOUNDATIONEVENT_FILE_MODIFIED = 9
-FOUNDATIONEVENT_LOW_MEMORY_WARNING = 10
-FOUNDATIONEVENT_DEVICE_ORIENTATION = 11
+FOUNDATIONEVENT_START = 1,
+FOUNDATIONEVENT_TERMINATE = 2,
+FOUNDATIONEVENT_PAUSE = 3,
+FOUNDATIONEVENT_RESUME = 4,
+FOUNDATIONEVENT_FOCUS_GAIN = 5,
+FOUNDATIONEVENT_FOCUS_LOST = 6,
+FOUNDATIONEVENT_FILE_CREATED = 7,
+FOUNDATIONEVENT_FILE_DELETED = 8,
+FOUNDATIONEVENT_FILE_MODIFIED = 9,
+FOUNDATIONEVENT_LOW_MEMORY_WARNING = 10,
+FOUNDATIONEVENT_DEVICE_ORIENTATION = 11,
 
-EVENTFLAG_DELAY = 1
+EVENTFLAG_DELAY = 1,
 
-ERRORLEVEL_NONE = 0
-ERRORLEVEL_DEBUG = 1
-ERRORLEVEL_INFO = 2
-ERRORLEVEL_WARNING = 3
-ERRORLEVEL_ERROR = 4
-ERRORLEVEL_PANIC = 5
+ERRORLEVEL_NONE = 0,
+ERRORLEVEL_DEBUG = 1,
+ERRORLEVEL_INFO = 2,
+ERRORLEVEL_WARNING = 3,
+ERRORLEVEL_ERROR = 4,
+ERRORLEVEL_PANIC = 5,
 
-ERROR_NONE = 0
-ERROR_INVALID_VALUE = 1
-ERROR_UNSUPPORTED = 2
-ERROR_NOT_IMPLEMENTED = 3
-ERROR_OUT_OF_MEMORY = 4
-ERROR_MEMORY_LEAK = 5
-ERROR_MEMORY_ALIGNMENT = 6
-ERROR_INTERNAL_FAILURE = 7
-ERROR_ACCESS_DENIED = 8
-ERROR_EXCEPTION = 9
-ERROR_SYSTEM_CALL_FAIL = 10
-ERROR_UNKNOWN_TYPE = 11
-ERROR_UNKNOWN_RESOURCE = 12
-ERROR_DEPRECATED = 13
-ERROR_ASSERT = 14
-ERROR_SCRIPT = 15
+ERROR_NONE = 0,
+ERROR_INVALID_VALUE = 1,
+ERROR_UNSUPPORTED = 2,
+ERROR_NOT_IMPLEMENTED = 3,
+ERROR_OUT_OF_MEMORY = 4,
+ERROR_MEMORY_LEAK = 5,
+ERROR_MEMORY_ALIGNMENT = 6,
+ERROR_INTERNAL_FAILURE = 7,
+ERROR_ACCESS_DENIED = 8,
+ERROR_EXCEPTION = 9,
+ERROR_SYSTEM_CALL_FAIL = 10,
+ERROR_UNKNOWN_TYPE = 11,
+ERROR_UNKNOWN_RESOURCE = 12,
+ERROR_DEPRECATED = 13,
+ERROR_ASSERT = 14,
+ERROR_SCRIPT = 15,
 
-WARNING_PERFORMANCE = 0
-WARNING_DEPRECATED = 1
-WARNING_INVALID_VALUE = 2
-WARNING_MEMORY = 3
-WARNING_UNSUPPORTED = 4
-WARNING_SUSPICIOUS = 5
-WARNING_SYSTEM_CALL_FAIL = 6
-WARNING_DEADLOCK = 7
-WARNING_SCRIPT = 8
-WARNING_RESOURCE = 9
+WARNING_PERFORMANCE = 0,
+WARNING_DEPRECATED = 1,
+WARNING_INVALID_VALUE = 2,
+WARNING_MEMORY = 3,
+WARNING_UNSUPPORTED = 4,
+WARNING_SUSPICIOUS = 5,
+WARNING_SYSTEM_CALL_FAIL = 6,
+WARNING_DEADLOCK = 7,
+WARNING_SCRIPT = 8,
+WARNING_RESOURCE = 9,
 
-STREAM_IN = 0x0001
-STREAM_OUT = 0x0002
-STREAM_TRUNCATE = 0x0010
-STREAM_CREATE = 0x0020
-STREAM_ATEND = 0x0040
-STREAM_BINARY = 0x0100
-STREAM_SYNC = 0x0200
+STREAM_IN = 0x0001,
+STREAM_OUT = 0x0002,
+STREAM_TRUNCATE = 0x0010,
+STREAM_CREATE = 0x0020,
+STREAM_ATEND = 0x0040,
+STREAM_BINARY = 0x0100,
+STREAM_SYNC = 0x0200,
 
-STREAM_SEEK_BEGIN = 0
-STREAM_SEEK_CURRENT = 1
-STREAM_SEEK_END = 2
+STREAM_SEEK_BEGIN = 0,
+STREAM_SEEK_CURRENT = 1,
+STREAM_SEEK_END = 2,
 
-BLOCKCIPHER_ECB = 0
-BLOCKCIPHER_CBC = 1
-BLOCKCIPHER_CFB = 2
-BLOCKCIPHER_OFB = 3
+BLOCKCIPHER_ECB = 0,
+BLOCKCIPHER_CBC = 1,
+BLOCKCIPHER_CFB = 2,
+BLOCKCIPHER_OFB = 3,
 
-RADIXSORT_INT32 = 0
-RADIXSORT_UINT32 = 1
-RADIXSORT_INT64 = 2
-RADIXSORT_UINT64 = 3
-RADIXSORT_FLOAT32 = 4
-RADIXSORT_FLOAT64 = 5
+RADIXSORT_INT32 = 0,
+RADIXSORT_UINT32 = 1,
+RADIXSORT_INT64 = 2,
+RADIXSORT_UINT64 = 3,
+RADIXSORT_FLOAT32 = 4,
+RADIXSORT_FLOAT64 = 5,
 
-DEVICEORIENTATION_UNKNOWN = 0
-DEVICEORIENTATION_PORTRAIT = 1
-DEVICEORIENTATION_PORTRAIT_FLIPPED = 2
-DEVICEORIENTATION_LANDSCAPE_CCW = 3
-DEVICEORIENTATION_LANDSCAPE_CW = 4
-DEVICEORIENTATION_FACEUP = 5
-DEVICEORIENTATION_FACEDOWN = 6
+DEVICEORIENTATION_UNKNOWN = 0,
+DEVICEORIENTATION_PORTRAIT = 1,
+DEVICEORIENTATION_PORTRAIT_FLIPPED = 2,
+DEVICEORIENTATION_LANDSCAPE_CCW = 3,
+DEVICEORIENTATION_LANDSCAPE_CW = 4,
+DEVICEORIENTATION_FACEUP = 5,
+DEVICEORIENTATION_FACEDOWN = 6,
 
-PROCESS_ATTACHED = 0
-PROCESS_DETACHED = 0x01
-PROCESS_CONSOLE = 0x02
-PROCESS_STDSTREAMS = 0x04
-PROCESS_WINDOWS_USE_SHELLEXECUTE = 0x08
-PROCESS_MACOSX_USE_OPENAPPLICATION = 0x10
-PROCESS_INVALID_ARGS = 0x7FFFFFF0
-PROCESS_TERMINATED_SIGNAL = 0x7FFFFFF1
-PROCESS_WAIT_INTERRUPTED = 0x7FFFFFF2
-PROCESS_WAIT_FAILED = 0x7FFFFFF3
-PROCESS_STILL_ACTIVE = 0x7FFFFFFF
+PROCESS_ATTACHED = 0,
+PROCESS_DETACHED = 0x01,
+PROCESS_CONSOLE = 0x02,
+PROCESS_STDSTREAMS = 0x04,
+PROCESS_WINDOWS_USE_SHELLEXECUTE = 0x08,
+PROCESS_MACOSX_USE_OPENAPPLICATION = 0x10,
+PROCESS_INVALID_ARGS = 0x7FFFFFF0,
+PROCESS_TERMINATED_SIGNAL = 0x7FFFFFF1,
+PROCESS_WAIT_INTERRUPTED = 0x7FFFFFF2,
+PROCESS_WAIT_FAILED = 0x7FFFFFF3,
+PROCESS_STILL_ACTIVE = 0x7FFFFFFF,
 
-STREAMTYPE_INVALID = 0
-STREAMTYPE_MEMORY = 1
-STREAMTYPE_FILE = 2
-STREAMTYPE_SOCKET = 3
-STREAMTYPE_RINGBUFFER = 4
-STREAMTYPE_ASSET = 5
-STREAMTYPE_PIPE = 6
-STREAMTYPE_STDSTREAM = 7
+STREAMTYPE_INVALID = 0,
+STREAMTYPE_MEMORY = 1,
+STREAMTYPE_FILE = 2,
+STREAMTYPE_SOCKET = 3,
+STREAMTYPE_RINGBUFFER = 4,
+STREAMTYPE_ASSET = 5,
+STREAMTYPE_PIPE = 6,
+STREAMTYPE_STDSTREAM = 7,
 
-THREAD_PRIORITY_LOW = 0
-THREAD_PRIORITY_BELOWNORMAL = 1
-THREAD_PRIORITY_NORMAL = 2
-THREAD_PRIORITY_ABOVENORMAL = 3
-THREAD_PRIORITY_HIGHEST = 4
-THREAD_PRIORITY_TIMECRITICAL = 5
+THREAD_PRIORITY_LOW = 0,
+THREAD_PRIORITY_BELOWNORMAL = 1,
+THREAD_PRIORITY_NORMAL = 2,
+THREAD_PRIORITY_ABOVENORMAL = 3,
+THREAD_PRIORITY_HIGHEST = 4,
+THREAD_PRIORITY_TIMECRITICAL = 5,
 
-MEMORY_PERSISTENT = 0x0000
-MEMORY_TEMPORARY = 0x0001
-MEMORY_THREAD = 0x0002
-MEMORY_32BIT_ADDRESS = 0x0004
-MEMORY_ZERO_INITIALIZED = 0x0008
+MEMORY_PERSISTENT = 0x0000,
+MEMORY_TEMPORARY = 0x0001,
+MEMORY_THREAD = 0x0002,
+MEMORY_32BIT_ADDRESS = 0x0004,
+MEMORY_ZERO_INITIALIZED = 0x0008,
 
 -- Context hash value is hash of "lua", since luajit parser does not handle
 -- full 64bit hex numbers (numbers > 0xc000000000000000 are truncated)
-HASH_LUA = hash("lua")
+HASH_LUA = PREHASH_LUA,
 
--- Convenience wrappers
-function log_debug(message) C.log_debugf(HASH_LUA, "%s", 2, message) end
-function log_info(message) C.log_infof(HASH_LUA, "%s", 2, message) end
-function log_warn(message) C.log_warnf(HASH_LUA, 8, "%s", 2, message) end -- 8 = WARNING_SCRIPT
-function log_error(message) C.log_errorf(HASH_LUA, 15, "%s", 2, message) end -- 15 = ERROR_SCRIPT
-function log_panic(message) C.log_panicf(HASH_LUA, 15, "%s", 2, message) end -- 15 = ERROR_SCRIPT
+-- log submodule
+log = {
 
-function size_t(val) return C.type_size_t(val) end
-function ssize_t(val) return C.type_ssize_t(val) end
+debug = log_debug,
+info = log_info,
+warn = log_warn,
+error = log_error,
+panic = log_panic
+
+},
+
+tosize = size_t,
+tossize = ssize_t,
+
+hash = wrap_string_hash,
+
+string_array_to_table = wrap_string_array_to_table,
+string_table_to_array = wrap_string_table_to_array
+
+}

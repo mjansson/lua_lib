@@ -1,34 +1,19 @@
-/* main.c  -  Foundation bind test for lua library  -  MIT License  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Foundation bind test for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
- * This library provides a fork of the LuaJIT library with custom modifications for projects
- * based on our foundation library.
+ * This library provides a cross-platform lua library in C11 for games and applications
+ * based on out foundation library. The latest source code is always available at
  *
- * The latest source code maintained by Rampant Pixels is always available at
  * https://github.com/rampantpixels/lua_lib
  *
- * For more information about LuaJIT, see
+ * This library is put in the public domain; you can redistribute it and/or modify it without
+ * any restrictions.
+ *
+ * The LuaJIT library is released under the MIT license. For more information about LuaJIT, see
  * http://luajit.org/
- *
- * The MIT License (MIT)
- * Copyright (c) 2013 Rampant Pixels AB
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
- * and associated documentation files (the "Software"), to deal in the Software without restriction,
- * including without limitation the rights to use, copy, modify, merge, publish, distribute,
- * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
- * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <foundation/foundation.h>
+#include <resource/resource.h>
 #include <lua/lua.h>
 #include <test/test.h>
 
@@ -36,10 +21,11 @@ application_t
 test_foundation_application(void) {
 	application_t app;
 	memset(&app, 0, sizeof(app));
-	app.name = string_const(STRING_CONST("Foundation tests"));
+	app.name = string_const(STRING_CONST("Lua foundation tests"));
 	app.short_name = string_const(STRING_CONST("test_lua_foundation"));
-	app.config_dir = string_const(STRING_CONST("test_lua_foundation"));
+	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.flags = APPLICATION_UTILITY;
+	app.exception_handler = test_exception_handler;
 	return app;
 }
 
@@ -57,12 +43,26 @@ test_foundation_config(void) {
 
 int
 test_foundation_initialize(void) {
-	return lua_module_initialize();
+	lua_config_t lua_config;
+	resource_config_t resource_config;
+
+	memset(&lua_config, 0, sizeof(lua_config));
+	memset(&resource_config, 0, sizeof(resource_config));
+
+	resource_config.enable_local_source = true;
+	resource_config.enable_local_cache = true;
+	resource_config.enable_remote_cache = true;
+
+	if (resource_module_initialize(resource_config) < 0)
+		return -1;
+
+	return lua_module_initialize(lua_config);
 }
 
 void
 test_foundation_finalize(void) {
 	lua_module_finalize();
+	resource_module_finalize();
 }
 
 DECLARE_TEST(foundation, log) {
@@ -72,23 +72,21 @@ DECLARE_TEST(foundation, log) {
 
 	EXPECT_NE(env, 0);
 
-	//Foundation bindings
-	lua_load_foundation(lua_state(env));
-
 	string_const_t testcode = string_const(STRING_CONST(
 	    "local ffi = require(\"ffi\")\n"
+	    "local foundation = require(\"foundation\")\n"
 	    "local C = ffi.C\n"
-	    "C.log_set_suppress(HASH_LUA, ERRORLEVEL_NONE)\n"
-	    "log_debug(\"Testing log debug output\")\n"
-	    "log_info(\"Testing log info output\")\n"
-	    "log_warn(\"Testing log warning output\")\n"
+	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
+	    "foundation.log.debug(\"Testing log debug output\")\n"
+	    "foundation.log.info(\"Testing log info output\")\n"
+	    "foundation.log.warn(\"Testing log warning output\")\n"
 	    "C.log_enable_prefix(false)\n"
-	    "log_error(\"Testing log error output without prefix\")\n"
+	    "foundation.log.error(\"Testing log error output without prefix\")\n"
 	    "C.log_enable_stdout(false)\n"
-	    "log_debug(\"Invisible on stdout\")\n"
+	    "foundation.log.debug(\"Invisible on stdout\")\n"
 	    "C.log_enable_stdout(true)\n"
 	    "C.log_enable_prefix(true)\n"
-	    "C.log_set_suppress(HASH_LUA, ERRORLEVEL_INFO)\n"
+	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
 	));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
@@ -107,25 +105,22 @@ DECLARE_TEST(foundation, environment) {
 
 	EXPECT_NE(env, 0);
 
-	//Foundation bindings
-	lua_load_foundation(lua_state(env));
-
 	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require( \"ffi\" )\n"
+	    "local ffi = require(\"ffi\")\n"
+	    "local foundation = require(\"foundation\")\n"
 	    "local C = ffi.C\n"
-	    "C.log_set_suppress( HASH_LUA, ERRORLEVEL_DEBUG )\n"
-	    "C.log_enable_prefix( false )\n"
-	    "log_info( \"Executable name: \" .. ffi.string( C.environment_executable_name() ) )\n"
+	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_DEBUG)\n"
+	    "C.log_enable_prefix(false)\n"
+	    "foundation.log.info(\"Executable name: \" .. tostring(C.environment_executable_name()))\n"
 	    "local cmdline = \"\"\n"
-	    "local cmdline_tab = environment_command_line()\n"
-	    "local i = 1\n"
-	    "while cmdline_tab[i] ~= nil do\n"
-	    "  cmdline = cmdline .. \" \" .. cmdline_tab[i]\n"
-	    "  i = i + 1\n"
+	    "local cmdline_tab = C.environment_command_line()\n"
+	    "local num = C.array_size(cmdline_tab)"
+	    "for i = 0, num-1 do\n"
+	    "  cmdline = cmdline .. \" \" .. tostring(cmdline_tab[i])\n"
 	    "end\n"
-	    "log_info( \"Command line:\" .. cmdline )\n"
-	    "C.log_enable_prefix( true )\n"
-	    "C.log_set_suppress( HASH_LUA, ERRORLEVEL_INFO )\n"
+	    "foundation.log.info(\"Command line:\" .. cmdline)\n"
+	    "C.log_enable_prefix(true)\n"
+	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
 	));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
