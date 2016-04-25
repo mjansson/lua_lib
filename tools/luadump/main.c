@@ -113,7 +113,7 @@ main_initialize(void) {
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("luadump"));
 	application.short_name = application.name;
-	application.config_dir = application.name;
+	application.company = string_const(STRING_CONST("Rampant Pixels"));
 	application.flags = APPLICATION_UTILITY;
 
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)

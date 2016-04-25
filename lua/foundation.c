@@ -29,14 +29,14 @@ _log_debugf_disabled(uint64_t context, const char* format, size_t format_size, .
 
 #if !BUILD_ENABLE_LOG
 
-static log_callback_fn
-_log_callback(void) {
-	return (log_callback_fn)nullptr;
+static log_handler_fn
+_log_handler(void) {
+	return (log_handler_fn)nullptr;
 }
 
 static void
-_log_set_callback(log_callback_fn callback) {
-	FOUNDATION_UNUSED(callback);
+_log_set_handler(log_handler_fn handler) {
+	FOUNDATION_UNUSED(handler);
 }
 
 static void
@@ -364,8 +364,7 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(config_set_int, CONFIG_SET_INT);
 	FOUNDATION_SYM(config_set_real, CONFIG_SET_REAL);
 	FOUNDATION_SYM(config_set_string, CONFIG_SET_STRING);
-	FOUNDATION_SYM(config_load, CONFIG_LOAD);
-	FOUNDATION_SYM(config_parse, CONFIG_PARSE);
+	FOUNDATION_SYM(config_read, CONFIG_READ);
 	FOUNDATION_SYM(config_write, CONFIG_WRITE);
 	FOUNDATION_SYM(config_parse_commandline, CONFIG_PARSE_COMMANDLINE);
 
@@ -377,14 +376,14 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(environment_current_working_directory, ENVIRONMENT_CURRENT_WORKING_DIRECTORY);
 	FOUNDATION_SYM(environment_set_current_working_directory,
 	               ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
-	FOUNDATION_SYM(environment_home_directory, ENVIRONMENT_HOME_DIRECTORY);
+	FOUNDATION_SYM(environment_application_directory, ENVIRONMENT_APPLICATION_DIRECTORY);
 	FOUNDATION_SYM(environment_temporary_directory, ENVIRONMENT_TEMPORARY_DIRECTORY);
 	FOUNDATION_SYM(environment_variable, ENVIRONMENT_VARIABLE);
 
 	FOUNDATION_SYM(error, ERROR);
 	FOUNDATION_SYM(error_report, ERROR_REPORT);
-	FOUNDATION_SYM(error_callback, ERROR_CALLBACK);
-	FOUNDATION_SYM(error_set_callback, ERROR_SET_CALLBACK);
+	FOUNDATION_SYM(error_handler, ERROR_HANDLER);
+	FOUNDATION_SYM(error_set_handler, ERROR_SET_HANDLER);
 #if BUILD_ENABLE_ERROR_CONTEXT
 	FOUNDATION_SYM(_error_context_push, ERROR_CONTEXT_PUSH);
 	FOUNDATION_SYM(_error_context_pop, ERROR_CONTEXT_POP);
@@ -485,6 +484,13 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(hashtable64_size, HASHTABLE64_SIZE);
 	FOUNDATION_SYM(hashtable64_clear, HASHTABLE64_CLEAR);
 
+	FOUNDATION_SYM(json_parse, JSON_PARSE);
+	FOUNDATION_SYM(sjson_parse, SJSON_PARSE);
+	FOUNDATION_SYM(json_token_identifier, JSON_TOKEN_IDENTIFIER);
+	FOUNDATION_SYM(json_token_value, JSON_TOKEN_VALUE);
+	FOUNDATION_SYM(json_unescape, JSON_UNESCAPE);
+	FOUNDATION_SYM(json_escape, JSON_ESCAPE);
+
 	FOUNDATION_SYM(library_load, LIBRARY_LOAD);
 	FOUNDATION_SYM(library_ref, LIBRARY_REF);
 	FOUNDATION_SYM(library_unload, LIBRARY_UNLOAD);
@@ -504,8 +510,8 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(log_panicf, LOG_PANICF);
 	FOUNDATION_SYM(log_enable_prefix, LOG_ENABLE_PREFIX);
 	FOUNDATION_SYM(log_enable_stdout, LOG_ENABLE_STDOUT);
-	FOUNDATION_SYM(log_callback, LOG_CALLBACK);
-	FOUNDATION_SYM(log_set_callback, LOG_SET_CALLBACK);
+	FOUNDATION_SYM(log_handler, LOG_HANDLER);
+	FOUNDATION_SYM(log_set_handler, LOG_SET_HANDLER);
 	FOUNDATION_SYM(log_set_suppress, LOG_SET_SUPPRESS);
 	FOUNDATION_SYM(log_suppress, LOG_SUPPRESS);
 	FOUNDATION_SYM(log_suppress_clear, LOG_SUPPRESS_CLEAR);
@@ -516,8 +522,8 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(_log_debugf_disabled, LOG_PANICF);
 	FOUNDATION_SYM(_log_enable, LOG_ENABLE_PREFIX);
 	FOUNDATION_SYM(_log_enable, LOG_ENABLE_STDOUT);
-	FOUNDATION_SYM(_log_callback, LOG_CALLBACK);
-	FOUNDATION_SYM(_log_set_callback, LOG_SET_CALLBACK);
+	FOUNDATION_SYM(_log_handler, LOG_HANDLER);
+	FOUNDATION_SYM(_log_set_handler, LOG_SET_HANDLER);
 	FOUNDATION_SYM(_log_set_suppress, LOG_SET_SUPPRESS);
 	FOUNDATION_SYM(_log_suppress, LOG_SUPPRESS);
 	FOUNDATION_SYM(_log_suppress_clear, LOG_SUPPRESS_CLEAR);
@@ -669,6 +675,20 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(ringbuffer_total_written, RINGBUFFER_TOTAL_WRITTEN);
 	FOUNDATION_SYM(ringbuffer_stream_allocate, RINGBUFFER_STREAM_ALLOCATE);
 	FOUNDATION_SYM(ringbuffer_stream_initialize, RINGBUFFER_STREAM_INITIALIZE);
+
+	FOUNDATION_SYM(sha256_allocate, SHA256_ALLOCATE);
+	FOUNDATION_SYM(sha256_deallocate, SHA256_DEALLOCATE);
+	FOUNDATION_SYM(sha256_digest, SHA256_DIGEST);
+	FOUNDATION_SYM(sha256_digest_finalize, SHA256_DIGEST_FINALIZE);
+	FOUNDATION_SYM(sha256_get_digest, SHA256_GET_DIGEST);
+	FOUNDATION_SYM(sha256_get_digest_raw, SHA256_GET_DIGEST_RAW);
+
+	FOUNDATION_SYM(sha512_allocate, SHA512_ALLOCATE);
+	FOUNDATION_SYM(sha512_deallocate, SHA512_DEALLOCATE);
+	FOUNDATION_SYM(sha512_digest, SHA512_DIGEST);
+	FOUNDATION_SYM(sha512_digest_finalize, SHA512_DIGEST_FINALIZE);
+	FOUNDATION_SYM(sha512_get_digest, SHA512_GET_DIGEST);
+	FOUNDATION_SYM(sha512_get_digest_raw, SHA512_GET_DIGEST_RAW);
 
 	FOUNDATION_SYM(semaphore_initialize, SEMAPHORE_INITIALIZE);
 	FOUNDATION_SYM(semaphore_initialize_named, SEMAPHORE_INITIALIZE_NAMED);

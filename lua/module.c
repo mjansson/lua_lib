@@ -180,8 +180,6 @@ lua_module_loader(lua_State* state) {
 		entry->module = lua_module_load(entry->uuid);
 		if (!entry->module.size) {
 			string_const_t uuidstr = string_from_uuid_static(entry->uuid);
-			log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Unable to load Lua module %.*s"),
-			           STRING_FORMAT(uuidstr));
 			lua_pushfstring(state, "unable to load module '%s'", uuidstr.str);
 			lua_error(state);
 			goto exit;

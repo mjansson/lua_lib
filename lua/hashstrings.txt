@@ -81,8 +81,7 @@ HASH_SYM_CONFIG_SET_BOOL                config_set_bool
 HASH_SYM_CONFIG_SET_INT                 config_set_int
 HASH_SYM_CONFIG_SET_REAL                config_set_real
 HASH_SYM_CONFIG_SET_STRING              config_set_string
-HASH_SYM_CONFIG_LOAD                    config_load
-HASH_SYM_CONFIG_PARSE                   config_parse
+HASH_SYM_CONFIG_READ                    config_read
 HASH_SYM_CONFIG_WRITE                   config_write
 HASH_SYM_CONFIG_PARSE_COMMANDLINE       config_parse_commandline
 
@@ -93,14 +92,14 @@ HASH_SYM_ENVIRONMENT_EXECUTABLE_PATH                environment_executable_path
 HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY      environment_initial_working_directory
 HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY      environment_current_working_directory
 HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY  environment_set_current_working_directory
-HASH_SYM_ENVIRONMENT_HOME_DIRECTORY                 environment_home_directory
+HASH_SYM_ENVIRONMENT_APPLICATION_DIRECTORY          environment_application_directory
 HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY            environment_temporary_directory
 HASH_SYM_ENVIRONMENT_VARIABLE                       environment_variable
 
 HASH_SYM_ERROR                          error
 HASH_SYM_ERROR_REPORT                   error_report
-HASH_SYM_ERROR_CALLBACK                 error_callback
-HASH_SYM_ERROR_SET_CALLBACK             error_set_callback
+HASH_SYM_ERROR_HANDLER                  error_handler
+HASH_SYM_ERROR_SET_HANDLER              error_set_handler
 HASH_SYM_ERROR_CONTEXT_PUSH             error_context_push
 HASH_SYM_ERROR_CONTEXT_POP              error_context_pop
 HASH_SYM_ERROR_CONTEXT_CLEAR            error_context_clear
@@ -181,6 +180,13 @@ HASH_SYM_HASHTABLE64_GET                hashtable64_get
 HASH_SYM_HASHTABLE64_SIZE               hashtable64_size
 HASH_SYM_HASHTABLE64_CLEAR              hashtable64_clear
 
+HASH_SYM_JSON_PARSE                     json_parse
+HASH_SYM_SJSON_PARSE                    sjson_parse
+HASH_SYM_JSON_TOKEN_IDENTIFIER          json_token_identifier
+HASH_SYM_JSON_TOKEN_VALUE               json_token_value
+HASH_SYM_JSON_UNESCAPE                  json_unescape
+HASH_SYM_JSON_ESCAPE                    json_escape
+
 HASH_SYM_LIBRARY_LOAD                   library_load
 HASH_SYM_LIBRARY_REF                    library_ref
 HASH_SYM_LIBRARY_UNLOAD                 library_unload
@@ -194,8 +200,8 @@ HASH_SYM_LOG_WARNF                      log_warnf
 HASH_SYM_LOG_ERRORF                     log_errorf
 HASH_SYM_LOG_PANICF                     log_panicf
 HASH_SYM_LOG_ERROR_CONTEXT              log_error_context
-HASH_SYM_LOG_CALLBACK                   log_callback
-HASH_SYM_LOG_SET_CALLBACK               log_set_callback
+HASH_SYM_LOG_HANDLER                    log_handler
+HASH_SYM_LOG_SET_HANDLER                log_set_handler
 HASH_SYM_LOG_ENABLE_STDOUT              log_enable_stdout
 HASH_SYM_LOG_ENABLE_PREFIX              log_enable_prefix
 HASH_SYM_LOG_SET_SUPPRESS               log_set_suppress
@@ -330,6 +336,20 @@ HASH_SYM_RINGBUFFER_TOTAL_READ          ringbuffer_total_read
 HASH_SYM_RINGBUFFER_TOTAL_WRITTEN       ringbuffer_total_written
 HASH_SYM_RINGBUFFER_STREAM_ALLOCATE     ringbuffer_stream_allocate
 HASH_SYM_RINGBUFFER_STREAM_INITIALIZE   ringbuffer_stream_initialize
+
+HASH_SYM_SHA256_ALLOCATE                sha256_allocate
+HASH_SYM_SHA256_DEALLOCATE              sha256_deallocate
+HASH_SYM_SHA256_DIGEST                  sha256_digest
+HASH_SYM_SHA256_DIGEST_FINALIZE         sha256_digest_finalize
+HASH_SYM_SHA256_GET_DIGEST              sha256_get_digest
+HASH_SYM_SHA256_GET_DIGEST_RAW          sha256_get_digest_raw
+
+HASH_SYM_SHA512_ALLOCATE                sha512_allocate
+HASH_SYM_SHA512_DEALLOCATE              sha512_deallocate
+HASH_SYM_SHA512_DIGEST                  sha512_digest
+HASH_SYM_SHA512_DIGEST_FINALIZE         sha512_digest_finalize
+HASH_SYM_SHA512_GET_DIGEST              sha512_get_digest
+HASH_SYM_SHA512_GET_DIGEST_RAW          sha512_get_digest_raw
 
 HASH_SYM_SEMAPHORE_INITIALIZE           semaphore_initialize
 HASH_SYM_SEMAPHORE_INITIALIZE_NAMED     semaphore_initialize_named

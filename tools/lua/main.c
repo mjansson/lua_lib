@@ -13,6 +13,7 @@
  */
 
 #include <foundation/foundation.h>
+#include <resource/resource.h>
 #include <lua/lua.h>
 #include <lua/bind.h>
 #include <lua/read.h>
@@ -26,9 +27,10 @@
 typedef struct lua_instance_t lua_instance_t;
 
 struct lua_instance_t {
-	string_t       input_file;
-	lua_t*         env;
-	error_level_t  suppress_level;
+	string_const_t* config_files;
+	string_t        input_file;
+	lua_t*          env;
+	error_level_t   suppress_level;
 };
 
 static bool _lua_terminate = false;
@@ -90,8 +92,8 @@ main_initialize(void) {
 	int ret = 0;
 
 	log_enable_prefix(false);
-	log_set_suppress(0, ERRORLEVEL_DEBUG);
-	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
+	log_set_suppress(0, ERRORLEVEL_INFO);
+	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
 
 	foundation_config_t config;
 	memset(&config, 0, sizeof(config));
@@ -100,10 +102,17 @@ main_initialize(void) {
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("lua"));
 	application.short_name = application.name;
-	application.config_dir = application.name;
+	application.company = string_const(STRING_CONST("Rampant Pixels"));
 	application.flags = APPLICATION_UTILITY;
 
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
+		return ret;
+
+	resource_config_t resource_config;
+	memset(&resource_config, 0, sizeof(resource_config_t));
+	resource_config.enable_local_cache = true;
+	resource_config.enable_local_source = true;
+	if ((ret = resource_module_initialize(resource_config)) < 0)
 		return ret;
 
 	lua_config_t lua_config;
@@ -123,6 +132,9 @@ main_run(void* main_arg) {
 	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
 	thread_start(&eventthread);
 
+	for (size_t cfgfile = 0, fsize = array_size(instance.config_files); cfgfile < fsize; ++cfgfile)
+		sjson_parse_path(STRING_ARGS(instance.config_files[cfgfile]), resource_module_parse_config);
+
 	instance.env = lua_allocate();
 
 	if (instance.input_file.length)
@@ -134,6 +146,7 @@ main_run(void* main_arg) {
 
 	lua_deallocate(instance.env);
 	string_deallocate(instance.input_file.str);
+	array_deallocate(instance.config_files);
 
 	thread_finalize(&eventthread);
 
@@ -278,7 +291,11 @@ _lua_parse_command_line(const string_const_t* cmdline) {
 
 	error_context_push(STRING_CONST("parsing command line"), STRING_CONST(""));
 	for (arg = 1, asize = array_size(cmdline); arg < asize; ++arg) {
-		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--help")))
+		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--config"))) {
+			if (arg < asize - 1)
+				array_push(instance.config_files, cmdline[++arg]);
+		}
+		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--help")))
 			display_help = true;
 		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--debug")))
 			instance.suppress_level = ERRORLEVEL_NONE;
@@ -302,8 +319,10 @@ _lua_print_usage(void) {
 	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
 	log_info(HASH_LUA, STRING_CONST(
 	         "lua usage:\n"
-	         "  lua [--help] [file]\n"
+	         "  lua [--config <path> ...] [--help] [file]\n"
 	         "    Optional arguments:\n"
+             "      --config <file>  Read and parse config file given by <path>\n"
+             "                       Loads all .json/.sjson files in <path> if it is a directory\n"
 	         "      --help           Show this message\n"
 	         "      <file>           Read <file> instead of stdin\n"
 	        ));
