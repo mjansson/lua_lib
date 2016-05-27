@@ -39,7 +39,6 @@ typedef struct application_t application_t;
 typedef struct bitbuffer_t bitbuffer_t;
 typedef struct blowfish_t blowfish_t;
 typedef struct beacon_t beacon_t;
-typedef struct config_node_t config_node_t;
 typedef struct error_frame_t error_frame_t;
 typedef struct error_context_t error_context_t;
 typedef struct event_t event_t;
@@ -171,22 +170,6 @@ void blowfish_decrypt(const blowfish_t*, void*, size_t, int, uint64_t);
 
 stream_t* buffer_stream_allocate(void*, unsigned int, size_t, size_t, bool, bool);
 void buffer_stream_initialize(stream_buffer_t*, void*, unsigned int, size_t, size_t, bool, bool);
-
-config_node_t* config_allocate(void);
-void config_deallocate(config_node_t*);
-bool config_bool(config_node_t*, ...);
-int64_t config_int(config_node_t*, ...);
-real config_real(config_node_t*, ...);
-const char* config_string(config_node_t*, ...);
-hash_t config_hash(config_node_t*, ...);
-config_node_t* config_node(config_node_t*, ...);
-void config_set_bool(config_node_t*, bool, ...);
-void config_set_int(config_node_t*, int64_t, ...);
-void config_set_real(config_node_t*, real, ...);
-void config_set_string(config_node_t*, const char*, size_t, ...);
-void config_read(config_node_t*, stream_t*, bool);
-void config_write(config_node_t*, stream_t*, string_map_fn);
-void config_parse_commandline(config_node_t*, const string_const_t*, size_t);
 
 const string_const_t* environment_command_line(void);
 string_const_t environment_executable_name(void);

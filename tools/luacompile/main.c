@@ -108,7 +108,7 @@ main_run(void* main_arg) {
 			string_t pathstr = string_copy(buffer, sizeof(buffer), STRING_ARGS(input.input_files[ifile]));
 			pathstr = path_clean(STRING_ARGS(pathstr), sizeof(buffer));
 			pathstr = path_absolute(STRING_ARGS(pathstr), sizeof(buffer));
-			uuid = resource_import_map_lookup(STRING_ARGS(pathstr));
+			uuid = resource_import_map_lookup(STRING_ARGS(pathstr)).uuid;
 		}
 		if (uuid_is_null(uuid)) {
 			log_warnf(HASH_RESOURCE, WARNING_INVALID_VALUE, STRING_CONST("Failed to lookup: %.*s"), STRING_FORMAT(input.input_files[ifile]));

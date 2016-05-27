@@ -168,7 +168,7 @@ luaimport_import(stream_t* stream, const uuid_t uuid_given) {
 		return LUAIMPORT_RESULT_UNSUPPORTED_INPUT;
 
 	if (uuid_is_null(uuid))
-		uuid = resource_import_map_lookup(STRING_ARGS(path));
+		uuid = resource_import_map_lookup(STRING_ARGS(path)).uuid;
 	
 	if (uuid_is_null(uuid)) {
 		uuid = uuid_generate_random();
@@ -176,11 +176,13 @@ luaimport_import(stream_t* stream, const uuid_t uuid_given) {
 	}
 	
 	if (store_import) {
-		if (!resource_import_map_store(STRING_ARGS(path), &uuid)) {
+		uuid_t founduuid = resource_import_map_store(STRING_ARGS(path), uuid, uint256_null());
+		if (uuid_is_null(founduuid)) {
 			log_warn(HASH_RESOURCE, WARNING_SUSPICIOUS,
 			         STRING_CONST("Unable to open import map file to store new resource"));
 			return LUAIMPORT_RESULT_UNABLE_TO_OPEN_MAP_FILE;
 		}
+		uuid = founduuid;
 	}
 
 	if ((ret = luaimport_import_stream(stream, uuid, &dump)) < 0)
@@ -188,6 +190,8 @@ luaimport_import(stream_t* stream, const uuid_t uuid_given) {
 
 	if ((ret = luaimport_output(uuid, &dump)) < 0)
 		goto exit;
+
+	resource_import_map_store(STRING_ARGS(path), uuid, stream_sha256(stream));
 
 exit:
 

@@ -355,19 +355,6 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(buffer_stream_allocate, BUFFER_STREAM_ALLOCATE);
 	FOUNDATION_SYM(buffer_stream_initialize, BUFFER_STREAM_INITIALIZE);
 
-	FOUNDATION_SYM(config_bool, CONFIG_BOOL);
-	FOUNDATION_SYM(config_int, CONFIG_INT);
-	FOUNDATION_SYM(config_real, CONFIG_REAL);
-	FOUNDATION_SYM(config_string, CONFIG_STRING);
-	FOUNDATION_SYM(config_hash, CONFIG_HASH);
-	FOUNDATION_SYM(config_set_bool, CONFIG_SET_BOOL);
-	FOUNDATION_SYM(config_set_int, CONFIG_SET_INT);
-	FOUNDATION_SYM(config_set_real, CONFIG_SET_REAL);
-	FOUNDATION_SYM(config_set_string, CONFIG_SET_STRING);
-	FOUNDATION_SYM(config_read, CONFIG_READ);
-	FOUNDATION_SYM(config_write, CONFIG_WRITE);
-	FOUNDATION_SYM(config_parse_commandline, CONFIG_PARSE_COMMANDLINE);
-
 	FOUNDATION_SYM(environment_command_line, ENVIRONMENT_COMMAND_LINE);
 	FOUNDATION_SYM(environment_executable_name, ENVIRONMENT_EXECUTABLE_NAME);
 	FOUNDATION_SYM(environment_executable_directory, ENVIRONMENT_EXECUTABLE_DIRECTORY);
