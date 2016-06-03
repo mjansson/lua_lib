@@ -2,6 +2,6 @@
 	"resource" : {
 		"local_path":    "resource/bin",
 		"source_path":   "resource/source",
-		"autoimport":    "resource/import.map"
+		"autoimport":    "resource"
 	}
 }

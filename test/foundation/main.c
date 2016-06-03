@@ -17,7 +17,7 @@
 #include <lua/lua.h>
 #include <test/test.h>
 
-application_t
+static application_t
 test_foundation_application(void) {
 	application_t app;
 	memset(&app, 0, sizeof(app));
@@ -29,12 +29,12 @@ test_foundation_application(void) {
 	return app;
 }
 
-memory_system_t
+static memory_system_t
 test_foundation_memory_system(void) {
 	return memory_system_malloc();
 }
 
-foundation_config_t
+static foundation_config_t
 test_foundation_config(void) {
 	foundation_config_t config;
 	memset(&config, 0, sizeof(config));
@@ -47,10 +47,12 @@ static void test_parse_config(const char* buffer, size_t size,
 	lua_module_parse_config(buffer, size, tokens, num_tokens);
 }
 
-int
+static int
 test_foundation_initialize(void) {
 	lua_config_t lua_config;
 	resource_config_t resource_config;
+
+	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
 
 	memset(&lua_config, 0, sizeof(lua_config));
 	memset(&resource_config, 0, sizeof(resource_config));
@@ -71,10 +73,15 @@ test_foundation_initialize(void) {
 	return 0;
 }
 
-void
+static void
 test_foundation_finalize(void) {
 	lua_module_finalize();
 	resource_module_finalize();
+}
+
+static void
+test_foundation_event(event_t* event) {
+	resource_event_handle(event);
 }
 
 DECLARE_TEST(foundation, log) {
@@ -145,7 +152,7 @@ DECLARE_TEST(foundation, environment) {
 	return 0;
 }
 
-void
+static void
 test_foundation_declare(void) {
 	ADD_TEST(foundation, log);
 	ADD_TEST(foundation, environment);
@@ -157,10 +164,11 @@ test_suite_t test_foundation_suite = {
 	test_foundation_config,
 	test_foundation_declare,
 	test_foundation_initialize,
-	test_foundation_finalize
+	test_foundation_finalize,
+	test_foundation_event
 };
 
-#if FOUNDATION_PLATFORM_ANDROID || FOUNDATION_PLATFORM_IOS
+#if BUILD_MONOLITHIC
 
 int
 test_foundation_run(void);

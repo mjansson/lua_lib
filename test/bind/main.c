@@ -17,7 +17,7 @@
 #include <lua/lua.h>
 #include <test/test.h>
 
-application_t
+static application_t
 test_bind_application(void) {
 	application_t app;
 	memset(&app, 0, sizeof(app));
@@ -29,12 +29,12 @@ test_bind_application(void) {
 	return app;
 }
 
-memory_system_t
+static memory_system_t
 test_bind_memory_system(void) {
 	return memory_system_malloc();
 }
 
-foundation_config_t
+static foundation_config_t
 test_bind_config(void) {
 	foundation_config_t config;
 	memset(&config, 0, sizeof(config));
@@ -47,7 +47,7 @@ static void test_parse_config(const char* buffer, size_t size,
 	lua_module_parse_config(buffer, size, tokens, num_tokens);
 }
 
-int
+static int
 test_bind_initialize(void) {
 	lua_config_t lua_config;
 	resource_config_t resource_config;
@@ -71,10 +71,15 @@ test_bind_initialize(void) {
 	return 0;	
 }
 
-void
+static void
 test_bind_finalize(void) {
 	lua_module_finalize();
 	resource_module_finalize();
+}
+
+static void
+test_bind_event(event_t* event) {
+	resource_event_handle(event);
 }
 
 DECLARE_TEST(bind, bind) {
@@ -92,7 +97,7 @@ DECLARE_TEST(bind, bind) {
 	return 0;
 }
 
-void
+static void
 test_bind_declare(void) {
 	ADD_TEST(bind, bind);
 }
@@ -103,10 +108,11 @@ test_suite_t test_bind_suite = {
 	test_bind_config,
 	test_bind_declare,
 	test_bind_initialize,
-	test_bind_finalize
+	test_bind_finalize,
+	test_bind_event
 };
 
-#if FOUNDATION_PLATFORM_ANDROID || FOUNDATION_PLATFORM_IOS
+#if BUILD_MONOLITHIC
 
 int
 test_bind_run(void);

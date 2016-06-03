@@ -12,6 +12,7 @@
 
 #include <foundation/foundation.h>
 #include <lua/lua.h>
+#include <resource/resource.h>
 #include <test/test.h>
 
 static volatile bool _test_should_start;
@@ -60,6 +61,8 @@ event_loop(void* arg) {
 			default:
 				break;
 			}
+
+			resource_event_handle(event);
 		}
 		thread_wait();
 	}
