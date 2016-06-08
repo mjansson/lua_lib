@@ -20,6 +20,7 @@
 #include <lua/read.h>
 
 #include <foundation/foundation.h>
+#include <resource/import.h>
 #include <resource/compile.h>
 
 #include <setjmp.h>
@@ -128,7 +129,8 @@ lua_execute_pending(lua_t* env) {
 		case LUACMD_BIND:
 		case LUACMD_BIND_INT:
 		case LUACMD_BIND_VAL:
-			lua_do_bind(env, env->queue[head].data.name, env->queue[head].size, env->queue[head].cmd, env->queue[head].arg.value[0]);
+			lua_do_bind(env, env->queue[head].data.name, env->queue[head].size, env->queue[head].cmd,
+			            env->queue[head].arg.value[0]);
 			break;
 
 		default:
@@ -769,9 +771,8 @@ lua_module_initialize(const lua_config_t config) {
 	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
 	                    lua_symbol_load_foundation);
 
-#if RESOURCE_ENABLE_LOCAL_CACHE && RESOURCE_ENABLE_LOCAL_SOURCE
+	resource_import_register(lua_import);
 	resource_compile_register(lua_compile);
-#endif
 
 	return 0;
 }

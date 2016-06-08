@@ -119,4 +119,18 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 	return result;
 }
 
+#else
+
+int
+lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
+            const uint256_t source_hash, const char* type, size_t type_length) {
+	FOUNDATION_UNUSED(uuid);
+	FOUNDATION_UNUSED(platform);
+	FOUNDATION_UNUSED(source);
+	FOUNDATION_UNUSED(source_hash);
+	FOUNDATION_UNUSED(type);
+	FOUNDATION_UNUSED(type_length);
+	return -1;
+}
+
 #endif

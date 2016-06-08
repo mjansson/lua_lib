@@ -25,6 +25,7 @@
 #include <lua/module.h>
 #include <lua/symbol.h>
 #include <lua/read.h>
+#include <lua/import.h>
 #include <lua/compile.h>
 #include <lua/foundation.h>
 

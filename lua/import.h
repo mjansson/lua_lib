@@ -1,4 +1,4 @@
-/* compile.h  -  Lua library  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
+/* import.h  -  Lua library  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
@@ -14,21 +14,17 @@
 
 #pragma once
 
-/*! \file compile.h
-    Lua library resource compilation */
+/*! \file import.h
+    Lua library resource import */
 
 #include <foundation/platform.h>
 #include <resource/types.h>
 
 #include <lua/types.h>
 
-/* Compile lua resource
+/* Import lua source to a resource
+\param stream Source stream
 \param uuid Resource UUID
-\param platform Resource platform
-\param source Resource source representation
-\param type Type string
-\param type_length Length of type string
 \return 0 if successful, <0 if error */
-LUA_API int
-lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
-            const uint256_t source_hash, const char* type, size_t type_length);
+int
+lua_import(stream_t* stream, const uuid_t uuid);
