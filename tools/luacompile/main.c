@@ -27,8 +27,9 @@ typedef struct {
 } luacompile_input_t;
 
 static void
-luacompile_parse_config(const char* buffer, size_t size, json_token_t* tokens,
-                        size_t numtokens);
+luacompile_parse_config(const char* path, size_t path_size,
+                        const char* buffer, size_t size,
+                        json_token_t* tokens, size_t numtokens);
 
 static luacompile_input_t
 luacompile_parse_command_line(const string_const_t* cmdline);
@@ -111,7 +112,8 @@ main_run(void* main_arg) {
 			uuid = resource_import_map_lookup(STRING_ARGS(pathstr)).uuid;
 		}
 		if (uuid_is_null(uuid)) {
-			log_warnf(HASH_RESOURCE, WARNING_INVALID_VALUE, STRING_CONST("Failed to lookup: %.*s"), STRING_FORMAT(input.input_files[ifile]));
+			log_warnf(HASH_RESOURCE, WARNING_INVALID_VALUE, STRING_CONST("Failed to lookup: %.*s"),
+			          STRING_FORMAT(input.input_files[ifile]));
 			result = LUACOMPILE_RESULT_INVALID_INPUT;
 			break;
 		}
@@ -144,10 +146,11 @@ main_finalize(void) {
 }
 
 static void
-luacompile_parse_config(const char* buffer, size_t size, json_token_t* tokens,
-                        size_t numtokens) {
-	resource_module_parse_config(buffer, size, tokens, numtokens);
-	lua_module_parse_config(buffer, size, tokens, numtokens);
+luacompile_parse_config(const char* path, size_t path_size,
+                        const char* buffer, size_t size,
+                        json_token_t* tokens, size_t numtokens) {
+	resource_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
+	lua_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 }
 
 static luacompile_input_t
@@ -155,6 +158,7 @@ luacompile_parse_command_line(const string_const_t* cmdline) {
 	luacompile_input_t input;
 	size_t arg, asize;
 
+	error_context_push(STRING_CONST("parse command line"), STRING_CONST(""));
 	memset(&input, 0, sizeof(input));
 
 	for (arg = 1, asize = array_size(cmdline); arg < asize; ++arg) {

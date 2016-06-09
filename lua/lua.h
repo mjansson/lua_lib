@@ -42,12 +42,15 @@ LUA_API version_t
 lua_module_version(void);
 
 /*! Parse config declarations from JSON buffer
+\param path Path
+\param path_size Length of path
 \param buffer Data buffer
 \param size Size of data buffer
 \param tokens JSON tokens
 \param num_tokens Number of JSON tokens */
 LUA_API void
-lua_module_parse_config(const char* buffer, size_t size,
+lua_module_parse_config(const char* path, size_t path_size,
+                        const char* buffer, size_t size,
                         const json_token_t* tokens, size_t num_tokens);
 
 

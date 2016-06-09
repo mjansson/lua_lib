@@ -41,10 +41,12 @@ test_bind_config(void) {
 	return config;
 }
 
-static void test_parse_config(const char* buffer, size_t size,
-                              const json_token_t* tokens, size_t num_tokens) {
-	resource_module_parse_config(buffer, size, tokens, num_tokens);
-	lua_module_parse_config(buffer, size, tokens, num_tokens);
+static void
+test_parse_config(const char* path, size_t path_size,
+                  const char* buffer, size_t size,
+                  const json_token_t* tokens, size_t num_tokens) {
+	resource_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
+	lua_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 }
 
 static int

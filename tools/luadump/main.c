@@ -210,12 +210,13 @@ static lua_dump_t
 luadump_parse_command_line(const string_const_t* cmdline) {
 	int arg, asize;
 	bool display_help = false;
-
 	lua_dump_t dump;
+
+	error_context_push(STRING_CONST("parse command line"), STRING_CONST(""));
+
 	memset(&dump, 0, sizeof(dump));
 	dump.suppress_level = ERRORLEVEL_INFO;
 
-	error_context_push(STRING_CONST("parsing command line"), STRING_CONST(""));
 	for (arg = 1, asize = array_size(cmdline); arg < asize; ++arg) {
 		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--help")))
 			display_help = true;

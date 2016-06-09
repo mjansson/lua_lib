@@ -48,8 +48,9 @@ static int
 _lua_interpreter(lua_t* lua);
 
 static void
-_lua_parse_config(const char* buffer, size_t size, json_token_t* tokens,
-                  size_t numtokens);
+_lua_parse_config(const char* path, size_t path_size,
+                  const char* buffer, size_t size,
+                  json_token_t* tokens, size_t numtokens);
 
 //static int
 //_lua_load_jitbc( lua_t* env );
@@ -292,12 +293,13 @@ static lua_instance_t
 _lua_parse_command_line(const string_const_t* cmdline) {
 	int arg, asize;
 	bool display_help = false;
-
 	lua_instance_t instance;
+
+	error_context_push(STRING_CONST("parse command line"), STRING_CONST(""));
+
 	memset(&instance, 0, sizeof(instance));
 	instance.suppress_level = ERRORLEVEL_INFO;
 
-	error_context_push(STRING_CONST("parsing command line"), STRING_CONST(""));
 	for (arg = 1, asize = array_size(cmdline); arg < asize; ++arg) {
 		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--config"))) {
 			if (arg < asize - 1)
@@ -323,10 +325,11 @@ _lua_parse_command_line(const string_const_t* cmdline) {
 }
 
 static void
-_lua_parse_config(const char* buffer, size_t size, json_token_t* tokens,
-                  size_t numtokens) {
-	resource_module_parse_config(buffer, size, tokens, numtokens);
-	lua_module_parse_config(buffer, size, tokens, numtokens);
+_lua_parse_config(const char* path, size_t path_size,
+                  const char* buffer, size_t size,
+                  json_token_t* tokens, size_t numtokens) {
+	resource_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
+	lua_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 }
 
 static void

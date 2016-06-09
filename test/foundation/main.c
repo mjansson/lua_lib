@@ -41,10 +41,12 @@ test_foundation_config(void) {
 	return config;
 }
 
-static void test_parse_config(const char* buffer, size_t size,
-                              const json_token_t* tokens, size_t num_tokens) {
-	resource_module_parse_config(buffer, size, tokens, num_tokens);
-	lua_module_parse_config(buffer, size, tokens, num_tokens);
+static void
+test_parse_config(const char* path, size_t path_size,
+                  const char* buffer, size_t size,
+                  const json_token_t* tokens, size_t num_tokens) {
+	resource_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
+	lua_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 }
 
 static int
@@ -92,21 +94,21 @@ DECLARE_TEST(foundation, log) {
 	EXPECT_NE(env, 0);
 
 	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require(\"ffi\")\n"
-	    "local foundation = require(\"foundation\")\n"
-	    "local C = ffi.C\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
-	    "foundation.log.debug(\"Testing log debug output\")\n"
-	    "foundation.log.info(\"Testing log info output\")\n"
-	    "foundation.log.warn(\"Testing log warning output\")\n"
-	    "C.log_enable_prefix(false)\n"
-	    "foundation.log.error(\"Testing log error output without prefix\")\n"
-	    "C.log_enable_stdout(false)\n"
-	    "foundation.log.debug(\"Invisible on stdout\")\n"
-	    "C.log_enable_stdout(true)\n"
-	    "C.log_enable_prefix(true)\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
-	));
+	                                           "local ffi = require(\"ffi\")\n"
+	                                           "local foundation = require(\"foundation\")\n"
+	                                           "local C = ffi.C\n"
+	                                           "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
+	                                           "foundation.log.debug(\"Testing log debug output\")\n"
+	                                           "foundation.log.info(\"Testing log info output\")\n"
+	                                           "foundation.log.warn(\"Testing log warning output\")\n"
+	                                           "C.log_enable_prefix(false)\n"
+	                                           "foundation.log.error(\"Testing log error output without prefix\")\n"
+	                                           "C.log_enable_stdout(false)\n"
+	                                           "foundation.log.debug(\"Invisible on stdout\")\n"
+	                                           "C.log_enable_stdout(true)\n"
+	                                           "C.log_enable_prefix(true)\n"
+	                                           "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
+	                                       ));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
 	EXPECT_EQ(error(), ERROR_SCRIPT);
@@ -125,22 +127,22 @@ DECLARE_TEST(foundation, environment) {
 	EXPECT_NE(env, 0);
 
 	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require(\"ffi\")\n"
-	    "local foundation = require(\"foundation\")\n"
-	    "local C = ffi.C\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_DEBUG)\n"
-	    "C.log_enable_prefix(false)\n"
-	    "foundation.log.info(\"Executable name: \" .. tostring(C.environment_executable_name()))\n"
-	    "local cmdline = \"\"\n"
-	    "local cmdline_tab = C.environment_command_line()\n"
-	    "local num = C.array_size(cmdline_tab)"
-	    "for i = 0, num-1 do\n"
-	    "  cmdline = cmdline .. \" \" .. tostring(cmdline_tab[i])\n"
-	    "end\n"
-	    "foundation.log.info(\"Command line:\" .. cmdline)\n"
-	    "C.log_enable_prefix(true)\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
-	));
+	                                           "local ffi = require(\"ffi\")\n"
+	                                           "local foundation = require(\"foundation\")\n"
+	                                           "local C = ffi.C\n"
+	                                           "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_DEBUG)\n"
+	                                           "C.log_enable_prefix(false)\n"
+	                                           "foundation.log.info(\"Executable name: \" .. tostring(C.environment_executable_name()))\n"
+	                                           "local cmdline = \"\"\n"
+	                                           "local cmdline_tab = C.environment_command_line()\n"
+	                                           "local num = C.array_size(cmdline_tab)"
+	                                           "for i = 0, num-1 do\n"
+	                                           "  cmdline = cmdline .. \" \" .. tostring(cmdline_tab[i])\n"
+	                                           "end\n"
+	                                           "foundation.log.info(\"Command line:\" .. cmdline)\n"
+	                                           "C.log_enable_prefix(true)\n"
+	                                           "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
+	                                       ));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
 

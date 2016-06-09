@@ -784,8 +784,11 @@ lua_module_finalize(void) {
 }
 
 void
-lua_module_parse_config(const char* buffer, size_t size,
+lua_module_parse_config(const char* path, size_t path_size,
+                        const char* buffer, size_t size,
                         const json_token_t* tokens, size_t num_tokens) {
+	FOUNDATION_UNUSED(path);
+	FOUNDATION_UNUSED(path_size);
 	FOUNDATION_UNUSED(buffer);
 	FOUNDATION_UNUSED(size);
 	FOUNDATION_UNUSED(tokens);
