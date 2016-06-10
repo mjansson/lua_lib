@@ -412,7 +412,8 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(fs_monitor, FS_MONITOR);
 	FOUNDATION_SYM(fs_unmonitor, FS_UNMONITOR);
 	FOUNDATION_SYM(fs_temporary_file, FS_TEMPORARY_FILE);
-	FOUNDATION_SYM(fs_post_event, FS_POST_EVENT);
+	FOUNDATION_SYM(fs_event_post, FS_EVENT_POST);
+	FOUNDATION_SYM(fs_event_path, FS_EVENT_PATH);
 	FOUNDATION_SYM(fs_event_stream, FS_EVENT_STREAM);
 
 	FOUNDATION_SYM(foundation_version, FOUNDATION_VERSION);

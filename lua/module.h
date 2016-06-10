@@ -21,8 +21,32 @@
 
 #include <lua/types.h>
 
-LUA_API void
-lua_module_register(const char* name, size_t length, uuid_t uuid, lua_fn loader, lua_preload_fn preload);
+/*! Query if module is loaded in the given lua environment
+\param lua Lua environment
+\param uuid Module
+\return true if loaded, false if not */
+LUA_API bool
+lua_module_is_loaded(lua_t* lua, const uuid_t uuid);
 
+/*! Reload the given module into the given lua environment
+\param lua Lua environment
+\param uuid Module to reload
+\return 0 if successful, <0 if error */
+LUA_API int
+lua_module_reload(lua_t* lua, const uuid_t uuid);
+
+/*! Register a module with the module loader.
+\param name Module name
+\param length Length of module name
+\param uuid Module UUID
+\param loader Loader function (typically lua_module_loader)
+\param preload Function to call before loading the module (typically to register symbol lookups) */
+LUA_API void
+lua_module_register(const char* name, size_t length, const uuid_t uuid, lua_fn loader, lua_preload_fn preload);
+
+/*! Standard module loader. Takes the module entry as the first upvalue index as a
+lua_modulemap_entry_t userdata pointer.
+\param state Lua state
+\return Number of return values on state stack */
 LUA_API int
 lua_module_loader(lua_State* state);

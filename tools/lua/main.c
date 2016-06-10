@@ -30,6 +30,7 @@ struct lua_instance_t {
 	string_const_t* config_files;
 	string_t        input_file;
 	lua_t*          env;
+	mutex_t*        lock;
 	error_level_t   suppress_level;
 };
 
@@ -44,8 +45,11 @@ _lua_print_usage(void);
 static int
 _lua_process_file(lua_t* lua, const char* filename, size_t length);
 
+static void
+_lua_process_resource_event(lua_t* lua, mutex_t* lock, const event_t* event);
+
 static int
-_lua_interpreter(lua_t* lua);
+_lua_interpreter(lua_t* lua, mutex_t* lock);
 
 static void
 _lua_parse_config(const char* path, size_t path_size,
@@ -61,31 +65,56 @@ lua_load(lua_State* L, lua_Reader reader, void* dt, const char* chunkname);
 LUA_API int
 lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 
+static void
+event_process_system(void) {
+	event_t* event = nullptr;
+	event_block_t* const block = event_stream_process(system_event_stream());
+
+	while ((event = event_next(block, event))) {
+		switch (event->id) {
+		case FOUNDATIONEVENT_TERMINATE:
+			//process_exit( LUA_RESULT_ABORTED );
+			_lua_terminate = true;
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+static void
+event_process_fs(void) {
+	event_t* event = nullptr;
+	event_block_t* const block = event_stream_process(fs_event_stream());
+
+	while ((event = event_next(block, event))) {
+		resource_event_handle(event);
+	}
+}
+
+static void
+event_process_resource(lua_t* lua, mutex_t* lock) {
+	event_t* event = nullptr;
+	event_block_t* const block = event_stream_process(resource_event_stream());
+
+	while ((event = event_next(block, event))) {
+		_lua_process_resource_event(lua, lock, event);
+	}
+}
+
 static void*
 event_thread(void* arg) {
-	event_block_t* block;
-	event_t* event = 0;
-
-	FOUNDATION_UNUSED(arg);
+	lua_instance_t* instance = arg;
 
 	event_stream_set_beacon(system_event_stream(), &thread_self()->beacon);
+	event_stream_set_beacon(fs_event_stream(), &thread_self()->beacon);
+	event_stream_set_beacon(resource_event_stream(), &thread_self()->beacon);
 
 	while (!_lua_terminate) {
-		block = event_stream_process(system_event_stream());
-		event = 0;
-
-		while ((event = event_next(block, event))) {
-			switch (event->id) {
-			case FOUNDATIONEVENT_TERMINATE:
-				//process_exit( LUA_RESULT_ABORTED );
-				_lua_terminate = true;
-				break;
-
-			default:
-				break;
-			}
-		}
-
+		event_process_system();
+		event_process_fs();
+		event_process_resource(instance->env, instance->lock);
 		thread_wait();
 	}
 
@@ -97,8 +126,8 @@ main_initialize(void) {
 	int ret = 0;
 
 	log_enable_prefix(false);
-	log_set_suppress(0, ERRORLEVEL_INFO);
-	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
+	log_set_suppress(0, ERRORLEVEL_DEBUG);
+	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
 
 	foundation_config_t config;
 	memset(&config, 0, sizeof(config));
@@ -134,7 +163,7 @@ main_run(void* main_arg) {
 	thread_t eventthread;
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
-	thread_initialize(&eventthread, event_thread, 0, STRING_CONST("event_thread"),
+	thread_initialize(&eventthread, event_thread, &instance, STRING_CONST("event_thread"),
 	                  THREAD_PRIORITY_NORMAL, 0);
 	thread_start(&eventthread);
 
@@ -143,14 +172,18 @@ main_run(void* main_arg) {
 
 	instance.env = lua_allocate();
 
-	if (instance.input_file.length)
+	if (instance.input_file.length) {
 		result = _lua_process_file(instance.env, STRING_ARGS(instance.input_file));
-	else
-		result = _lua_interpreter(instance.env);
+	}
+	else {
+		instance.lock = mutex_allocate(STRING_CONST("lua"));
+		result = _lua_interpreter(instance.env, instance.lock);
+	}
 
 	thread_signal(&eventthread);
 
 	lua_deallocate(instance.env);
+	mutex_deallocate(instance.lock);
 	string_deallocate(instance.input_file.str);
 	array_deallocate(instance.config_files);
 
@@ -168,7 +201,7 @@ main_finalize(void) {
 }
 
 static int
-_lua_interpreter(lua_t* lua) {
+_lua_interpreter(lua_t* lua, mutex_t* lock) {
 	stream_t* in = stream_open_stdin();
 	stream_t* out = stream_open_stdout();
 
@@ -179,7 +212,8 @@ _lua_interpreter(lua_t* lua) {
 
 	int status;
 
-	log_enable_prefix(false);
+	log_enable_prefix(true);
+	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_DEBUG);
 
 	memset(&read_string, 0, sizeof(read_string));
 
@@ -201,6 +235,9 @@ _lua_interpreter(lua_t* lua) {
 				read_string.string = entry.str;
 				read_string.size = entry.length;
 			}
+
+			if (lock)
+				mutex_lock(lock);
 
 			if ((status = lua_load(state, lua_read_string, &read_string, "=eval")) != 0) {
 				bool continued = false;
@@ -237,6 +274,9 @@ _lua_interpreter(lua_t* lua) {
 					lua_pop(state, 1);
 				}
 			}
+
+			if (lock)
+				mutex_unlock(lock);
 		}
 
 		string_deallocate(entry.str);
@@ -248,6 +288,22 @@ _lua_interpreter(lua_t* lua) {
 	stream_deallocate(out);
 
 	return LUA_RESULT_OK;
+}
+
+static void
+_lua_process_resource_event(lua_t* lua, mutex_t* lock, const event_t* event) {
+	if (event->id != RESOURCEEVENT_MODIFY)
+		return;
+
+	const uuid_t uuid = resource_event_uuid(event);
+	const string_const_t uuidstr = string_from_uuid_static(uuid);
+	log_infof(HASH_LUA, STRING_CONST("Got resource modify event: %.*s"), STRING_FORMAT(uuidstr));
+
+	if (lock)
+		mutex_lock(lock);
+	lua_module_reload(lua, uuid);
+	if (lock)
+		mutex_unlock(lock);
 }
 
 static int

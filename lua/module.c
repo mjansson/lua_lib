@@ -12,16 +12,11 @@
  * http://luajit.org/
  */
 
-#include <lua/module.h>
-#include <lua/hashstrings.h>
-#include <lua/read.h>
+#define LUA_USE_INTERNAL_HEADER
 
-#include <foundation/hash.h>
-#include <foundation/hashmap.h>
-#include <foundation/memory.h>
-#include <foundation/array.h>
-#include <foundation/stream.h>
-#include <foundation/log.h>
+#include <lua/lua.h>
+
+#include <foundation/foundation.h>
 
 #include <resource/stream.h>
 #include <resource/platform.h>
@@ -33,9 +28,12 @@
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
 
-LUA_EXTERN void* lj_clib_getsym_registry(lua_State*, const char*, size_t);
+#undef LUA_API
 
-static hashmap_t* _lua_registry;
+LUA_EXTERN void* lj_clib_getsym_modulemap(lua_State*, const char*, size_t);
+
+static hashmap_t* _lua_modulemap;
+static mutex_t* _lua_modulemap_lock;
 
 struct lua_module_t {
 	void* bytecode;
@@ -43,83 +41,118 @@ struct lua_module_t {
 };
 typedef struct lua_module_t lua_module_t;
 
-struct lua_registry_entry_t {
-	hash_t name;
-	uuid_t uuid;
-	lua_fn loader;
-	lua_preload_fn preload;
-	lua_module_t module;
-};
-typedef struct lua_registry_entry_t lua_registry_entry_t;
-
 LUA_EXTERN int
-lua_registry_initialize(void);
+lua_modulemap_initialize(void);
 
 LUA_EXTERN void
-lua_registry_finalize(void);
+lua_modulemap_finalize(void);
+
+LUA_EXTERN void
+lua_module_registry_finalize(lua_State* state);
 
 #if FOUNDATION_COMPILER_GCC
 #  pragma GCC diagnostic ignored "-Wpedantic"
 #endif
+
+static void
+lua_module_registry_add(lua_State* state, lua_modulemap_entry_t* entry) {
+	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+	lua_gettable(state, LUA_REGISTRYINDEX);
+
+	lua_modulemap_entry_t** entryarr = lua_touserdata(state, -1);
+	array_push(entryarr, entry);
+
+	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+	lua_pushlightuserdata(state, entryarr);
+	lua_settable(state, LUA_REGISTRYINDEX);
+}
+
+static lua_modulemap_entry_t*
+lua_module_registry_lookup(lua_State* state, const uuid_t uuid) {
+	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+	lua_gettable(state, LUA_REGISTRYINDEX);
+	lua_modulemap_entry_t** entryarr = lua_touserdata(state, -1);
+	if (entryarr) {
+		for (size_t ient = 0, esize = array_size(entryarr); ient != esize; ++ient) {
+			if (uuid_equal(entryarr[ient]->uuid, uuid))
+				return entryarr[ient];
+		}
+	}
+	return nullptr;
+}
+
+void
+lua_module_registry_finalize(lua_State* state) {
+	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+	lua_gettable(state, LUA_REGISTRYINDEX);
+	lua_modulemap_entry_t** entryarr = lua_touserdata(state, -1);
+	if (entryarr)
+		array_deallocate(entryarr);
+}
 
 //This is our custom callback point from luajit lib_package loader
 int
 lj_cf_package_loader_registry(lua_State* state) {
 	size_t length = 0;
 	const char* name = luaL_checklstring(state, 1, &length);
+
+	mutex_lock(_lua_modulemap_lock);
+
 	hash_t namehash = hash(name, length);
-	lua_registry_entry_t* entry = hashmap_lookup(_lua_registry, namehash);
+	lua_modulemap_entry_t* entry = hashmap_lookup(_lua_modulemap, namehash);
+
+	mutex_unlock(_lua_modulemap_lock);
+
 	if (entry) {
 		lua_pushlightuserdata(state, entry);
 		lua_pushcclosure(state, entry->loader, 1);
 	}
 	else {
-		lua_pushfstring(state, "\n\tno registry entry '%s'", name);
+		lua_pushfstring(state, "\n\tno modulemap entry '%s'", name);
 	}
 	return 1;
 }
 
 int
-lua_registry_initialize(void) {
-	_lua_registry = hashmap_allocate(13, 7);
+lua_modulemap_initialize(void) {
+	_lua_modulemap = hashmap_allocate(13, 7);
+	_lua_modulemap_lock = mutex_allocate(STRING_CONST("lua-modulemap"));
 	return 0;
 }
 
 void
-lua_registry_finalize(void) {
-	for (size_t ibucket = 0; ibucket < _lua_registry->num_buckets; ++ibucket) {
-		hashmap_node_t* bucket = _lua_registry->bucket[ibucket];
-		for (size_t inode = 0, nsize = array_size(bucket); inode < nsize; ++inode ) {
-			hashmap_node_t* node = bucket + inode;
-			lua_registry_entry_t* entry = node->value;
-			memory_deallocate(entry->module.bytecode);
-			memory_deallocate(entry);
-		}
+lua_modulemap_finalize(void) {
+	for (size_t ibucket = 0; ibucket < _lua_modulemap->num_buckets; ++ibucket) {
+		hashmap_node_t* bucket = _lua_modulemap->bucket[ibucket];
+		for (size_t inode = 0, nsize = array_size(bucket); inode < nsize; ++inode)
+			memory_deallocate(bucket[inode].value);
 	}
-	hashmap_deallocate(_lua_registry);
+	hashmap_deallocate(_lua_modulemap);
+	mutex_deallocate(_lua_modulemap_lock);
 }
 
 void
-lua_module_register(const char* name, size_t length, uuid_t uuid, lua_fn loader, lua_preload_fn preload) {
+lua_module_register(const char* name, size_t length, const uuid_t uuid, lua_fn loader,
+                    lua_preload_fn preload) {
 	hash_t namehash = hash(name, length);
-	lua_registry_entry_t* entry = hashmap_lookup(_lua_registry, namehash);
+
+	mutex_lock(_lua_modulemap_lock);
+
+	lua_modulemap_entry_t* entry = hashmap_lookup(_lua_modulemap, namehash);
 	if (!entry) {
-		entry = memory_allocate(HASH_LUA, sizeof(lua_registry_entry_t), 0, MEMORY_PERSISTENT);
-		hashmap_insert(_lua_registry, hash(name, length), entry);
+		entry = memory_allocate(HASH_LUA, sizeof(lua_modulemap_entry_t), 0, MEMORY_PERSISTENT);
+		entry->name = namehash;
+		entry->uuid = uuid;
+		entry->loader = loader;
+		entry->preload = preload;
+		hashmap_insert(_lua_modulemap, hash(name, length), entry);
 	}
-	else {
-		memory_deallocate(entry->module.bytecode);
-	}
-	entry->name = namehash;
-	entry->uuid = uuid;
-	entry->loader = loader;
-	entry->preload = preload;
-	entry->module.bytecode = 0;
-	entry->module.size = 0;
+
+	mutex_unlock(_lua_modulemap_lock);
 }
 
 static lua_module_t
-lua_module_load(const uuid_t uuid) {
+lua_module_load_resource(const uuid_t uuid) {
 	lua_module_t module = {0, 0};
 	bool success = false;
 	const uint32_t expected_version = 1;
@@ -164,58 +197,95 @@ lua_module_load(const uuid_t uuid) {
 		stream = nullptr;
 	}
 
-	return module;	
+	return module;
 }
 
-int
-lua_module_loader(lua_State* state) {
-	lua_registry_entry_t* entry = lua_touserdata(state, lua_upvalueindex(1));
-	if (!entry)
-		return 0;
-
-	if (entry->preload)
-		entry->preload();
-
-	if (!entry->module.size) {
-		entry->module = lua_module_load(entry->uuid);
-		if (!entry->module.size) {
-			string_const_t uuidstr = string_from_uuid_static(entry->uuid);
-			lua_pushfstring(state, "unable to load module '%s'", uuidstr.str);
-			lua_error(state);
-			goto exit;
-		}
-	}
-
+static int
+lua_module_upload(lua_State* state, const void* bytecode, size_t size) {
 	string_const_t errmsg = {0, 0};
 	lua_readbuffer_t read_buffer = {
-		.buffer = entry->module.bytecode,
-		.size   = entry->module.size,
+		.buffer = bytecode,
+		.size   = size,
 		.offset = 0
 	};
-	int stacksize;
+
+	int stacksize = lua_gettop(state);
 
 	log_debugf(HASH_LUA, STRING_CONST("Loading %u bytes of module bytecode"),
 	           read_buffer.size);
-
-	stacksize = lua_gettop(state);
 
 	if (lua_load(state, lua_read_buffer, &read_buffer, "module") != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed (module): %.*s"),
 		           STRING_FORMAT(errmsg));
 		lua_pop(state, 1);
-		goto exit;
+		return -1;
 	}
 
 	if (lua_pcall(state, 0, 1, 0) != 0) {
 		errmsg.str = lua_tolstring(state, -1, &errmsg.length);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed (module): %.*s"),
 		           STRING_FORMAT(errmsg));
-		goto exit;
+		return -1;
 	}
 
 	log_debug(HASH_LUA, STRING_CONST("Loaded module"));
 
-exit:
+	return 0;
+}
+
+int
+lua_module_loader(lua_State* state) {
+	lua_modulemap_entry_t* entry = lua_touserdata(state, lua_upvalueindex(1));
+	if (!entry)
+		return 0;
+
+	int stacksize = lua_gettop(state);
+
+	if (entry->preload)
+		entry->preload();
+
+	lua_module_t module = lua_module_load_resource(entry->uuid);
+	if (module.size) {
+		if (lua_module_upload(state, module.bytecode, module.size) == 0) {
+			lua_module_registry_add(state, entry);
+		}
+	}
+	else {
+		string_const_t uuidstr = string_from_uuid_static(entry->uuid);
+		lua_pushfstring(state, "unable to load module '%s'", uuidstr.str);
+		lua_error(state);
+	}
+
 	return lua_gettop(state) - stacksize;
+}
+
+bool
+lua_module_is_loaded(lua_t* lua, const uuid_t uuid) {
+	return lua_module_registry_lookup(lua_state(lua), uuid) != nullptr;
+}
+
+int
+lua_module_reload(lua_t* lua, const uuid_t uuid) {
+	lua_State* state = lua_state(lua);
+	lua_modulemap_entry_t* entry = lua_module_registry_lookup(state, uuid);
+	if (entry) {
+		int stacksize = lua_gettop(state);
+
+		lua_module_t module = lua_module_load_resource(uuid);
+		if (module.size) {
+			const string_const_t uuidstr = string_from_uuid_static(uuid);
+			log_infof(HASH_LUA, STRING_CONST("Reloading module: %.*s"), STRING_FORMAT(uuidstr));
+			return lua_module_upload(state, module.bytecode, module.size);
+		}
+
+		string_const_t uuidstr = string_from_uuid_static(entry->uuid);
+		log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to load module '%.*s'"),
+		          STRING_FORMAT(uuidstr));
+	}
+	else {
+		string_const_t uuidstr = string_from_uuid_static(uuid);
+		log_infof(HASH_LUA, STRING_CONST("Reloading module failed, not loaded: %.*s"), STRING_FORMAT(uuidstr));
+	}
+	return -1;
 }

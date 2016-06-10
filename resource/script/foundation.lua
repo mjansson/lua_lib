@@ -220,7 +220,8 @@ string_t* fs_subdirs(const char*, size_t);
 void fs_monitor(const char*, size_t);
 void fs_unmonitor(const char*, size_t);
 stream_t* fs_temporary_file(void);
-void fs_post_event(int, const char*, size_t);
+void fs_event_post(int, const char*, size_t);
+string_const_t fs_event_path(const event_t*);
 event_stream_t* fs_event_stream(void);
 
 version_t foundation_version(void);

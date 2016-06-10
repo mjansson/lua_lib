@@ -89,6 +89,7 @@ typedef struct lua_op_t lua_op_t;
 typedef struct lua_readstream_t lua_readstream_t;
 typedef struct lua_readbuffer_t lua_readbuffer_t;
 typedef struct lua_readstring_t lua_readstring_t;
+typedef struct lua_modulemap_entry_t lua_modulemap_entry_t;
 typedef struct lua_config_t lua_config_t;
 typedef struct lua_t lua_t;
 
@@ -139,8 +140,7 @@ struct lua_readstring_t {
 	size_t      size;
 };
 
-struct lua_t
-{
+struct lua_t {
 	//! Lua state
 	lua_State*   state;
 
@@ -166,6 +166,13 @@ struct lua_t
 	//! Execution count (protected by execute semaphore)
 	unsigned int executing_count;
 #endif
+};
+
+struct lua_modulemap_entry_t {
+	hash_t name;
+	uuid_t uuid;
+	lua_fn loader;
+	lua_preload_fn preload;
 };
 
 #define LUA_FOUNDATION_UUID uuid_make(0x4666006cd11e65efULL, 0x291433d0785ef08dULL)

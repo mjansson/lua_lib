@@ -144,4 +144,12 @@ lua_push_op(lua_t* env, lua_op_t* op);
 void
 lua_execute_pending(lua_t* env);
 
+#else
+
+#define lua_has_execution_right(env) ((void)sizeof(env)), true
+#define lua_acquire_execution_right(env, force) ((void)sizeof(env)), ((void)sizeof(force))
+#define lua_release_execution_right(env) ((void)sizeof(env))
+#define lua_push_op(env, op) ((void)sizeof(env)), ((void)sizeof(op))
+#define lua_execute_pending(env) ((void)sizeof(env))
+
 #endif

@@ -133,7 +133,8 @@ HASH_SYM_FS_SUBDIRS                     fs_subdirs
 HASH_SYM_FS_MONITOR                     fs_monitor
 HASH_SYM_FS_UNMONITOR                   fs_unmonitor
 HASH_SYM_FS_TEMPORARY_FILE              fs_temporary_file
-HASH_SYM_FS_POST_EVENT                  fs_post_event
+HASH_SYM_FS_EVENT_POST                  fs_event_post
+HASH_SYM_FS_EVENT_PATH                  fs_event_path
 HASH_SYM_FS_EVENT_STREAM                fs_event_stream
 
 HASH_SYM_FOUNDATION_VERSION             foundation_version

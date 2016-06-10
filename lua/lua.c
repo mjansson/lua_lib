@@ -183,6 +183,9 @@ lua_panic(lua_State* state) {
 	return 0;
 }
 
+LUA_EXTERN void
+lua_module_registry_finalize(lua_State* state);
+
 lua_t*
 lua_allocate(void) {
 	lua_t* env = memory_allocate(HASH_LUA, sizeof(lua_t), 0,
@@ -231,6 +234,9 @@ lua_deallocate(lua_t* env) {
 	FOUNDATION_ASSERT(env->state);
 
 	lua_gc(env->state, LUA_GCCOLLECT, 0);
+
+	lua_module_registry_finalize(env->state);
+
 	lua_close(env->state);
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
@@ -747,10 +753,10 @@ lua_state(lua_t* env) {
 }
 
 extern int
-lua_registry_initialize(void);
+lua_modulemap_initialize(void);
 
 extern void
-lua_registry_finalize(void);
+lua_modulemap_finalize(void);
 
 extern int
 lua_symbol_initialize(void);
@@ -765,7 +771,7 @@ lua_module_initialize(const lua_config_t config) {
 	if (lua_symbol_initialize() < 0)
 		return -1;
 
-	if (lua_registry_initialize() < 0)
+	if (lua_modulemap_initialize() < 0)
 		return -1;
 
 	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
@@ -779,7 +785,7 @@ lua_module_initialize(const lua_config_t config) {
 
 void
 lua_module_finalize(void) {
-	lua_registry_finalize();
+	lua_modulemap_finalize();
 	lua_symbol_finalize();
 }
 
