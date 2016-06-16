@@ -48,30 +48,47 @@ LUA_EXTERN void
 lua_modulemap_finalize(void);
 
 LUA_EXTERN void
+lua_module_registry_initialize(lua_State* state);
+
+LUA_EXTERN void
 lua_module_registry_finalize(lua_State* state);
 
 #if FOUNDATION_COMPILER_GCC
 #  pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
+#define LOADED_MODULES_ENTRY_ARRAY "entry"
+
 static void
 lua_module_registry_add(lua_State* state, lua_modulemap_entry_t* entry) {
 	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
 	lua_gettable(state, LUA_REGISTRYINDEX);
 
+	lua_pushlstring(state, STRING_CONST(LOADED_MODULES_ENTRY_ARRAY));
+	lua_gettable(state, -2);
+
 	lua_modulemap_entry_t** entryarr = lua_touserdata(state, -1);
 	array_push(entryarr, entry);
 
-	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+	lua_pushlstring(state, STRING_CONST(LOADED_MODULES_ENTRY_ARRAY));
 	lua_pushlightuserdata(state, entryarr);
-	lua_settable(state, LUA_REGISTRYINDEX);
+	lua_settable(state, -4);
+
+	lua_pop(state, 2);
 }
 
 static lua_modulemap_entry_t*
 lua_module_registry_lookup(lua_State* state, const uuid_t uuid) {
 	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
 	lua_gettable(state, LUA_REGISTRYINDEX);
+
+	lua_pushlstring(state, STRING_CONST(LOADED_MODULES_ENTRY_ARRAY));
+	lua_gettable(state, -2);
+
 	lua_modulemap_entry_t** entryarr = lua_touserdata(state, -1);
+
+	lua_pop(state, 2);
+
 	if (entryarr) {
 		for (size_t ient = 0, esize = array_size(entryarr); ient != esize; ++ient) {
 			if (uuid_equal(entryarr[ient]->uuid, uuid))
@@ -82,10 +99,24 @@ lua_module_registry_lookup(lua_State* state, const uuid_t uuid) {
 }
 
 void
+lua_module_registry_initialize(lua_State* state) {
+	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+	lua_newtable(state);
+	lua_settable(state, LUA_REGISTRYINDEX);
+}
+
+void
 lua_module_registry_finalize(lua_State* state) {
 	lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
 	lua_gettable(state, LUA_REGISTRYINDEX);
+
+	lua_pushlstring(state, STRING_CONST(LOADED_MODULES_ENTRY_ARRAY));
+	lua_gettable(state, -2);
+
 	lua_modulemap_entry_t** entryarr = lua_touserdata(state, -1);
+
+	lua_pop(state, 2);
+
 	if (entryarr)
 		array_deallocate(entryarr);
 }
@@ -104,8 +135,9 @@ lj_cf_package_loader_registry(lua_State* state) {
 	mutex_unlock(_lua_modulemap_lock);
 
 	if (entry) {
+		lua_pushlstring(state, name, length);
 		lua_pushlightuserdata(state, entry);
-		lua_pushcclosure(state, entry->loader, 1);
+		lua_pushcclosure(state, entry->loader, 2);
 	}
 	else {
 		lua_pushfstring(state, "\n\tno modulemap entry '%s'", name);
@@ -200,6 +232,16 @@ lua_module_load_resource(const uuid_t uuid) {
 	return module;
 }
 
+/* Module garbage collection not enabled
+static int
+lua_module_gc(lua_State* state) {
+	lua_modulemap_entry_t* entry = lua_touserdata(state, lua_upvalueindex(1));
+	if (!entry)
+		return 0;
+	log_debug(HASH_LUA, STRING_CONST("Module garbage collected"));
+	return 0;
+}*/
+
 static int
 lua_module_upload(lua_State* state, const void* bytecode, size_t size) {
 	string_const_t errmsg = {0, 0};
@@ -208,8 +250,6 @@ lua_module_upload(lua_State* state, const void* bytecode, size_t size) {
 		.size   = size,
 		.offset = 0
 	};
-
-	int stacksize = lua_gettop(state);
 
 	log_debugf(HASH_LUA, STRING_CONST("Loading %u bytes of module bytecode"),
 	           read_buffer.size);
@@ -229,16 +269,17 @@ lua_module_upload(lua_State* state, const void* bytecode, size_t size) {
 		return -1;
 	}
 
-	log_debug(HASH_LUA, STRING_CONST("Loaded module"));
-
 	return 0;
 }
 
 int
 lua_module_loader(lua_State* state) {
-	lua_modulemap_entry_t* entry = lua_touserdata(state, lua_upvalueindex(1));
+	lua_modulemap_entry_t* entry = lua_touserdata(state, lua_upvalueindex(2));
 	if (!entry)
 		return 0;
+
+	size_t name_length = 0;
+	const char* name = luaL_checklstring(state, lua_upvalueindex(1), &name_length);
 
 	int stacksize = lua_gettop(state);
 
@@ -249,7 +290,36 @@ lua_module_loader(lua_State* state) {
 	if (module.size) {
 		if (lua_module_upload(state, module.bytecode, module.size) == 0) {
 			lua_module_registry_add(state, entry);
+			if (lua_istable(state, -1)) {
+				/* Modules are never garbage collected anyway, since lib_package keeps a global
+				   registry reference in _LOADED table, and we keep a reference in loaded-modules
+				   table for reload functionality
+				lua_pushlstring(state, STRING_CONST("__gcproxy")); //Proxy table index
+				lua_newuserdata(state, 8); //New proxy object
+				lua_newtable(state); //New metatable for proxy
+				lua_pushlstring(state, STRING_CONST("__gc"));
+				lua_pushlightuserdata(state, entry);
+				lua_pushcclosure(state, lua_module_gc, 1);
+				lua_rawset(state, -3); //Set __gc metatable method
+				lua_setmetatable(state, -2); //Set metatable on proxy
+				lua_rawset(state, -3); //Set proxy in table index __gcproxy */
+
+				lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+				lua_gettable(state, LUA_REGISTRYINDEX);
+
+				lua_pushlightuserdata(state, entry); //entry is key
+				lua_pushvalue(state, -3); //copy the loaded module table as value
+
+				lua_pushlstring(state, STRING_CONST("__modulename"));
+				lua_pushlstring(state, name, name_length);
+				lua_settable(state, -3); //set moduletable["__modulename"] = name
+
+				lua_settable(state, -3); //set table loaded-modules[entry] = moduletable
+
+				lua_pop(state, 1);
+			}
 		}
+		memory_deallocate(module.bytecode);
 	}
 	else {
 		string_const_t uuidstr = string_from_uuid_static(entry->uuid);
@@ -267,6 +337,7 @@ lua_module_is_loaded(lua_t* lua, const uuid_t uuid) {
 
 int
 lua_module_reload(lua_t* lua, const uuid_t uuid) {
+	int ret = -1;
 	lua_State* state = lua_state(lua);
 	lua_modulemap_entry_t* entry = lua_module_registry_lookup(state, uuid);
 	if (entry) {
@@ -274,18 +345,73 @@ lua_module_reload(lua_t* lua, const uuid_t uuid) {
 
 		lua_module_t module = lua_module_load_resource(uuid);
 		if (module.size) {
-			const string_const_t uuidstr = string_from_uuid_static(uuid);
-			log_infof(HASH_LUA, STRING_CONST("Reloading module: %.*s"), STRING_FORMAT(uuidstr));
-			return lua_module_upload(state, module.bytecode, module.size);
+			string_const_t uuidstr = string_from_uuid_static(uuid);
+			log_debugf(HASH_LUA, STRING_CONST("Reloading module: %.*s"), STRING_FORMAT(uuidstr));
+			if (lua_module_upload(state, module.bytecode, module.size) == 0) {
+				//Check if module loaded as a table
+				if (lua_istable(state, -1)) {
+					lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+					lua_gettable(state, LUA_REGISTRYINDEX);
+
+					//Get and replace the old loaded module table
+					lua_pushlightuserdata(state, entry);
+					lua_gettable(state, -2);
+					lua_replace(state, -2); //Get rid of loaded-modules registry table from stack
+					if (lua_istable(state, -1)) {
+						lua_pushlstring(state, STRING_CONST("__modulename"));
+						lua_gettable(state, -2);
+
+						size_t name_length = 0;
+						const char* modulename = lua_isnil(state, -1)
+						                         ? nullptr
+						                         : luaL_checklstring(state, -1, &name_length);
+						log_debugf(HASH_LUA, STRING_CONST("Replacing module table: %.*s (%.*s)"),
+						           STRING_FORMAT(uuidstr), (int)name_length, modulename);
+						lua_pop(state, 1); //Get rid of name from stack
+
+						//Clear previous loaded-modules table
+						lua_pushnil(state);
+						while (lua_next(state, -2) != 0) {
+							lua_pop(state, 1); //Old value
+							lua_pushnil(state); //Replace with nil
+							lua_settable(state, -3); //Erase in previous loaded-modules table
+							lua_pushnil(state); //Restart lua_next
+						}
+
+						//Copy new module table to previous loaded-modules table
+						lua_pushnil(state);
+						while (lua_next(state, -3) != 0) { //Lookup in new module table
+							lua_pushvalue(state, -2); //Copy key
+							lua_pushvalue(state, -2); //Copy value
+							lua_settable(state, -5); //Set in previous loaded-modules table
+							lua_pop(state, 1); //Pop value, leaving key for lua_next iteration
+						}
+
+						lua_pushlstring(state, STRING_CONST("__modulename"));
+						lua_pushlstring(state, modulename, name_length);
+						lua_settable(state, -3);
+					}
+				}
+				ret = 0;
+			}
+			else {
+				uuidstr = string_from_uuid_static(uuid);
+				log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to reload module '%.*s'"),
+				          STRING_FORMAT(uuidstr));
+			}
+		}
+		else {
+			string_const_t uuidstr = string_from_uuid_static(uuid);
+			log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to load module '%.*s'"),
+			          STRING_FORMAT(uuidstr));
 		}
 
-		string_const_t uuidstr = string_from_uuid_static(entry->uuid);
-		log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to load module '%.*s'"),
-		          STRING_FORMAT(uuidstr));
+		lua_settop(state, stacksize);
 	}
 	else {
 		string_const_t uuidstr = string_from_uuid_static(uuid);
-		log_infof(HASH_LUA, STRING_CONST("Reloading module failed, not loaded: %.*s"), STRING_FORMAT(uuidstr));
+		log_debugf(HASH_LUA, STRING_CONST("Reloading module ignored, not loaded: %.*s"),
+		           STRING_FORMAT(uuidstr));
 	}
-	return -1;
+	return ret;
 }

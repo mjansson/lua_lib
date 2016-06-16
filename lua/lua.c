@@ -49,6 +49,12 @@ lua_do_eval_stream(lua_t* env, stream_t* stream);
 static lua_result_t
 lua_do_get(lua_t* env, const char* property, size_t length);
 
+LUA_EXTERN void
+lua_module_registry_finalize(lua_State* state);
+
+LUA_EXTERN void
+lua_module_registry_initialize(lua_State* state);
+
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 
 bool
@@ -176,15 +182,12 @@ static FOUNDATION_NOINLINE int
 lua_panic(lua_State* state) {
 	string_const_t errmsg = {0, 0};
 	errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-	FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length,
-	                             errmsg.str);
+	//FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length,
+	//                             errmsg.str);
 	log_errorf(HASH_LUA, ERROR_EXCEPTION, STRING_CONST("unprotected error in call to Lua API: %.*s"),
 	           STRING_FORMAT(errmsg));
 	return 0;
 }
-
-LUA_EXTERN void
-lua_module_registry_finalize(lua_State* state);
 
 lua_t*
 lua_allocate(void) {
@@ -219,6 +222,8 @@ lua_allocate(void) {
 	int stacksize = lua_gettop(state);
 
 	luaL_openlibs(state);
+
+	lua_module_registry_initialize(state);
 
 	lua_pop(state, lua_gettop(state) - stacksize);
 

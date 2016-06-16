@@ -81,7 +81,7 @@ lua_import_stream(stream_t* stream, const uuid_t uuid, luaimport_dump_t* dump) {
 		goto exit;
 	}
 
-	log_info(HASH_LUA, STRING_CONST("Lua bytecode dump successful"));
+	log_debug(HASH_LUA, STRING_CONST("Lua bytecode dump successful"));
 
 exit:
 

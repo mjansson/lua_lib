@@ -34,7 +34,13 @@ struct lua_instance_t {
 	error_level_t   suppress_level;
 };
 
-static bool _lua_terminate = false;
+static atomic32_t _lua_terminate_flag;
+
+static void
+_lua_terminate(void);
+
+static bool
+_lua_should_terminate(void);
 
 static lua_instance_t
 _lua_parse_command_line(const string_const_t* cmdline);
@@ -74,7 +80,7 @@ event_process_system(void) {
 		switch (event->id) {
 		case FOUNDATIONEVENT_TERMINATE:
 			//process_exit( LUA_RESULT_ABORTED );
-			_lua_terminate = true;
+			_lua_terminate();
 			break;
 
 		default:
@@ -111,7 +117,7 @@ event_thread(void* arg) {
 	event_stream_set_beacon(fs_event_stream(), &thread_self()->beacon);
 	event_stream_set_beacon(resource_event_stream(), &thread_self()->beacon);
 
-	while (!_lua_terminate) {
+	while (!_lua_should_terminate()) {
 		event_process_system();
 		event_process_fs();
 		event_process_resource(instance->env, instance->lock);
@@ -126,7 +132,7 @@ main_initialize(void) {
 	int ret = 0;
 
 	log_enable_prefix(false);
-	log_set_suppress(0, ERRORLEVEL_DEBUG);
+	log_set_suppress(0, ERRORLEVEL_INFO);
 	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
 
 	foundation_config_t config;
@@ -163,6 +169,8 @@ main_run(void* main_arg) {
 	thread_t eventthread;
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
+	log_set_suppress(HASH_LUA, instance.suppress_level);
+
 	thread_initialize(&eventthread, event_thread, &instance, STRING_CONST("event_thread"),
 	                  THREAD_PRIORITY_NORMAL, 0);
 	thread_start(&eventthread);
@@ -180,6 +188,7 @@ main_run(void* main_arg) {
 		result = _lua_interpreter(instance.env, instance.lock);
 	}
 
+	_lua_terminate();
 	thread_signal(&eventthread);
 
 	lua_deallocate(instance.env);
@@ -198,6 +207,18 @@ void
 main_finalize(void) {
 	lua_module_finalize();
 	foundation_finalize();
+}
+
+static bool
+_lua_should_terminate(void) {
+	atomic_thread_fence_acquire();
+	return atomic_load32(&_lua_terminate_flag) > 0;
+}
+
+static void
+_lua_terminate(void) {
+	atomic_store32(&_lua_terminate_flag, 1);
+	atomic_thread_fence_release();
 }
 
 static int
@@ -275,6 +296,8 @@ _lua_interpreter(lua_t* lua, mutex_t* lock) {
 				}
 			}
 
+			lua_timed_gc(lua, 0);
+
 			if (lock)
 				mutex_unlock(lock);
 		}
@@ -282,7 +305,7 @@ _lua_interpreter(lua_t* lua, mutex_t* lock) {
 		string_deallocate(entry.str);
 
 	}
-	while (!_lua_terminate && !stream_eos(in));
+	while (!_lua_should_terminate() && !stream_eos(in));
 
 	stream_deallocate(in);
 	stream_deallocate(out);

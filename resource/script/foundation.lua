@@ -660,25 +660,27 @@ ssize_t type_ssize_t(int);
 
 ]]
 
--- Metatypes
-local string_meta_t
-local string_meta_table = {
-	__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length, nullptr) end,
-	__eq = function(lhs, rhs) return C.string_equal(lhs.str, lhs.length, rhs.str, rhs.length) end,
-	__len = function(str) return str.length end,
-	__tostring = function(str) return ffi.string(str.str, str.length) end,
-	__gc = function(str) C.string_deallocate(str.str) end
-}
-local string_meta_t = ffi.metatype("string_t", string_meta_table)
+if not _foundation_module_loaded then
+	-- Metatypes (has to be guarded for reloads as ffi.metatype cannot update existing associations)
+	local string_meta_t
+	local string_meta_table = {
+		__concat = function(lhs, rhs) return C.string_allocate_concat(lhs.str, lhs.length, rhs.str, rhs.length, nullptr) end,
+		__eq = function(lhs, rhs) return C.string_equal(lhs.str, lhs.length, rhs.str, rhs.length) end,
+		__len = function(str) return str.length end,
+		__tostring = function(str) return ffi.string(str.str, str.length) end,
+		__gc = function(str) C.string_deallocate(str.str) end
+	}
+	local string_meta_t = ffi.metatype("string_t", string_meta_table)
 
-local string_const_meta_t
-local string_const_meta_table = {
-	__concat = string_meta_table.__concat,
-	__eq = string_meta_table.__eq,
-	__len = string_meta_table.__len,
-	__tostring = string_meta_table.__tostring
-}
-local string_const_meta_t = ffi.metatype("string_const_t", string_const_meta_table)
+	local string_const_meta_t
+	local string_const_meta_table = {
+		__concat = string_meta_table.__concat,
+		__eq = string_meta_table.__eq,
+		__len = string_meta_table.__len,
+		__tostring = string_meta_table.__tostring
+	}
+	local string_const_meta_t = ffi.metatype("string_const_t", string_const_meta_table)
+end
 
 -- Helper functions
 local function wrap_string_hash(str)
@@ -715,6 +717,8 @@ local function log_panic(message) C.log_panicf(PREHASH_LUA, 15, "%s", 2, message
 
 local function size_t(val) return C.type_size_t(val) end
 local function ssize_t(val) return C.type_ssize_t(val) end
+
+_foundation_module_loaded = 1
 
 return {
 
