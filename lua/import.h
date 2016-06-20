@@ -26,5 +26,5 @@
 \param stream Source stream
 \param uuid Resource UUID
 \return 0 if successful, <0 if error */
-int
+LUA_API int
 lua_import(stream_t* stream, const uuid_t uuid);
