@@ -24,6 +24,7 @@
 #include <lua/bind.h>
 #include <lua/module.h>
 #include <lua/symbol.h>
+#include <lua/event.h>
 #include <lua/read.h>
 #include <lua/import.h>
 #include <lua/compile.h>

@@ -315,16 +315,9 @@ _lua_interpreter(lua_t* lua, mutex_t* lock) {
 
 static void
 _lua_process_resource_event(lua_t* lua, mutex_t* lock, const event_t* event) {
-	if (event->id != RESOURCEEVENT_MODIFY)
-		return;
-
-	const uuid_t uuid = resource_event_uuid(event);
-	const string_const_t uuidstr = string_from_uuid_static(uuid);
-	log_infof(HASH_LUA, STRING_CONST("Got resource modify event: %.*s"), STRING_FORMAT(uuidstr));
-
 	if (lock)
 		mutex_lock(lock);
-	lua_module_reload(lua, uuid);
+	lua_event_handle(lua, event);
 	if (lock)
 		mutex_unlock(lock);
 }

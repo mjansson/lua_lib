@@ -17,7 +17,7 @@ writer = generator.writer
 toolchain = generator.toolchain
 
 lua_lib = generator.lib(module = 'lua', sources = [
-  'bind.c', 'compile.c', 'foundation.c', 'import.c', 'lua.c', 'module.c', 'read.c', 'symbol.c', 'version.c'])
+  'bind.c', 'compile.c', 'event.c', 'foundation.c', 'import.c', 'lua.c', 'module.c', 'read.c', 'symbol.c', 'version.c'])
 
 if not target.is_ios() and not target.is_android():
   configs = [config for config in toolchain.configs if config not in ['profile', 'deploy']]
