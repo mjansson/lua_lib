@@ -18,7 +18,7 @@
 #include <resource/event.h>
 
 void
-lua_event_handle(lua_t* lua, const event_t* event) {
+lua_event_handle_resource(lua_t* lua, const event_t* event) {
 	if (event->id != RESOURCEEVENT_MODIFY)
 		return;
 
