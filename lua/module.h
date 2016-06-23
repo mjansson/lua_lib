@@ -50,3 +50,5 @@ lua_modulemap_entry_t userdata pointer.
 \return Number of return values on state stack */
 LUA_API int
 lua_module_loader(lua_State* state);
+
+#define LUA_RESOURCE_MODULE_VERSION 1

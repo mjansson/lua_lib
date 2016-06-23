@@ -19,6 +19,7 @@
 #include <foundation/foundation.h>
 
 #include <resource/stream.h>
+#include <resource/compile.h>
 #include <resource/platform.h>
 
 #undef LUA_API
@@ -187,9 +188,19 @@ static lua_module_t
 lua_module_load_resource(const uuid_t uuid) {
 	lua_module_t module = {0, 0};
 	bool success = false;
-	const uint32_t expected_version = 1;
+	const uint32_t expected_version = LUA_RESOURCE_MODULE_VERSION;
 	uint64_t platform = 0;
 	stream_t* stream;
+	bool recompile = false;
+	bool recompiled = false;
+
+	error_context_declare_local(
+	    char uuidbuf[40];
+	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
+	);
+	error_context_push(STRING_CONST("loading module"), STRING_ARGS(uuidstr));
+
+retry:
 
 	stream = resource_stream_open_static(uuid, platform);
 	if (stream) {
@@ -199,8 +210,9 @@ lua_module_load_resource(const uuid_t uuid) {
 		}
 		else {
 			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
-			          STRING_CONST("Got unexpected type/version when loading Lua module: %" PRIx64 " : %u"),
+			          STRING_CONST("Got unexpected type/version: %" PRIx64 " : %u"),
 			          header.type, header.version);
+			recompile = true;
 		}
 		stream_deallocate(stream);
 		stream = nullptr;
@@ -218,16 +230,26 @@ lua_module_load_resource(const uuid_t uuid) {
 			}
 			else {
 				memory_deallocate(buffer);
+				log_warn(HASH_LUA, WARNING_SYSTEM_CALL_FAIL, STRING_CONST("Unable to read module data"));
 			}
 		}
 		else {
 			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
-			          STRING_CONST("Got unexpected type/version when loading Lua module blob: %u"),
+			          STRING_CONST("Got unexpected type/version: %u"),
 			          version);
+			recompile = true;
 		}
 		stream_deallocate(stream);
 		stream = nullptr;
 	}
+
+	if (recompile && !recompiled) {
+		recompiled = resource_compile(uuid, platform);
+		if (recompiled)
+			goto retry;
+	}
+
+	error_context_pop();
 
 	return module;
 }

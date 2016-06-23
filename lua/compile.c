@@ -50,6 +50,12 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 	if (resource_type_hash != HASH_LUA)
 		return -1;
 
+	error_context_declare_local(
+	    char uuidbuf[40];
+	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
+	);
+	error_context_push(STRING_CONST("compiling module"), STRING_ARGS(uuidstr));
+
 	array_push(subplatforms, platform);
 
 	hashmap_initialize(map, sizeof(fixedmap.bucket) / sizeof(fixedmap.bucket[0]), 8);
@@ -80,7 +86,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 
 		stream = resource_local_create_static(uuid, subplatform);
 		if (stream) {
-			const uint32_t version = 1;
+			const uint32_t version = LUA_RESOURCE_MODULE_VERSION;
 			resource_header_t header = {
 				.type = resource_type_hash,
 				.version = version,
@@ -115,6 +121,8 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 
 	array_deallocate(subplatforms);
 	hashmap_finalize(map);
+
+	error_context_pop();
 
 	return result;
 }
