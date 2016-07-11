@@ -51,9 +51,9 @@ if target.is_ios() or target.is_android():
   if target.is_pnacl():
     generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs, resources = test_resources, includepaths = includepaths)
   else:
-    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs, resources = test_resources, includepaths = includepaths)
+    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs, resources = test_resources, includepaths = includepaths, variables = {'support_lua' : True})
 else:
   #Build one binary per test case
   generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['lua'] + dependlibs, includepaths = includepaths)
   for test in test_cases:
-    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs, includepaths = includepaths)
+    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs, includepaths = includepaths, variables = {'support_lua' : True})
