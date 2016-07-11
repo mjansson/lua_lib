@@ -160,7 +160,7 @@ test_foundation_declare(void) {
 	ADD_TEST(foundation, environment);
 }
 
-test_suite_t test_foundation_suite = {
+static test_suite_t test_foundation_suite = {
 	test_foundation_application,
 	test_foundation_memory_system,
 	test_foundation_config,

@@ -30,13 +30,10 @@ typedef struct {
 static void
 luaimport_parse_config(const char* path, size_t path_size,
                        const char* buffer, size_t size,
-                       json_token_t* tokens, size_t numtokens);
+                       const json_token_t* tokens, size_t numtokens);
 
 static luaimport_input_t
 luaimport_parse_command_line(const string_const_t* cmdline);
-
-static void
-luaimport_load_config(const char* path, size_t length);
 
 static void
 luaimport_print_usage(void);
@@ -129,7 +126,7 @@ main_finalize(void) {
 static void
 luaimport_parse_config(const char* path, size_t path_size,
                        const char* buffer, size_t size,
-                       json_token_t* tokens, size_t numtokens) {
+                       const json_token_t* tokens, size_t numtokens) {
 	resource_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 	lua_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 }

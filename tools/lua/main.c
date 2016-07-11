@@ -60,7 +60,7 @@ _lua_interpreter(lua_t* lua, mutex_t* lock);
 static void
 _lua_parse_config(const char* path, size_t path_size,
                   const char* buffer, size_t size,
-                  json_token_t* tokens, size_t numtokens);
+                  const json_token_t* tokens, size_t numtokens);
 
 //static int
 //_lua_load_jitbc( lua_t* env );
@@ -363,7 +363,7 @@ exit:
 
 static lua_instance_t
 _lua_parse_command_line(const string_const_t* cmdline) {
-	int arg, asize;
+	unsigned int arg, asize;
 	bool display_help = false;
 	lua_instance_t instance;
 
@@ -399,7 +399,7 @@ _lua_parse_command_line(const string_const_t* cmdline) {
 static void
 _lua_parse_config(const char* path, size_t path_size,
                   const char* buffer, size_t size,
-                  json_token_t* tokens, size_t numtokens) {
+                  const json_token_t* tokens, size_t numtokens) {
 	resource_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 	lua_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 }

@@ -208,7 +208,7 @@ main_finalize(void) {
 
 static lua_dump_t
 luadump_parse_command_line(const string_const_t* cmdline) {
-	int arg, asize;
+	unsigned int arg, asize;
 	bool display_help = false;
 	lua_dump_t dump;
 

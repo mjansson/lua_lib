@@ -29,7 +29,7 @@ typedef struct {
 static void
 luacompile_parse_config(const char* path, size_t path_size,
                         const char* buffer, size_t size,
-                        json_token_t* tokens, size_t numtokens);
+                        const json_token_t* tokens, size_t numtokens);
 
 static luacompile_input_t
 luacompile_parse_command_line(const string_const_t* cmdline);
@@ -148,7 +148,7 @@ main_finalize(void) {
 static void
 luacompile_parse_config(const char* path, size_t path_size,
                         const char* buffer, size_t size,
-                        json_token_t* tokens, size_t numtokens) {
+                        const json_token_t* tokens, size_t numtokens) {
 	resource_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 	lua_module_parse_config(path, path_size, buffer, size, tokens, numtokens);
 }

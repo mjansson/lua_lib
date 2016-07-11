@@ -104,7 +104,7 @@ test_bind_declare(void) {
 	ADD_TEST(bind, bind);
 }
 
-test_suite_t test_bind_suite = {
+static test_suite_t test_bind_suite = {
 	test_bind_application,
 	test_bind_memory_system,
 	test_bind_config,
