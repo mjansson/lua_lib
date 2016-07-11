@@ -42,6 +42,9 @@ lua_module_is_initialized(void);
 LUA_API version_t
 lua_module_version(void);
 
+LUA_API lua_config_t
+lua_module_config(void);
+
 /*! Parse config declarations from JSON buffer
 \param path Path
 \param path_size Length of path

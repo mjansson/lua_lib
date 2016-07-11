@@ -12,7 +12,7 @@
  * http://luajit.org/
  */
 
-#include <lua/module.h>
+#include <lua/symbol.h>
 
 #include <foundation/hash.h>
 #include <foundation/hashmap.h>

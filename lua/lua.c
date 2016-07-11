@@ -34,6 +34,8 @@
 
 #undef LUA_API
 
+static lua_config_t _lua_config;
+
 lua_result_t
 lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, lua_value_t val);
 
@@ -172,7 +174,7 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 		else
 			block = memory_reallocate(block, nsize, 0, osize);
 		if (block == 0 && env && ((lua_t*)env)->state)
-			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%u bytes)"),
+			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%" PRIsize " bytes)"),
 			           nsize);
 	}
 	return block;
@@ -380,7 +382,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 				break;
 
 			case LUADATA_REAL:
-				lua_pushnumber(state, arg->value[i].val);
+				lua_pushnumber(state, (lua_Number)arg->value[i].val);
 				break;
 
 			case LUADATA_STR:
@@ -407,7 +409,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 					lua_newtable(state);
 					for (uint16_t ia = 0; ia < arg->size[i]; ++ia) {
 						lua_pushinteger(state, ia + 1);
-						lua_pushnumber(state, values[ia]);
+						lua_pushnumber(state, (lua_Number)values[ia]);
 						lua_settable(state, -3);
 					}
 					break;
@@ -442,7 +444,7 @@ lua_call_void(lua_t* env, const char* method, size_t length) {
 }
 
 lua_result_t
-lua_call_val(lua_t* env, const char* method, size_t length, real val) {
+lua_call_real(lua_t* env, const char* method, size_t length, real val) {
 	lua_arg_t arg = { .num = 1, .type[0] = LUADATA_REAL, .value[0].val = val };
 	return lua_call_custom(env, method, length, &arg);
 }
@@ -773,6 +775,8 @@ int
 lua_module_initialize(const lua_config_t config) {
 	FOUNDATION_UNUSED(config);
 
+	memset(&_lua_config, 0, sizeof(_lua_config));
+
 	if (lua_symbol_initialize() < 0)
 		return -1;
 
@@ -792,6 +796,11 @@ void
 lua_module_finalize(void) {
 	lua_modulemap_finalize();
 	lua_symbol_finalize();
+}
+
+lua_config_t
+lua_module_config(void) {
+	return _lua_config;
 }
 
 void

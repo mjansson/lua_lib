@@ -23,6 +23,7 @@ resource_source_platform_reduce(resource_change_t* change, resource_change_t* be
 	uint64_t** subplatforms = data;
 	uint64_t platform = (*subplatforms)[0];
 	size_t iplat, psize;
+	FOUNDATION_UNUSED(best);
 	if ((platform == RESOURCE_PLATFORM_ALL) ||
 	        resource_platform_is_equal_or_more_specific(change->platform, platform)) {
 		for (iplat = 1, psize = array_size(*subplatforms); iplat != psize; ++iplat) {

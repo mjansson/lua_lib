@@ -94,7 +94,7 @@ typedef struct lua_config_t lua_config_t;
 typedef struct lua_t lua_t;
 
 struct lua_config_t {
-	unsigned int __unused;
+	unsigned int _unused;
 };
 
 union lua_value_t {

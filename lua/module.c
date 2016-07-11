@@ -31,7 +31,8 @@
 
 #undef LUA_API
 
-LUA_EXTERN void* lj_clib_getsym_modulemap(lua_State*, const char*, size_t);
+LUA_EXTERN int
+lj_cf_package_loader_registry(lua_State* state);
 
 static hashmap_t* _lua_modulemap;
 static mutex_t* _lua_modulemap_lock;
@@ -273,7 +274,7 @@ lua_module_upload(lua_State* state, const void* bytecode, size_t size) {
 		.offset = 0
 	};
 
-	log_debugf(HASH_LUA, STRING_CONST("Loading %u bytes of module bytecode"),
+	log_debugf(HASH_LUA, STRING_CONST("Loading %" PRIsize " bytes of module bytecode"),
 	           read_buffer.size);
 
 	if (lua_load(state, lua_read_buffer, &read_buffer, "module") != 0) {

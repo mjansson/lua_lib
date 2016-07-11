@@ -42,13 +42,13 @@ lua_push_integer_global(lua_State* state, const char* name, size_t length, int v
 static void
 lua_push_number(lua_State* state, const char* name, size_t length, real value) {
 	lua_pushlstring(state, name, length);
-	lua_pushnumber(state, value);
+	lua_pushnumber(state, (lua_Number)value);
 	lua_settable(state, -3);
 }
 
 static void
 lua_push_number_global(lua_State* state, const char* name, size_t length, real value) {
-	lua_pushnumber(state, value);
+	lua_pushnumber(state, (lua_Number)value);
 	lua_setlglobal(state, name, length);
 }
 
@@ -188,7 +188,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 				lua_pushlstring(state, part.str, part.length);
 				lua_pushvalue(state, -2);
 				lua_settable(state, -4);
-				log_debugf(HASH_LUA, STRING_CONST("Created table: %.*s"), next, property);
+				log_debugf(HASH_LUA, STRING_CONST("Created table: %.*s"), (int)next, property);
 			}
 			else if (!lua_istable(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
@@ -218,6 +218,10 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 		case LUACMD_BIND_VAL:
 			lua_push_number(state, STRING_ARGS(part), val.val);
 			break;
+		case LUACMD_WAIT:
+		case LUACMD_LOAD:
+		case LUACMD_EVAL:
+		case LUACMD_CALL:
 		default:
 			break;
 		}
@@ -239,6 +243,10 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 		case LUACMD_BIND_VAL:
 			lua_push_number_global(state, STRING_ARGS(part), val.val);
 			break;
+		case LUACMD_WAIT:
+		case LUACMD_LOAD:
+		case LUACMD_EVAL:
+		case LUACMD_CALL:
 		default:
 			break;
 		}

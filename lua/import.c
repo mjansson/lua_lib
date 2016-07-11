@@ -60,6 +60,8 @@ lua_import_stream(stream_t* stream, const uuid_t uuid, luaimport_dump_t* dump) {
 		.stream = stream,
 	};
 
+	FOUNDATION_UNUSED(uuid);
+
 	env = lua_allocate();
 	state = lua_state(env);
 

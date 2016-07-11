@@ -92,31 +92,11 @@ _error_context_buffer_disabled(char* str, size_t length) {
 #undef memory_context_pop
 #undef memory_context
 
-static void
-memory_context_push(hash_t context) {
-	FOUNDATION_UNUSED(context);
-}
-
-static void
-memory_context_pop(void) {
-}
-
-static hash_t
-memory_context(void) {
-	return 0;
-}
-
 #endif
 
 #if !BUILD_ENABLE_STATIC_HASH_DEBUG
 
 #undef hash_to_string
-
-static string_const_t
-hash_to_string(hash_t value) {
-	FOUNDATION_UNUSED(value);
-	return string_empty();
-}
 
 #endif
 
@@ -139,7 +119,7 @@ _array_deallocate(void** arr) {
 	array_deallocate(arr);
 }
 
-static int
+static unsigned int
 _array_size(const void* arr) {
 	return (arr ? array_size(arr) : 0);
 }
@@ -214,7 +194,7 @@ system_size_wchar(void) {
 
 #if !BUILD_ENABLE_PROFILE
 
-void
+static void
 _profile_initialize(const char* str, size_t length, void* ptr, uint64_t val) {
 	FOUNDATION_UNUSED(str);
 	FOUNDATION_UNUSED(length);
@@ -222,31 +202,31 @@ _profile_initialize(const char* str, size_t length, void* ptr, uint64_t val) {
 	FOUNDATION_UNUSED(val);
 }
 
-void
+static void
 _profile_void(void) {
 }
 
-void
+static void
 _profile_bool(bool flag) {
 	FOUNDATION_UNUSED(flag);
 }
 
-void
+static void
 _profile_fn(profile_write_fn fn) {
 	FOUNDATION_UNUSED(fn);
 }
 
-void
+static void
 _profile_int(int val) {
 	FOUNDATION_UNUSED(val);
 }
 
-void
+static void
 _profile_uint64(uint64_t val) {
 	FOUNDATION_UNUSED(val);
 }
 
-void
+static void
 _profile_str(const char* str, size_t length) {
 	FOUNDATION_UNUSED(str);
 	FOUNDATION_UNUSED(length);
