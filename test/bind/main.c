@@ -59,7 +59,8 @@ test_bind_initialize(void) {
 
 	resource_config.enable_local_source = true;
 	resource_config.enable_local_cache = true;
-	resource_config.enable_remote_cache = true;
+	resource_config.enable_remote_sourced = true;
+	resource_config.enable_remote_compiled = true;
 
 	if (resource_module_initialize(resource_config) < 0)
 		return -1;
