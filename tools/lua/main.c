@@ -13,6 +13,7 @@
  */
 
 #include <foundation/foundation.h>
+#include <network/network.h>
 #include <resource/resource.h>
 #include <lua/lua.h>
 #include <lua/bind.h>
@@ -148,6 +149,11 @@ main_initialize(void) {
 	if ((ret = foundation_initialize(memory_system_malloc(), application, config)) < 0)
 		return ret;
 
+	network_config_t network_config;
+	memset(&network_config, 0, sizeof(network_config_t));
+	if ((ret = network_module_initialize(network_config)) < 0)
+		return ret;
+
 	resource_config_t resource_config;
 	memset(&resource_config, 0, sizeof(resource_config_t));
 	resource_config.enable_local_cache = true;
@@ -170,6 +176,10 @@ main_run(void* main_arg) {
 	lua_instance_t instance = _lua_parse_command_line(environment_command_line());
 
 	log_set_suppress(HASH_LUA, instance.suppress_level);
+	log_set_suppress(HASH_NETWORK, instance.suppress_level);
+	log_set_suppress(HASH_RESOURCE, instance.suppress_level);
+	log_set_suppress(0, instance.suppress_level);
+	log_set_suppress(HASH_SCRIPT, ERRORLEVEL_NONE);
 
 	thread_initialize(&eventthread, event_thread, &instance, STRING_CONST("event_thread"),
 	                  THREAD_PRIORITY_NORMAL, 0);
@@ -206,6 +216,8 @@ main_run(void* main_arg) {
 void
 main_finalize(void) {
 	lua_module_finalize();
+	resource_module_finalize();
+	network_module_finalize();
 	foundation_finalize();
 }
 
@@ -409,12 +421,13 @@ _lua_print_usage(void) {
 	log_set_suppress(HASH_LUA, ERRORLEVEL_DEBUG);
 	log_info(HASH_LUA, STRING_CONST(
 	             "lua usage:\n"
-	             "  lua [--config <path> ...] [--help] [file]\n"
+	             "  lua [--config <path> ...] [--help] [file] [--]\n"
 	             "    Optional arguments:\n"
 	             "      --config <file>  Read and parse config file given by <path>\n"
 	             "                       Loads all .json/.sjson files in <path> if it is a directory\n"
 	             "      --help           Show this message\n"
 	             "      <file>           Read <file> instead of stdin\n"
+	             "      --               Stop processing command line arguments"
 	         ));
 	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
 }

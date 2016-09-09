@@ -149,7 +149,7 @@ lua_import(stream_t* stream, const uuid_t uuid_given) {
 		return -1;
 
 	if (uuid_is_null(uuid))
-		uuid = resource_import_map_lookup(STRING_ARGS(path)).uuid;
+		uuid = resource_import_lookup(STRING_ARGS(path)).uuid;
 
 	if (uuid_is_null(uuid)) {
 		uuid = uuid_generate_random();

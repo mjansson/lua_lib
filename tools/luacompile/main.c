@@ -13,6 +13,7 @@
  */
 
 #include <foundation/foundation.h>
+#include <network/network.h>
 #include <resource/resource.h>
 #include <lua/lua.h>
 
@@ -43,6 +44,7 @@ main_initialize(void) {
 	application_t application;
 	foundation_config_t foundation_config;
 	resource_config_t resource_config;
+	network_config_t network_config;
 	lua_config_t lua_config;
 
 	memset(&foundation_config, 0, sizeof(foundation_config));
@@ -62,7 +64,11 @@ main_initialize(void) {
 	resource_config.enable_local_cache = true;
 	resource_config.enable_remote_sourced = true;
 
+	memset(&network_config, 0, sizeof(network_config_t));
+
 	if ((ret = foundation_initialize(memory_system_malloc(), application, foundation_config)) < 0)
+		return ret;
+	if ((ret = network_module_initialize(network_config)) < 0)
 		return ret;
 	if ((ret = resource_module_initialize(resource_config)) < 0)
 		return ret;
@@ -109,7 +115,7 @@ main_run(void* main_arg) {
 			string_t pathstr = string_copy(buffer, sizeof(buffer), STRING_ARGS(input.input_files[ifile]));
 			pathstr = path_clean(STRING_ARGS(pathstr), sizeof(buffer));
 			pathstr = path_absolute(STRING_ARGS(pathstr), sizeof(buffer));
-			uuid = resource_import_map_lookup(STRING_ARGS(pathstr)).uuid;
+			uuid = resource_import_lookup(STRING_ARGS(pathstr)).uuid;
 		}
 		if (uuid_is_null(uuid)) {
 			log_warnf(HASH_RESOURCE, WARNING_INVALID_VALUE, STRING_CONST("Failed to lookup: %.*s"),
@@ -142,6 +148,7 @@ void
 main_finalize(void) {
 	lua_module_finalize();
 	resource_module_finalize();
+	network_module_finalize();
 	foundation_finalize();
 }
 
@@ -196,6 +203,7 @@ luacompile_parse_command_line(const string_const_t* cmdline) {
 		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--debug"))) {
 			log_set_suppress(0, ERRORLEVEL_NONE);
 			log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
+			log_set_suppress(HASH_NETWORK, ERRORLEVEL_NONE);
 			log_set_suppress(HASH_SCRIPT, ERRORLEVEL_NONE);
 			log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
 		}

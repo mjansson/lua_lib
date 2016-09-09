@@ -13,6 +13,7 @@
  */
 
 #include <foundation/foundation.h>
+#include <network/network.h>
 #include <resource/resource.h>
 #include <lua/lua.h>
 
@@ -44,6 +45,7 @@ main_initialize(void) {
 	application_t application;
 	foundation_config_t foundation_config;
 	resource_config_t resource_config;
+	network_config_t network_config;
 	lua_config_t lua_config;
 
 	memset(&foundation_config, 0, sizeof(foundation_config));
@@ -62,7 +64,11 @@ main_initialize(void) {
 	resource_config.enable_local_source = true;
 	resource_config.enable_local_cache = true;
 
+	memset(&network_config, 0, sizeof(network_config_t));
+
 	if ((ret = foundation_initialize(memory_system_malloc(), application, foundation_config)) < 0)
+		return ret;
+	if ((ret = network_module_initialize(network_config)) < 0)
 		return ret;
 	if ((ret = resource_module_initialize(resource_config)) < 0)
 		return ret;
@@ -119,6 +125,7 @@ void
 main_finalize(void) {
 	lua_module_finalize();
 	resource_module_finalize();
+	network_module_finalize();
 	foundation_finalize();
 }
 
@@ -173,6 +180,7 @@ luaimport_parse_command_line(const string_const_t* cmdline) {
 		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--debug"))) {
 			log_set_suppress(0, ERRORLEVEL_NONE);
 			log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
+			log_set_suppress(HASH_NETWORK, ERRORLEVEL_NONE);
 			log_set_suppress(HASH_SCRIPT, ERRORLEVEL_NONE);
 			log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
 		}
