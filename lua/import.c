@@ -66,8 +66,9 @@ lua_import_stream(stream_t* stream, const uuid_t uuid, luaimport_dump_t* dump) {
 	state = lua_state(env);
 
 	if (lua_load(state, lua_read_stream, &read_stream, "import") != 0) {
+		const char* errstr = lua_tostring(state, -1);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed: %s"),
-		           lua_tostring(state, -1));
+		           errstr ? errstr : "<no error>");
 		lua_pop(state, 1);
 		result = -1;
 		goto exit;
@@ -76,8 +77,9 @@ lua_import_stream(stream_t* stream, const uuid_t uuid, luaimport_dump_t* dump) {
 	lua_dump(state, lua_import_dump_writer, dump);
 
 	if (lua_pcall(state, 0, 0, 0) != 0) {
+		const char* errstr = lua_tostring(state, -1);
 		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed: %s"),
-		           lua_tostring(state, -1));
+		           errstr ? errstr : "<no error>");
 		lua_pop(state, 1);
 		result = -1;
 		goto exit;
@@ -115,6 +117,9 @@ lua_import_output(const uuid_t uuid, const luaimport_dump_t* dump) {
 		                         platform, checksum, dump->bytecode_size);
 	}
 	else {
+		string_const_t uuidstr = string_from_uuid_static(uuid);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Failed to write resource source blob file: %.*s"),
+		           STRING_FORMAT(uuidstr));
 		ret = -1;
 		goto finalize;
 	}
@@ -123,6 +128,9 @@ lua_import_output(const uuid_t uuid, const luaimport_dump_t* dump) {
 	                    0, STRING_ARGS(type));
 
 	if (!resource_source_write(&source, uuid, false)) {
+		string_const_t uuidstr = string_from_uuid_static(uuid);
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Failed to write resource source file: %.*s"),
+		           STRING_FORMAT(uuidstr));
 		ret = -1;
 		goto finalize;
 	}

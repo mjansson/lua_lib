@@ -75,8 +75,6 @@ main_initialize(void) {
 	if ((ret = lua_module_initialize(lua_config)) < 0)
 		return ret;
 
-	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_DEBUG);
-
 	return 0;
 }
 
@@ -96,6 +94,7 @@ main_run(void* main_arg) {
 	if (!resource_source_path().length) {
 		log_errorf(HASH_RESOURCE, ERROR_INVALID_VALUE, STRING_CONST("No source path given"));
 		input.display_help = true;
+		result = LUAIMPORT_RESULT_INVALID_ARGUMENTS;
 	}
 
 	if (input.display_help) {
@@ -103,14 +102,21 @@ main_run(void* main_arg) {
 		goto exit;
 	}
 
+	lua_symbol_load_foundation();
+
 	size_t ifile, fsize;
 	for (ifile = 0, fsize = array_size(input.input_files); ifile < fsize; ++ifile) {
-		if (resource_import(STRING_ARGS(input.input_files[ifile]), uuid_null()))
+		log_infof(HASH_RESOURCE, STRING_CONST("Importing: %.*s"),
+		          STRING_FORMAT(input.input_files[ifile]));
+		if (resource_import(STRING_ARGS(input.input_files[ifile]), uuid_null())) {
 			log_infof(HASH_RESOURCE, STRING_CONST("Successfully imported: %.*s"),
 			          STRING_FORMAT(input.input_files[ifile]));
-		else
+		}
+		else {
 			log_warnf(HASH_RESOURCE, WARNING_UNSUPPORTED, STRING_CONST("Failed to import: %.*s"),
 			          STRING_FORMAT(input.input_files[ifile]));
+			result = LUAIMPORT_RESULT_IMPORT_FAILED;
+		}
 	}
 
 exit:

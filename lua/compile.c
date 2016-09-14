@@ -79,6 +79,16 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 				memory_deallocate(compiled_blob);
 				compiled_blob = 0;
 				compiled_size = 0;
+				log_errorf(HASH_RESOURCE, ERROR_SYSTEM_CALL_FAIL,
+				           STRING_CONST("Unable to read blob for platform %" PRIx64),
+				           subplatform);
+				result = -1;
+			}
+			else if (compiled_size <= 0) {
+				log_errorf(HASH_RESOURCE, ERROR_INVALID_VALUE,
+				           STRING_CONST("No blob for platform %" PRIx64),
+				           subplatform);
+				result = -1;
 			}
 		}
 
@@ -94,6 +104,9 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 				.source_hash = source_hash
 			};
 			resource_stream_write_header(stream, header);
+			string_const_t streampath = stream_path(stream);
+			log_debugf(HASH_RESOURCE, STRING_CONST("Wrote static resource stream: %.*s"),
+			           STRING_FORMAT(streampath));
 			stream_deallocate(stream);
 
 			if (compiled_size > 0) {
@@ -102,6 +115,9 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 					stream_write_uint32(stream, version);
 					stream_write_uint64(stream, compiled_size);
 					stream_write(stream, compiled_blob, compiled_size);
+					streampath = stream_path(stream);
+					log_debugf(HASH_RESOURCE, STRING_CONST("Wrote dynamic resource stream: %.*s"),
+					           STRING_FORMAT(streampath));
 					stream_deallocate(stream);
 				}
 				else {

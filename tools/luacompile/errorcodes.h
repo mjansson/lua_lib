@@ -16,5 +16,5 @@
 
 //Error codes returned by luacompile tool
 #define LUACOMPILE_RESULT_OK                           0
-#define LUACOMPILE_RESULT_UNSUPPORTED_INPUT           -1
-#define LUACOMPILE_RESULT_INVALID_INPUT               -2
+#define LUACOMPILE_RESULT_COMPILE_FAILED              -1
+#define LUACOMPILE_RESULT_INVALID_ARGUMENTS           -2

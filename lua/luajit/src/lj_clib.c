@@ -272,7 +272,7 @@ static void *clib_getsym(CLibrary *cl, const char *name)
 LJ_NORET LJ_NOINLINE static void clib_error(lua_State *L, const char *fmt,
 					    const char *name)
 {
-  lj_err_callermsg(L, lj_strfmt_pushf(L, fmt, name, "no support for this OS"));
+  lj_err_callermsg(L, lj_strfmt_pushf(L, fmt, name, "symbol not found"));
 }
 
 static void *clib_loadlib(lua_State *L, const char *name, int global)

@@ -95,9 +95,10 @@ main_run(void* main_arg) {
 	if (input.source_path.length)
 		resource_source_set_path(STRING_ARGS(input.source_path));
 
-	if (!resource_source_path().length) {
+	if (!resource_source_path().length && !resource_remote_sourced_is_connected()) {
 		log_errorf(HASH_RESOURCE, ERROR_INVALID_VALUE, STRING_CONST("No source path given"));
 		input.display_help = true;
+		result = LUACOMPILE_RESULT_INVALID_ARGUMENTS;
 	}
 
 	if (input.display_help) {
@@ -120,7 +121,7 @@ main_run(void* main_arg) {
 		if (uuid_is_null(uuid)) {
 			log_warnf(HASH_RESOURCE, WARNING_INVALID_VALUE, STRING_CONST("Failed to lookup: %.*s"),
 			          STRING_FORMAT(input.input_files[ifile]));
-			result = LUACOMPILE_RESULT_INVALID_INPUT;
+			result = LUACOMPILE_RESULT_INVALID_ARGUMENTS;
 			break;
 		}
 
@@ -131,8 +132,10 @@ main_run(void* main_arg) {
 		}
 		else {
 			string_const_t uuidstr = string_from_uuid_static(uuid);
-			log_warnf(HASH_RESOURCE, WARNING_UNSUPPORTED, STRING_CONST("Failed to compile: %.*s (%.*s)"),
+			log_errorf(HASH_RESOURCE, ERROR_UNSUPPORTED, STRING_CONST("Failed to compile: %.*s (%.*s)"),
 			          STRING_FORMAT(uuidstr), STRING_FORMAT(input.input_files[ifile]));
+			result = LUACOMPILE_RESULT_COMPILE_FAILED;
+			break;
 		}
 	}
 

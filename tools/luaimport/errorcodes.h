@@ -16,14 +16,5 @@
 
 //Error codes returned by luaimport tool
 #define LUAIMPORT_RESULT_OK                           0
-#define LUAIMPORT_RESULT_UNSUPPORTED_INPUT           -1
-#define LUAIMPORT_RESULT_INVALID_ARGUMENT            -2
-#define LUAIMPORT_RESULT_UNKNOWN_COMMAND             -3
-#define LUAIMPORT_RESULT_UNABLE_TO_OPEN_OUTPUT_FILE  -4
-#define LUAIMPORT_RESULT_INVALID_INPUT               -5
-#define LUAIMPORT_RESULT_UNABLE_TO_OPEN_MAP_FILE     -6
-#define LUAIMPORT_RESULT_UNABLE_TO_WRITE_BLOB        -7
-#define LUAIMPORT_RESULT_UNABLE_TO_WRITE_SOURCE      -8
-#define LUAIMPORT_RESULT_UUID_MISMATCH               -9
-
-#define LUAIMPORT_RESULT_FAILED_EVAL                 -100
+#define LUAIMPORT_RESULT_IMPORT_FAILED               -1
+#define LUAIMPORT_RESULT_INVALID_ARGUMENTS           -2
