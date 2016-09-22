@@ -16,6 +16,7 @@
 		451388E9193F85DA00BA2092 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451388D5193F858E00BA2092 /* CoreFoundation.framework */; };
 		451388EB193F85DA00BA2092 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 451388EA193F85DA00BA2092 /* liblua.a */; };
 		451388EF193F868B00BA2092 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 451388EE193F868B00BA2092 /* main.c */; };
+		CDFE0CA81D94094D00E11451 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 451388EA193F85DA00BA2092 /* liblua.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDFE0CA81D94094D00E11451 /* liblua.a in Frameworks */,
 				451388D6193F858E00BA2092 /* Carbon.framework in Frameworks */,
 				451388D7193F858E00BA2092 /* Cocoa.framework in Frameworks */,
 				451388D8193F858E00BA2092 /* CoreFoundation.framework in Frameworks */,
@@ -238,9 +240,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/debug;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -250,20 +251,28 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
 					../../../lib/macosx/debug,
+					../../../../resource_lib/lib/macosx/debug,
+					../../../../network_lib/lib/macosx/debug,
 					../../../../foundation_lib/lib/macosx/debug,
 					"$(inherited)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
+					"-lresource",
+					"-lnetwork",
 					"-lfoundation",
 					"-pagezero_size",
 					10000,
@@ -282,9 +291,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/release;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -294,22 +302,30 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/release,
+					../../../lib/macosx/debug,
+					../../../../resource_lib/lib/macosx/release,
+					../../../../network_lib/lib/macosx/release,
 					../../../../foundation_lib/lib/macosx/release,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
+					"-lresource",
+					"-lnetwork",
 					"-lfoundation",
 					"-pagezero_size",
 					10000,
@@ -428,9 +444,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/profile;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -440,22 +455,30 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/profile,
+					../../../lib/macosx/debug,
+					../../../../resource_lib/lib/macosx/profile,
+					../../../../network_lib/lib/macosx/profile,
 					../../../../foundation_lib/lib/macosx/profile,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
+					"-lresource",
+					"-lnetwork",
 					"-lfoundation",
 					"-pagezero_size",
 					10000,
@@ -524,9 +547,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/deploy;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -536,22 +558,30 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/deploy,
+					../../../lib/macosx/debug,
+					../../../../resource_lib/lib/macosx/deploy,
+					../../../../network_lib/lib/macosx/deploy,
 					../../../../foundation_lib/lib/macosx/deploy,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				OTHER_LDFLAGS = (
+					"-lresource",
+					"-lnetwork",
 					"-lfoundation",
 					"-pagezero_size",
 					10000,
