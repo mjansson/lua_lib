@@ -63,6 +63,9 @@ _lua_parse_config(const char* path, size_t path_size,
                   const char* buffer, size_t size,
                   const json_token_t* tokens, size_t numtokens);
 
+static void
+_lua_load_default_config(void);
+
 //static int
 //_lua_load_jitbc( lua_t* env );
 
@@ -187,6 +190,9 @@ main_run(void* main_arg) {
 
 	for (size_t cfgfile = 0, fsize = array_size(instance.config_files); cfgfile < fsize; ++cfgfile)
 		sjson_parse_path(STRING_ARGS(instance.config_files[cfgfile]), _lua_parse_config);
+
+	if (array_size(instance.config_files) == 0)
+		_lua_load_default_config();
 
 	instance.env = lua_allocate();
 
@@ -430,5 +436,25 @@ _lua_print_usage(void) {
 	             "      --               Stop processing command line arguments"
 	         ));
 	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
+}
+
+static void
+_lua_load_default_config(void) {
+	char buffer[BUILD_MAX_PATHLEN];
+	
+	string_const_t last_dir;
+	string_t config_dir;
+	string_const_t current_dir = environment_current_working_directory();
+	do {
+		last_dir = current_dir;
+		config_dir = path_concat(buffer, sizeof(buffer), STRING_ARGS(current_dir), STRING_CONST("config"));
+		if (fs_is_directory(STRING_ARGS(config_dir))) {
+			sjson_parse_path(STRING_ARGS(config_dir), _lua_parse_config);
+			break;
+		}
+		
+		current_dir = path_directory_name(STRING_ARGS(current_dir));
+	}
+	while (!string_equal(STRING_ARGS(current_dir), STRING_ARGS(last_dir)));
 }
 
