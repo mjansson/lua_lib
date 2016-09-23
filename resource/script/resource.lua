@@ -1,7 +1,7 @@
 
 local foundation = require("foundation")
 
-local ffi = require( "ffi" )
+local ffi = require("ffi")
 local C = ffi.C
 
 -- Network types and functions

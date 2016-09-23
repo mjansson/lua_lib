@@ -255,7 +255,6 @@ _lua_interpreter(lua_t* lua, mutex_t* lock) {
 	int status;
 
 	log_enable_prefix(true);
-	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_DEBUG);
 
 	memset(&read_string, 0, sizeof(read_string));
 

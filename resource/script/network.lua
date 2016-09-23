@@ -1,7 +1,7 @@
 
 local foundation = require("foundation")
 
-local ffi = require( "ffi" )
+local ffi = require("ffi")
 local C = ffi.C
 
 -- Network types and functions
@@ -60,7 +60,7 @@ void socket_finalize(socket_t*);
 void socket_deallocate(socket_t*);
 bool socket_bind(socket_t*, const network_address_t*);
 bool socket_connect(socket_t*, const network_address_t*, unsigned int);
-void socket_close(socket_t*;
+void socket_close(socket_t*);
 bool socket_blocking(const socket_t*);
 void socket_set_blocking(socket_t*, bool);
 bool socket_reuse_address(const socket_t*);

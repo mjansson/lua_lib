@@ -164,12 +164,19 @@ lua_import(stream_t* stream, const uuid_t uuid_given) {
 		store_import = true;
 	}
 
+	error_context_declare_local(
+	    char uuidbuf[40];
+	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
+	);
+	error_context_push(STRING_CONST("importing module"), STRING_ARGS(uuidstr));
+
 	if (store_import) {
 		uuid_t founduuid = resource_import_map_store(STRING_ARGS(path), uuid, uint256_null());
 		if (uuid_is_null(founduuid)) {
 			log_warn(HASH_RESOURCE, WARNING_SUSPICIOUS,
 			         STRING_CONST("Unable to open import map file to store new resource"));
-			return -1;
+			ret = -1;
+			goto exit;
 		}
 		uuid = founduuid;
 	}
@@ -185,6 +192,8 @@ lua_import(stream_t* stream, const uuid_t uuid_given) {
 exit:
 
 	memory_deallocate(dump.bytecode);
+
+	error_context_pop();
 
 	return ret;
 }
