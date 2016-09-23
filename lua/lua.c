@@ -15,9 +15,6 @@
 #define LUA_USE_INTERNAL_HEADER
 
 #include <lua/lua.h>
-#include <lua/hashstrings.h>
-#include <lua/foundation.h>
-#include <lua/read.h>
 
 #include <foundation/foundation.h>
 #include <resource/import.h>
@@ -785,6 +782,10 @@ lua_module_initialize(const lua_config_t config) {
 
 	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
 	                    lua_symbol_load_foundation);
+	lua_module_register(STRING_CONST("network"), LUA_NETWORK_UUID, lua_module_loader,
+	                    lua_symbol_load_network);
+	lua_module_register(STRING_CONST("resource"), LUA_RESOURCE_UUID, lua_module_loader,
+	                    lua_symbol_load_resource);
 
 	resource_import_register(lua_import);
 	resource_compile_register(lua_compile);

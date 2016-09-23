@@ -15,7 +15,7 @@
 #pragma once
 
 /*! \file foundation.h
-    Lua scripting environment */
+    Binding for foundation module */
 
 #include <foundation/platform.h>
 

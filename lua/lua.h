@@ -28,7 +28,10 @@
 #include <lua/read.h>
 #include <lua/import.h>
 #include <lua/compile.h>
+
 #include <lua/foundation.h>
+#include <lua/network.h>
+#include <lua/resource.h>
 
 LUA_API int
 lua_module_initialize(const lua_config_t config);

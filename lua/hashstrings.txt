@@ -574,3 +574,191 @@ HASH_SYM_UUID_DNS                       uuid_dns
 
 HASH_SYM_TYPE_SIZE_T                    type_size_t
 HASH_SYM_TYPE_SSIZE_T                   type_ssize_t
+
+HASH_SYM_NETWORK_ADDRESS_CLONE          network_address_clone
+HASH_SYM_NETWORK_ADDRESS_RESOLVE        network_address_resolve
+HASH_SYM_NETWORK_ADDRESS_TO_STRING      network_address_to_string
+HASH_SYM_NETWORK_ADDRESS_IPV4_ANY       network_address_ipv4_any
+HASH_SYM_NETWORK_ADDRESS_IPV6_ANY       network_address_ipv6_any
+HASH_SYM_NETWORK_ADDRESS_IP_SET_PORT    network_address_ip_set_port
+HASH_SYM_NETWORK_ADDRESS_IP_PORT        network_address_ip_port
+HASH_SYM_NETWORK_ADDRESS_IPV4_FROM_IP   network_address_ipv4_from_ip
+HASH_SYM_NETWORK_ADDRESS_IPV4_SET_IP    network_address_ipv4_set_ip
+HASH_SYM_NETWORK_ADDRESS_IPV4_IP        network_address_ipv4_ip
+HASH_SYM_NETWORK_ADDRESS_TYPE           network_address_type
+HASH_SYM_NETWORK_ADDRESS_FAMILY         network_address_family
+HASH_SYM_NETWORK_ADDRESS_LOCAL          network_address_local
+HASH_SYM_NETWORK_ADDRESS_EQUAL          network_address_equal
+HASH_SYM_NETWORK_ADDRESS_ARRAY_DEALLOCATE network_address_array_deallocate
+
+HASH_SYM_NETWORK_MODULE_INITIALIZE      network_module_initialize
+HASH_SYM_NETWORK_MODULE_FINALIZE        network_module_finalize
+HASH_SYM_NETWORK_MODULE_IS_INITIALIZED  network_module_is_initialized
+HASH_SYM_NETWORK_MODULE_CONFIG          network_module_config
+HASH_SYM_NETWORK_MODULE_VERSION         network_module_version
+HASH_SYM_NETWORK_SUPPORTS_IPV4          network_supports_ipv4
+HASH_SYM_NETWORK_SUPPORTS_IPV6          network_supports_ipv6
+
+HASH_SYM_NETWORK_POLL_ALLOCATE          network_poll_allocate
+HASH_SYM_NETWORK_POLL_INITIALIZE        network_poll_initialize
+HASH_SYM_NETWORK_POLL_FINALIZE          network_poll_finalize
+HASH_SYM_NETWORK_POLL_DEALLOCATE        network_poll_deallocate
+HASH_SYM_NETWORK_POLL_ADD_SOCKET        network_poll_add_socket
+HASH_SYM_NETWORK_POLL_UPDATE_SOCKET     network_poll_update_socket
+HASH_SYM_NETWORK_POLL_REMOVE_SOCKET     network_poll_remove_socket
+HASH_SYM_NETWORK_POLL_HAS_SOCKET        network_poll_has_socket
+HASH_SYM_NETWORK_POLL_NUM_SOCKETS       network_poll_num_sockets
+HASH_SYM_NETWORK_POLL_SOCKETS           network_poll_sockets
+HASH_SYM_NETWORK_POLL                   network_poll
+
+HASH_SYM_SOCKET_FINALIZE                socket_finalize
+HASH_SYM_SOCKET_DEALLOCATE              socket_deallocate
+HASH_SYM_SOCKET_BIND                    socket_bind
+HASH_SYM_SOCKET_CONNECT                 socket_connect
+HASH_SYM_SOCKET_CLOSE                   socket_close
+HASH_SYM_SOCKET_BLOCKING                socket_blocking
+HASH_SYM_SOCKET_SET_BLOCKING            socket_set_blocking
+HASH_SYM_SOCKET_REUSE_ADDRESS           socket_reuse_address
+HASH_SYM_SOCKET_SET_REUSE_ADDRESS       socket_set_reuse_address
+HASH_SYM_SOCKET_REUSE_PORT              socket_reuse_port
+HASH_SYM_SOCKET_SET_REUSE_PORT          socket_set_reuse_port
+HASH_SYM_SOCKET_SET_MULTICAST_GROUP     socket_set_multicast_group
+HASH_SYM_SOCKET_ADDRESS_LOCAL           socket_address_local
+HASH_SYM_SOCKET_ADDRESS_REMOTE          socket_address_remote
+HASH_SYM_SOCKET_STATE                   socket_state
+HASH_SYM_SOCKET_POLL_STATE              socket_poll_state
+HASH_SYM_SOCKET_FD                      socket_fd
+HASH_SYM_SOCKET_AVAILABLE_READ          socket_available_read
+HASH_SYM_SOCKET_READ                    socket_read
+HASH_SYM_SOCKET_WRITE                   socket_write
+HASH_SYM_SOCKET_SET_BEACON              socket_set_beacon
+
+HASH_SYM_SOCKET_STREAM_ALLOCATE         socket_stream_allocate
+HASH_SYM_SOCKET_STREAM_INITIALIZE       socket_stream_initialize
+HASH_SYM_SOCKET_STREAM_FINALIZE         socket_stream_finalize
+
+HASH_SYM_TCP_SOCKET_ALLOCATE            tcp_socket_allocate
+HASH_SYM_TCP_SOCKET_INITIALIZE          tcp_socket_initialize
+HASH_SYM_TCP_SOCKET_ACCEPT              tcp_socket_accept
+HASH_SYM_TCP_SOCKET_LISTEN              tcp_socket_listen
+HASH_SYM_TCP_SOCKET_DELAY               tcp_socket_delay
+HASH_SYM_TCP_SOCKET_SET_DELAY           tcp_socket_set_delay
+
+HASH_SYM_UDP_SOCKET_ALLOCATE            udp_socket_allocate
+HASH_SYM_UDP_SOCKET_INITIALIZE          udp_socket_initialize
+HASH_SYM_UDP_SOCKET_RECVFROM            udp_socket_recvfrom
+HASH_SYM_UDP_SOCKET_SENDTO              udp_socket_sendto
+
+HASH_SYM_RESOURCE_BUNDLE_LOAD                 resource_bundle_load
+HASH_SYM_RESOURCE_BUNDLE_STREAM               resource_bundle_stream
+
+HASH_SYM_RESOURCE_CHANGE_IS_VALUE             resource_change_is_value
+HASH_SYM_RESOURCE_CHANGE_IS_BLOB              resource_change_is_blob
+HASH_SYM_RESOURCE_CHANGE_DATA_ALLOCATE        resource_change_data_allocate
+HASH_SYM_RESOURCE_CHANGE_DATA_DEALLOCATE      resource_change_data_deallocate
+HASH_SYM_RESOURCE_CHANGE_DATA_INITIALIZE      resource_change_data_initialize
+HASH_SYM_RESOURCE_CHANGE_DATA_FINALIZE        resource_change_data_finalize
+HASH_SYM_RESOURCE_CHANGE_BLOCK_ALLOCATE       resource_change_block_allocate
+HASH_SYM_RESOURCE_CHANGE_BLOCK_DEALLOCATE     resource_change_block_deallocate
+HASH_SYM_RESOURCE_CHANGE_BLOCK_INITIALIZE     resource_change_block_initialize
+HASH_SYM_RESOURCE_CHANGE_BLOCK_FINALIZE       resource_change_block_finalize
+
+HASH_SYM_RESOURCE_COMPILE_NEED_UPDATE         resource_compile_need_update
+HASH_SYM_RESOURCE_COMPILE                     resource_compile
+HASH_SYM_RESOURCE_COMPILE_REGISTER            resource_compile_register
+HASH_SYM_RESOURCE_COMPILE_REGISTER_PATH       resource_compile_register_path
+HASH_SYM_RESOURCE_COMPILE_UNREGISTER          resource_compile_unregister
+HASH_SYM_RESOURCE_COMPILE_UNREGISTER_PATH     resource_compile_unregister_path
+
+HASH_SYM_RESOURCE_EVENT_UUID                  resource_event_uuid
+HASH_SYM_RESOURCE_EVENT_TOKEN                 resource_event_token
+HASH_SYM_RESOURCE_EVENT_POST                  resource_event_post
+HASH_SYM_RESOURCE_EVENT_STREAM                resource_event_stream
+HASH_SYM_RESOURCE_EVENT_HANDLE                resource_event_handle
+
+HASH_SYM_RESOURCE_IMPORT_BASE_PATH            resource_import_base_path
+HASH_SYM_RESOURCE_IMPORT_SET_BASE_PATH        resource_import_set_base_path
+HASH_SYM_RESOURCE_IMPORT                      resource_import
+HASH_SYM_RESOURCE_IMPORT_REGISTER             resource_import_register
+HASH_SYM_RESOURCE_IMPORT_REGISTER_PATH        resource_import_register_path
+HASH_SYM_RESOURCE_IMPORT_UNREGISTER           resource_import_unregister
+HASH_SYM_RESOURCE_IMPORT_UNREGISTER_PATH      resource_import_unregister_path
+HASH_SYM_RESOURCE_IMPORT_LOOKUP               resource_import_lookup
+HASH_SYM_RESOURCE_IMPORT_MAP_STORE            resource_import_map_store
+HASH_SYM_RESOURCE_IMPORT_MAP_PURGE            resource_import_map_purge
+
+HASH_SYM_RESOURCE_AUTOIMPORT                  resource_autoimport
+HASH_SYM_RESOURCE_AUTOIMPORT_NEED_UPDATE      resource_autoimport_need_update
+HASH_SYM_RESOURCE_AUTOIMPORT_WATCH            resource_autoimport_watch
+HASH_SYM_RESOURCE_AUTOIMPORT_UNWATCH          resource_autoimport_unwatch
+HASH_SYM_RESOURCE_AUTOIMPORT_CLEAR            resource_autoimport_clear
+HASH_SYM_RESOURCE_AUTOIMPORT_EVENT_HANDLE     resource_autoimport_event_handle
+
+HASH_SYM_RESOURCE_LOCAL_PATHS                 resource_local_paths
+HASH_SYM_RESOURCE_LOCAL_SET_PATHS             resource_local_set_paths
+HASH_SYM_RESOURCE_LOCAL_ADD_PATH              resource_local_add_path
+HASH_SYM_RESOURCE_LOCAL_REMOVE_PATH           resource_local_remove_path
+HASH_SYM_RESOURCE_LOCAL_CLEAR_PATHS           resource_local_clear_paths
+HASH_SYM_RESOURCE_LOCAL_OPEN_STATIC           resource_local_open_static
+HASH_SYM_RESOURCE_LOCAL_OPEN_DYNAMIC          resource_local_open_dynamic
+HASH_SYM_RESOURCE_LOCAL_CREATE_STATIC         resource_local_create_static
+HASH_SYM_RESOURCE_LOCAL_CREATE_DYNAMIC        resource_local_create_dynamic
+
+HASH_SYM_RESOURCE_PLATFORM                    resource_platform
+HASH_SYM_RESOURCE_PLATFORM_DECOMPOSE          resource_platform_decompose
+HASH_SYM_RESOURCE_PLATFORM_IS_EQUAL_OR_MORE_SPECIFIC resource_platform_is_equal_or_more_specific
+HASH_SYM_RESOURCE_PLATFORM_REDUCE             resource_platform_reduce
+
+HASH_SYM_RESOURCE_REMOTE_SOURCED              resource_remote_sourced
+HASH_SYM_RESOURCE_REMOTE_SOURCED_CONNECT      resource_remote_sourced_connect
+HASH_SYM_RESOURCE_REMOTE_SOURCED_DISCONNECT   resource_remote_sourced_disconnect
+HASH_SYM_RESOURCE_REMOTE_SOURCED_IS_CONNECTED resource_remote_sourced_is_connected
+HASH_SYM_RESOURCE_REMOTE_SOURCED_LOOKUP       resource_remote_sourced_lookup
+HASH_SYM_RESOURCE_REMOTE_SOURCED_HASH         resource_remote_sourced_hash
+HASH_SYM_RESOURCE_REMOTE_SOURCED_DEPENDENCIES resource_remote_sourced_dependencies
+HASH_SYM_RESOURCE_REMOTE_SOURCED_READ         resource_remote_sourced_read
+HASH_SYM_RESOURCE_REMOTE_SOURCED_READ_BLOB    resource_remote_sourced_read_blob
+HASH_SYM_RESOURCE_REMOTE_COMPILED             resource_remote_compiled
+HASH_SYM_RESOURCE_REMOTE_COMPILED_CONNECT     resource_remote_compiled_connect
+HASH_SYM_RESOURCE_REMOTE_COMPILED_DISCONNECT  resource_remote_compiled_disconnect
+HASH_SYM_RESOURCE_REMOTE_OPEN_STATIC          resource_remote_open_static
+HASH_SYM_RESOURCE_REMOTE_OPEN_DYNAMIC         resource_remote_open_dynamic
+
+HASH_SYM_RESOURCE_MODULE_INITIALIZE           resource_module_initialize
+HASH_SYM_RESOURCE_MODULE_FINALIZE             resource_module_finalize
+HASH_SYM_RESOURCE_MODULE_IS_INITIALIZED       resource_module_is_initialized
+HASH_SYM_RESOURCE_MODULE_VERSION              resource_module_version
+HASH_SYM_RESOURCE_MODULE_CONFIG               resource_module_config
+HASH_SYM_RESOURCE_MODULE_PARSE_CONFIG         resource_module_parse_config
+
+HASH_SYM_RESOURCE_SOURCE_PATH                 resource_source_path
+HASH_SYM_RESOURCE_SOURCE_SET_PATH             resource_source_set_path
+HASH_SYM_RESOURCE_SOURCE_READ_HASH            resource_source_read_hash
+HASH_SYM_RESOURCE_SOURCE_ALLOCATE             resource_source_allocate
+HASH_SYM_RESOURCE_SOURCE_DEALLOCATE           resource_source_deallocate
+HASH_SYM_RESOURCE_SOURCE_INITIALIZE           resource_source_initialize
+HASH_SYM_RESOURCE_SOURCE_FINALIZE             resource_source_finalize
+HASH_SYM_RESOURCE_SOURCE_READ                 resource_source_read
+HASH_SYM_RESOURCE_SOURCE_WRITE                resource_source_write
+HASH_SYM_RESOURCE_SOURCE_SET                  resource_source_set
+HASH_SYM_RESOURCE_SOURCE_UNSET                resource_source_unset
+HASH_SYM_RESOURCE_SOURCE_GET                  resource_source_get
+HASH_SYM_RESOURCE_SOURCE_SET_BLOB             resource_source_set_blob
+HASH_SYM_RESOURCE_SOURCE_READ_BLOB            resource_source_read_blob
+HASH_SYM_RESOURCE_SOURCE_WRITE_BLOB           resource_source_write_blob
+HASH_SYM_RESOURCE_SOURCE_COLLAPSE_HISTORY     resource_source_collapse_history
+HASH_SYM_RESOURCE_SOURCE_CLEAR_BLOB_HISTORY   resource_source_clear_blob_history
+HASH_SYM_RESOURCE_SOURCE_MAP                  resource_source_map
+HASH_SYM_RESOURCE_SOURCE_MAP_ALL              resource_source_map_all
+HASH_SYM_RESOURCE_SOURCE_MAP_ITERATE          resource_source_map_iterate
+HASH_SYM_RESOURCE_SOURCE_MAP_REDUCE           resource_source_map_reduce
+HASH_SYM_RESOURCE_SOURCE_MAP_CLEAR            resource_source_map_clear
+HASH_SYM_RESOURCE_SOURCE_NUM_DEPENDENCIES     resource_source_num_dependencies
+HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES         resource_source_dependencies
+HASH_SYM_RESOURCE_SOURCE_SET_DEPENDENCIES     resource_source_set_dependencies
+
+HASH_SYM_RESOURCE_STREAM_OPEN_STATIC          resource_stream_open_static
+HASH_SYM_RESOURCE_STREAM_OPEN_DYNAMIC         resource_stream_open_dynamic
+HASH_SYM_RESOURCE_STREAM_MAKE_PATH            resource_stream_make_path
+HASH_SYM_RESOURCE_STREAM_WRITE_HEADER         resource_stream_write_header
+HASH_SYM_RESOURCE_STREAM_READ_HEADER          resource_stream_read_header

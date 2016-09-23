@@ -158,6 +158,9 @@ main_initialize(void) {
 	memset(&resource_config, 0, sizeof(resource_config_t));
 	resource_config.enable_local_cache = true;
 	resource_config.enable_local_source = true;
+	resource_config.enable_local_autoimport = true;
+	resource_config.enable_remote_sourced = true;
+	resource_config.enable_remote_compiled = true;
 	if ((ret = resource_module_initialize(resource_config)) < 0)
 		return ret;
 
