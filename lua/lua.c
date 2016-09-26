@@ -768,9 +768,16 @@ lua_symbol_initialize(void);
 extern void
 lua_symbol_finalize(void);
 
+static bool _module_initialized;
+
 int
 lua_module_initialize(const lua_config_t config) {
 	FOUNDATION_UNUSED(config);
+
+	if (_module_initialized)
+		return 0;
+
+	_module_initialized = true;
 
 	memset(&_lua_config, 0, sizeof(_lua_config));
 
@@ -795,8 +802,18 @@ lua_module_initialize(const lua_config_t config) {
 
 void
 lua_module_finalize(void) {
+	if (!_module_initialized)
+		return;
+
 	lua_modulemap_finalize();
 	lua_symbol_finalize();
+
+	_module_initialized = false;
+}
+
+bool
+lua_module_is_initialized(void) {
+	return _module_initialized;
 }
 
 lua_config_t

@@ -11,8 +11,6 @@
  */
 
 #include <foundation/foundation.h>
-#include <lua/lua.h>
-#include <resource/resource.h>
 #include <test/test.h>
 
 static volatile bool _test_should_start;
@@ -62,7 +60,7 @@ event_loop(void* arg) {
 				break;
 			}
 
-			resource_event_handle(event);
+			test_event(event);
 		}
 		thread_wait();
 	}
@@ -72,7 +70,12 @@ event_loop(void* arg) {
 	return 0;
 }
 
-#if ( FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID ) && BUILD_ENABLE_LOG
+void
+test_event(event_t* event) {
+	FOUNDATION_UNUSED(event);
+}
+
+#if FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID
 
 #if FOUNDATION_PLATFORM_ANDROID
 #include <foundation/android.h>
@@ -83,13 +86,7 @@ event_loop(void* arg) {
 #include <test/test.h>
 
 static void
-test_log_handler(hash_t context, error_level_t severity, const char* msg, size_t length) {
-	FOUNDATION_UNUSED(context);
-	FOUNDATION_UNUSED(severity);
-
-	if (_test_should_terminate)
-		return;
-
+test_log_view_append(const char* msg, size_t length) {
 #if FOUNDATION_PLATFORM_IOS
 	test_text_view_append(delegate_uiwindow(), 1 , msg, length);
 #elif FOUNDATION_PLATFORM_ANDROID
@@ -110,6 +107,21 @@ test_log_handler(hash_t context, error_level_t severity, const char* msg, size_t
 #endif
 }
 
+#  if BUILD_ENABLE_LOG
+
+static void
+test_log_handler(hash_t context, error_level_t severity, const char* msg, size_t length) {
+	FOUNDATION_UNUSED(context);
+	FOUNDATION_UNUSED(severity);
+	if (_test_should_terminate)
+		return;
+	if (!log_stdout())
+		return;
+	test_log_view_append(msg, length);
+}
+
+#  endif
+
 #endif
 
 #if !BUILD_MONOLITHIC
@@ -119,15 +131,26 @@ test_exception_handler(const char* dump_file, size_t length) {
 	FOUNDATION_UNUSED(dump_file);
 	FOUNDATION_UNUSED(length);
 	log_error(HASH_TEST, ERROR_EXCEPTION, STRING_CONST("Test raised exception"));
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+	test_log_view_append(STRING_CONST("Test raised exception\n"));
+	thread_sleep(5000);
+#endif
 	process_exit(-1);
 }
 
 #else
 
-static void test_parse_config(const char* buffer, size_t size,
-                              const json_token_t* tokens, size_t num_tokens) {
-	resource_module_parse_config(buffer, size, tokens, num_tokens);
-	lua_module_parse_config(buffer, size, tokens, num_tokens);
+#include <resource/resource.h>
+#include <network/network.h>
+#include <lua/lua.h>
+
+static void
+test_parse_config(const char* path, size_t path_size,
+				  const char* buffer, size_t size,
+				  const json_token_t* tokens, size_t num_tokens) {
+	resource_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
+	network_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
+	lua_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 }
 
 #endif
@@ -157,17 +180,16 @@ main_initialize(void) {
 	memset(&config, 0, sizeof(config));
 
 	memset(&application, 0, sizeof(application));
-	application.name = string_const(STRING_CONST("Lua library test suite"));
+	application.name = string_const(STRING_CONST("Foundation library test suite"));
 	application.short_name = string_const(STRING_CONST("test_all"));
 	application.company = string_const(STRING_CONST("Rampant Pixels"));
-	application.version = lua_module_version();
+	application.version = foundation_version();
 	application.flags = APPLICATION_UTILITY;
 	application.exception_handler = test_exception_handler;
 
 	log_set_suppress(0, ERRORLEVEL_INFO);
-	log_set_suppress(HASH_LUA, ERRORLEVEL_INFO);
 
-#if ( FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID ) && BUILD_ENABLE_LOG
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && BUILD_ENABLE_LOG
 	log_set_handler(test_log_handler);
 #endif
 
@@ -180,14 +202,29 @@ main_initialize(void) {
 	ret = foundation_initialize(memory_system_malloc(), application, config);
 
 #if BUILD_MONOLITHIC
-	if (ret == 0) {
-		lua_config_t lua_config;
-		memset(&lua_config, 0, sizeof(lua_config));
-		ret = lua_module_initialize(lua_config);
-	}
+	network_config_t network_config;
+	memset(&network_config, 0, sizeof(network_config));
+	if (ret >= 0)
+		ret = network_module_initialize(network_config);
 
-	test_set_suitable_working_directory();
-	test_load_config(test_parse_config);
+	resource_config_t resource_config;
+	memset(&resource_config, 0, sizeof(resource_config));
+	resource_config.enable_local_source = true;
+	resource_config.enable_local_cache = true;
+	resource_config.enable_remote_sourced = true;
+	resource_config.enable_remote_compiled = true;
+	if (ret >= 0)
+		ret = resource_module_initialize(resource_config);
+
+	lua_config_t lua_config;
+	memset(&lua_config, 0, sizeof(lua_config));
+	if (ret >= 0)
+		ret = lua_module_initialize(lua_config);
+
+	if (ret >= 0) {
+		test_set_suitable_working_directory();
+		test_load_config(test_parse_config);
+	}
 #endif
 	return ret;
 }
@@ -204,13 +241,37 @@ typedef int (*test_run_fn)(void);
 static void*
 test_runner(void* arg) {
 	test_run_fn* tests = (test_run_fn*)arg;
-	int test_fn = 0;
 	int process_result = 0;
+	size_t itest, numtests;
 
-	while (tests[test_fn] && (process_result >= 0)) {
-		if ((process_result = tests[test_fn]()) >= 0)
-			log_infof(HASH_TEST, STRING_CONST("All tests passed (%d)"), process_result);
-		++test_fn;
+	for (numtests = 0; tests[numtests];)
+		++numtests;
+
+	itest = 0;
+	while (tests[itest] && (process_result >= 0)) {
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+		{
+			char buffer[64];
+			string_t msg = string_format(buffer, sizeof(buffer),
+			                             STRING_CONST("Test %" PRIsize "/%" PRIsize " starting... "),
+			                             itest+1, numtests);
+			test_log_view_append(STRING_ARGS(msg));
+		}
+#endif
+
+		if ((process_result = tests[itest]()) >= 0) {
+			log_infof(HASH_TEST, STRING_CONST("Test %" PRIsize "/%" PRIsize " passed (%d)"),
+			          itest+1, numtests, process_result);
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+			test_log_view_append(STRING_CONST("PASSED\n"));
+#endif
+		}
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+		else {
+			test_log_view_append(STRING_CONST("FAILED\n"));
+		}
+#endif
+		++itest;
 	}
 
 	return (void*)(intptr_t)process_result;
@@ -255,11 +316,12 @@ main_run(void* main_arg) {
 
 	log_set_suppress(HASH_TEST, ERRORLEVEL_DEBUG);
 
-	log_infof(HASH_TEST, STRING_CONST("Lua library v%s built for %s using %s (%.*s%.*s)"),
-	          string_from_version_static(lua_module_version()).str, FOUNDATION_PLATFORM_DESCRIPTION,
+	log_infof(HASH_TEST, STRING_CONST("Foundation library v%s built for %s using %s (%.*s%.*s)"),
+	          string_from_version_static(foundation_version()).str, FOUNDATION_PLATFORM_DESCRIPTION,
 	          FOUNDATION_COMPILER_DESCRIPTION, STRING_FORMAT(build_name), STRING_FORMAT(build_type));
 
-	thread_initialize(&event_thread, event_loop, 0, STRING_CONST("event_thread"), THREAD_PRIORITY_NORMAL, 0);
+	thread_initialize(&event_thread, event_loop, 0, STRING_CONST("event_thread"),
+	                  THREAD_PRIORITY_NORMAL, 0);
 	thread_start(&event_thread);
 
 	pathbuf = memory_allocate(HASH_STRING, BUILD_MAX_PATHLEN, 0, MEMORY_PERSISTENT);
@@ -278,6 +340,10 @@ main_run(void* main_arg) {
 
 	fs_remove_directory(STRING_ARGS(environment_temporary_directory()));
 
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+	test_log_view_append(STRING_CONST("Tests starting\n"));
+#endif
+
 #if BUILD_MONOLITHIC
 
 	test_run_fn tests[] = {
@@ -295,14 +361,14 @@ main_run(void* main_arg) {
 
 	log_debug(HASH_TEST, STRING_CONST("Starting test runner thread"));
 
-	while (!thread_is_running(&test_thread)) {
+	while (!thread_is_started(&test_thread)) {
 		system_process_events();
-		thread_sleep(10);
+		thread_sleep(100);
 	}
 
 	while (thread_is_running(&test_thread)) {
 		system_process_events();
-		thread_sleep(10);
+		thread_sleep(100);
 	}
 
 	test_result = thread_join(&test_thread);
@@ -320,6 +386,13 @@ main_run(void* main_arg) {
 	if (process_result != 0)
 		log_warnf(HASH_TEST, WARNING_SUSPICIOUS, STRING_CONST("Tests failed with exit code %d"),
 		          process_result);
+
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+	if (process_result)
+		test_log_view_append(STRING_CONST("Tests FAILED\n"));
+	else
+		test_log_view_append(STRING_CONST("Tests PASSED\n"));
+#endif
 
 #if FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID || FOUNDATION_PLATFORM_PNACL
 
@@ -356,7 +429,7 @@ main_run(void* main_arg) {
 	string_t* subdirs = fs_subdirs(STRING_ARGS(environment_executable_directory()));
 	for (size_t idir = 0, dirsize = array_size(subdirs); idir < dirsize; ++idir) {
 		if (regex_match(app_regex, subdirs[idir].str, subdirs[idir].length, 0, 0)) {
-			string_t exe_path = { subdirs[idir].str, subdirs[idir].length - 4 };
+			string_t exe_path = string_clone(subdirs[idir].str, subdirs[idir].length - 4);
 			array_push(exe_paths, exe_path);
 			array_push(exe_flags, PROCESS_MACOSX_USE_OPENAPPLICATION);
 		}
@@ -395,6 +468,12 @@ main_run(void* main_arg) {
 		array_deallocate(process_args);
 
 		if (process_result != 0) {
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+			char buffer[64];
+			string_const_t msg = string_format(buffer, sizeof(buffer), "Test %.*s failed\n",
+			                                   STRING_FORMAT(exe_paths[iexe]));
+			test_log_view_append(STRING_ARGS(msg));
+#endif
 			if (process_result >= PROCESS_INVALID_ARGS)
 				log_warnf(HASH_TEST, WARNING_SUSPICIOUS,
 				          STRING_CONST("Tests failed, process terminated with error %x"),
@@ -405,6 +484,15 @@ main_run(void* main_arg) {
 			process_set_exit_code(-1);
 			goto exit;
 		}
+
+#if (FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID) && !BUILD_ENABLE_LOG
+		{
+			char buffer[64];
+			string_const_t msg = string_format(buffer, sizeof(buffer), "Test %.*s PASSED\n",
+			                                   STRING_FORMAT(exe_paths[iexe]));
+			test_log_view_append(STRING_ARGS(msg));
+		}
+#endif
 
 		log_infof(HASH_TEST, STRING_CONST("All tests from %.*s passed (%d)"),
 		          STRING_FORMAT(exe_paths[iexe]), process_result);
@@ -423,6 +511,7 @@ exit:
 	_test_should_terminate = true;
 
 	thread_signal(&event_thread);
+	thread_join(&event_thread);
 	thread_finalize(&event_thread);
 
 	memory_deallocate(pathbuf);
@@ -444,8 +533,9 @@ main_finalize(void) {
 
 #if BUILD_MONOLITHIC
 	lua_module_finalize();
+	resource_module_finalize();
+	network_module_finalize();
 #endif
-
 	foundation_finalize();
 }
 
