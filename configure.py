@@ -11,6 +11,7 @@ import generator
 
 dependlibs = ['resource', 'network', 'foundation']
 extralibs = []
+extravariables = {'support_lua' : True}
 
 generator = generator.Generator(project = 'lua', dependlibs = dependlibs, variables = [('bundleidentifier', 'com.rampantpixels.lua.$(binname)')])
 target = generator.target
@@ -27,10 +28,10 @@ lua_lib = generator.lib(module = 'lua', sources = [
 if not target.is_ios() and not target.is_android():
   configs = [config for config in toolchain.configs if config not in ['profile', 'deploy']]
   if not configs == []:
-    generator.bin('lua', ['main.c'], 'lua', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs)
-    generator.bin('luadump', ['main.c'], 'luadump', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs)
-    generator.bin('luaimport', ['main.c'], 'luaimport', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs)
-    generator.bin('luacompile', ['main.c'], 'luacompile', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs)
+    generator.bin('lua', ['main.c'], 'lua', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
+    generator.bin('luadump', ['main.c'], 'luadump', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
+    generator.bin('luaimport', ['main.c'], 'luaimport', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
+    generator.bin('luacompile', ['main.c'], 'luacompile', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
 
 includepaths = generator.test_includepaths()
 
@@ -43,7 +44,7 @@ if target.is_ios() or target.is_android():
   test_extrasources = []
   test_cases += ['all']
   if target.is_ios():
-    test_resources = [s.path.join('all', 'ios', item) for item in ['test-all.plist', 'Images.xcassets', 'test-all.xib']]
+    test_resources = [os.path.join('all', 'ios', item) for item in ['test-all.plist', 'Images.xcassets', 'test-all.xib']]
   elif target.is_android():
     test_resources = [os.path.join('all', 'android', item) for item in [
       'AndroidManifest.xml', os.path.join('layout', 'main.xml'), os.path.join('values', 'strings.xml'),
@@ -56,9 +57,9 @@ if target.is_ios() or target.is_android():
   if target.is_pnacl():
     generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, resources = test_resources, includepaths = includepaths)
   else:
-    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, resources = test_resources, includepaths = includepaths, variables = {'support_lua' : True})
+    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, resources = test_resources, includepaths = includepaths, variables = extravariables)
 else:
   #Build one binary per test case
   generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['lua'] + dependlibs + extralibs, includepaths = includepaths)
   for test in test_cases:
-    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, includepaths = includepaths, variables = {'support_lua' : True})
+    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, includepaths = includepaths, variables = extravariables)

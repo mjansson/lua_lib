@@ -10,6 +10,15 @@
 		4513895F193FC00F00BA2092 /* foundation.c in Sources */ = {isa = PBXBuildFile; fileRef = 45138956193FC00F00BA2092 /* foundation.c */; };
 		45138960193FC00F00BA2092 /* lua.c in Sources */ = {isa = PBXBuildFile; fileRef = 45138959193FC00F00BA2092 /* lua.c */; };
 		45138961193FC00F00BA2092 /* read.c in Sources */ = {isa = PBXBuildFile; fileRef = 4513895C193FC00F00BA2092 /* read.c */; };
+		CD384AC51D99331F006F177B /* bind.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384AB41D99331F006F177B /* bind.c */; };
+		CD384AC61D99331F006F177B /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384AB61D99331F006F177B /* compile.c */; };
+		CD384AC71D99331F006F177B /* event.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384AB81D99331F006F177B /* event.c */; };
+		CD384AC81D99331F006F177B /* import.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384ABA1D99331F006F177B /* import.c */; };
+		CD384AC91D99331F006F177B /* module.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384ABC1D99331F006F177B /* module.c */; };
+		CD384ACA1D99331F006F177B /* network.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384ABE1D99331F006F177B /* network.c */; };
+		CD384ACB1D99331F006F177B /* resource.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384AC01D99331F006F177B /* resource.c */; };
+		CD384ACC1D99331F006F177B /* symbol.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384AC21D99331F006F177B /* symbol.c */; };
+		CD384ACD1D99331F006F177B /* version.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384AC41D99331F006F177B /* version.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -29,7 +38,6 @@
 		4513890B193FBE8800BA2092 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		4513890E193FBE8800BA2092 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		45138927193FBED900BA2092 /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		45138954193FC00F00BA2092 /* bind.foundation.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bind.foundation.lua; path = ../../../lua/bind.foundation.lua; sourceTree = "<group>"; };
 		45138955193FC00F00BA2092 /* bind.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bind.h; path = ../../../lua/bind.h; sourceTree = "<group>"; };
 		45138956193FC00F00BA2092 /* foundation.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = foundation.c; path = ../../../lua/foundation.c; sourceTree = "<group>"; };
 		45138957193FC00F00BA2092 /* foundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = foundation.h; path = ../../../lua/foundation.h; sourceTree = "<group>"; };
@@ -40,6 +48,23 @@
 		4513895C193FC00F00BA2092 /* read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = read.c; path = ../../../lua/read.c; sourceTree = "<group>"; };
 		4513895D193FC00F00BA2092 /* read.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = read.h; path = ../../../lua/read.h; sourceTree = "<group>"; };
 		4513895E193FC00F00BA2092 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../../lua/types.h; sourceTree = "<group>"; };
+		CD384AB41D99331F006F177B /* bind.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bind.c; path = ../../../lua/bind.c; sourceTree = "<group>"; };
+		CD384AB51D99331F006F177B /* build.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = build.h; path = ../../../lua/build.h; sourceTree = "<group>"; };
+		CD384AB61D99331F006F177B /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compile.c; path = ../../../lua/compile.c; sourceTree = "<group>"; };
+		CD384AB71D99331F006F177B /* compile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = compile.h; path = ../../../lua/compile.h; sourceTree = "<group>"; };
+		CD384AB81D99331F006F177B /* event.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = event.c; path = ../../../lua/event.c; sourceTree = "<group>"; };
+		CD384AB91D99331F006F177B /* event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = event.h; path = ../../../lua/event.h; sourceTree = "<group>"; };
+		CD384ABA1D99331F006F177B /* import.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = import.c; path = ../../../lua/import.c; sourceTree = "<group>"; };
+		CD384ABB1D99331F006F177B /* import.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = import.h; path = ../../../lua/import.h; sourceTree = "<group>"; };
+		CD384ABC1D99331F006F177B /* module.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = module.c; path = ../../../lua/module.c; sourceTree = "<group>"; };
+		CD384ABD1D99331F006F177B /* module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = module.h; path = ../../../lua/module.h; sourceTree = "<group>"; };
+		CD384ABE1D99331F006F177B /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network.c; path = ../../../lua/network.c; sourceTree = "<group>"; };
+		CD384ABF1D99331F006F177B /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = ../../../lua/network.h; sourceTree = "<group>"; };
+		CD384AC01D99331F006F177B /* resource.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = resource.c; path = ../../../lua/resource.c; sourceTree = "<group>"; };
+		CD384AC11D99331F006F177B /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resource.h; path = ../../../lua/resource.h; sourceTree = "<group>"; };
+		CD384AC21D99331F006F177B /* symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = symbol.c; path = ../../../lua/symbol.c; sourceTree = "<group>"; };
+		CD384AC31D99331F006F177B /* symbol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = symbol.h; path = ../../../lua/symbol.h; sourceTree = "<group>"; };
+		CD384AC41D99331F006F177B /* version.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = version.c; path = ../../../lua/version.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,17 +108,33 @@
 		45138953193FBFF900BA2092 /* lua */ = {
 			isa = PBXGroup;
 			children = (
-				45138954193FC00F00BA2092 /* bind.foundation.lua */,
+				CD384AB41D99331F006F177B /* bind.c */,
 				45138955193FC00F00BA2092 /* bind.h */,
+				CD384AB51D99331F006F177B /* build.h */,
+				CD384AB61D99331F006F177B /* compile.c */,
+				CD384AB71D99331F006F177B /* compile.h */,
+				CD384AB81D99331F006F177B /* event.c */,
+				CD384AB91D99331F006F177B /* event.h */,
 				45138956193FC00F00BA2092 /* foundation.c */,
 				45138957193FC00F00BA2092 /* foundation.h */,
 				45138958193FC00F00BA2092 /* hashstrings.h */,
+				CD384ABA1D99331F006F177B /* import.c */,
+				CD384ABB1D99331F006F177B /* import.h */,
 				45138959193FC00F00BA2092 /* lua.c */,
 				4513895A193FC00F00BA2092 /* lua.h */,
 				4513895B193FC00F00BA2092 /* luajit.h */,
+				CD384ABC1D99331F006F177B /* module.c */,
+				CD384ABD1D99331F006F177B /* module.h */,
+				CD384ABE1D99331F006F177B /* network.c */,
+				CD384ABF1D99331F006F177B /* network.h */,
 				4513895C193FC00F00BA2092 /* read.c */,
 				4513895D193FC00F00BA2092 /* read.h */,
+				CD384AC01D99331F006F177B /* resource.c */,
+				CD384AC11D99331F006F177B /* resource.h */,
+				CD384AC21D99331F006F177B /* symbol.c */,
+				CD384AC31D99331F006F177B /* symbol.h */,
 				4513895E193FC00F00BA2092 /* types.h */,
+				CD384AC41D99331F006F177B /* version.c */,
 			);
 			name = lua;
 			sourceTree = "<group>";
@@ -149,9 +190,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD384ACC1D99331F006F177B /* symbol.c in Sources */,
+				CD384ACA1D99331F006F177B /* network.c in Sources */,
+				CD384AC71D99331F006F177B /* event.c in Sources */,
+				CD384AC61D99331F006F177B /* compile.c in Sources */,
+				CD384ACD1D99331F006F177B /* version.c in Sources */,
+				CD384AC51D99331F006F177B /* bind.c in Sources */,
 				45138960193FC00F00BA2092 /* lua.c in Sources */,
 				4513895F193FC00F00BA2092 /* foundation.c in Sources */,
 				45138961193FC00F00BA2092 /* read.c in Sources */,
+				CD384AC81D99331F006F177B /* import.c in Sources */,
+				CD384AC91D99331F006F177B /* module.c in Sources */,
+				CD384ACB1D99331F006F177B /* resource.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,21 +214,13 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = ../../../lib/ios/debug;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -188,23 +230,21 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LLVM_LTO = NO;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -214,20 +254,12 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = ../../../lib/ios/release;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -236,23 +268,21 @@
 					"$(inherited)",
 				);
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LLVM_LTO = YES;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};
@@ -280,20 +310,12 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = ../../../lib/ios/profile;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -302,23 +324,21 @@
 					"$(inherited)",
 				);
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LLVM_LTO = YES;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Profile;
 		};
@@ -337,20 +357,12 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_LINK_OBJC_RUNTIME = NO;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = ../../../lib/ios/deploy;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = YES;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -359,23 +371,21 @@
 					"$(inherited)",
 				);
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LLVM_LTO = YES;
 				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Deploy;
 		};

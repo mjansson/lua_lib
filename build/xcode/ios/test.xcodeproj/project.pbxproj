@@ -13,9 +13,12 @@
 		451389A4194044A600BA2092 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 451389A3194044A600BA2092 /* main.c */; };
 		451389A6194044B100BA2092 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 451389A5194044B100BA2092 /* main.c */; };
 		451389AA1940454400BA2092 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 451389A71940454300BA2092 /* Images.xcassets */; };
-		451389AB1940454400BA2092 /* test-all.plist in Resources */ = {isa = PBXBuildFile; fileRef = 451389A81940454400BA2092 /* test-all.plist */; };
 		451389AC1940454400BA2092 /* test-all.xib in Resources */ = {isa = PBXBuildFile; fileRef = 451389A91940454400BA2092 /* test-all.xib */; };
 		451389B2194046B200BA2092 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 451389B1194046B200BA2092 /* liblua.a */; };
+		CD384AD01D99335B006F177B /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384ACF1D99335B006F177B /* main.c */; };
+		CD384AD31D993432006F177B /* viewcontroller.m in Sources */ = {isa = PBXBuildFile; fileRef = CD384AD21D993432006F177B /* viewcontroller.m */; };
+		CD384AD91D99352C006F177B /* config in Resources */ = {isa = PBXBuildFile; fileRef = CD384AD81D99352C006F177B /* config */; };
+		CD384ADE1D996FF0006F177B /* bin in Resources */ = {isa = PBXBuildFile; fileRef = CD384ADD1D996FF0006F177B /* bin */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +33,11 @@
 		451389A81940454400BA2092 /* test-all.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "test-all.plist"; path = "../../../test/all/ios/test-all.plist"; sourceTree = "<group>"; };
 		451389A91940454400BA2092 /* test-all.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = "test-all.xib"; path = "../../../test/all/ios/test-all.xib"; sourceTree = "<group>"; };
 		451389B1194046B200BA2092 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../../../lib/ios/debug/liblua.a; sourceTree = "<group>"; };
+		CD384ACF1D99335B006F177B /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../test/bind/main.c; sourceTree = "<group>"; };
+		CD384AD11D993432006F177B /* viewcontroller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = viewcontroller.h; path = ../../../test/all/ios/viewcontroller.h; sourceTree = "<group>"; };
+		CD384AD21D993432006F177B /* viewcontroller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = viewcontroller.m; path = ../../../test/all/ios/viewcontroller.m; sourceTree = "<group>"; };
+		CD384AD81D99352C006F177B /* config */ = {isa = PBXFileReference; lastKnownFileType = folder; name = config; path = ../../../config; sourceTree = "<group>"; };
+		CD384ADD1D996FF0006F177B /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = bin; path = ../../../resource/bin; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,7 +58,9 @@
 		451389661940442800BA2092 = {
 			isa = PBXGroup;
 			children = (
+				CD384AD51D99345B006F177B /* resource */,
 				451389A11940448D00BA2092 /* all */,
+				CD384ACE1D99334A006F177B /* bind */,
 				451389A21940449500BA2092 /* foundation */,
 				451389B31940AAA800BA2092 /* lib */,
 				451389721940446100BA2092 /* bin */,
@@ -80,6 +90,8 @@
 		451389A11940448D00BA2092 /* all */ = {
 			isa = PBXGroup;
 			children = (
+				CD384AD11D993432006F177B /* viewcontroller.h */,
+				CD384AD21D993432006F177B /* viewcontroller.m */,
 				451389A71940454300BA2092 /* Images.xcassets */,
 				451389A81940454400BA2092 /* test-all.plist */,
 				451389A91940454400BA2092 /* test-all.xib */,
@@ -102,6 +114,23 @@
 				451389B1194046B200BA2092 /* liblua.a */,
 			);
 			name = lib;
+			sourceTree = "<group>";
+		};
+		CD384ACE1D99334A006F177B /* bind */ = {
+			isa = PBXGroup;
+			children = (
+				CD384ACF1D99335B006F177B /* main.c */,
+			);
+			name = bind;
+			sourceTree = "<group>";
+		};
+		CD384AD51D99345B006F177B /* resource */ = {
+			isa = PBXGroup;
+			children = (
+				CD384ADD1D996FF0006F177B /* bin */,
+				CD384AD81D99352C006F177B /* config */,
+			);
+			name = resource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -130,7 +159,7 @@
 		451389671940442800BA2092 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0800;
 				TargetAttributes = {
 					451389701940446100BA2092 = {
 						DevelopmentTeam = TDSNBN44YV;
@@ -159,7 +188,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				451389AB1940454400BA2092 /* test-all.plist in Resources */,
+				CD384ADE1D996FF0006F177B /* bin in Resources */,
+				CD384AD91D99352C006F177B /* config in Resources */,
 				451389AA1940454400BA2092 /* Images.xcassets in Resources */,
 				451389AC1940454400BA2092 /* test-all.xib in Resources */,
 			);
@@ -174,6 +204,8 @@
 			files = (
 				451389A6194044B100BA2092 /* main.c in Sources */,
 				451389A4194044A600BA2092 /* main.c in Sources */,
+				CD384AD31D993432006F177B /* viewcontroller.m in Sources */,
+				CD384AD01D99335B006F177B /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,9 +218,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/ios/debug;
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -198,23 +230,40 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/ios,
 					../../../lib/ios/debug,
 					../../../../foundation_lib/lib/ios/debug,
+					../../../../resource_lib/lib/ios/debug,
+					../../../../network_lib/lib/ios/debug,
 					"$(inherited)",
 				);
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-llua",
+					"-lresource",
+					"-lnetwork",
+					"-ltest",
+					"-lfoundation",
+					"-lluajit",
+					"-pagezero_size",
+					10000,
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Debug;
 		};
@@ -224,9 +273,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/ios/release;
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -236,25 +285,42 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/ios,
 					../../../lib/ios/release,
 					../../../../foundation_lib/lib/ios/release,
+					../../../../resource_lib/lib/ios/release,
+					../../../../network_lib/lib/ios/release,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-llua",
+					"-lresource",
+					"-lnetwork",
+					"-ltest",
+					"-lfoundation",
+					"-lluajit",
+					"-pagezero_size",
+					10000,
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Release;
 		};
@@ -263,34 +329,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/mjansson/projects/lua_lib/lib/ios/debug,
-				);
-				OTHER_LDFLAGS = (
-					"-lluajit",
-					"-ltest",
-					"-lfoundation",
-					"-pagezero_size",
-					10000,
-				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -302,34 +344,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/mjansson/projects/lua_lib/lib/ios/debug,
-				);
-				OTHER_LDFLAGS = (
-					"-lluajit",
-					"-ltest",
-					"-lfoundation",
-					"-pagezero_size",
-					10000,
-				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -342,9 +360,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/ios/profile;
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -354,25 +372,42 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/ios,
 					../../../lib/ios/profile,
 					../../../../foundation_lib/lib/ios/profile,
+					../../../../resource_lib/lib/ios/profile,
+					../../../../network_lib/lib/ios/profile,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-llua",
+					"-lresource",
+					"-lnetwork",
+					"-ltest",
+					"-lfoundation",
+					"-lluajit",
+					"-pagezero_size",
+					10000,
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Profile;
 		};
@@ -381,34 +416,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/mjansson/projects/lua_lib/lib/ios/debug,
-				);
-				OTHER_LDFLAGS = (
-					"-lluajit",
-					"-ltest",
-					"-lfoundation",
-					"-pagezero_size",
-					10000,
-				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -421,9 +432,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CONFIGURATION_BUILD_DIR = ../../../bin/ios/deploy;
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
-				GCC_ENABLE_CPP_EXCEPTIONS = NO;
-				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = NO;
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = fast;
@@ -433,25 +444,42 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_THREADSAFE_STATICS = NO;
+				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_PEDANTIC = YES;
 				HEADER_SEARCH_PATHS = (
 					../../..,
 					../../../../foundation_lib,
 					../../../../foundation_lib/test,
+					../../../../network_lib,
+					../../../../resource_lib,
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/ios,
 					../../../lib/ios/deploy,
 					../../../../foundation_lib/lib/ios/deploy,
+					../../../../resource_lib/lib/ios/deploy,
+					../../../../network_lib/lib/ios/deploy,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-lluajit",
+					"-llua",
+					"-lresource",
+					"-lnetwork",
+					"-ltest",
+					"-lfoundation",
+					"-lluajit",
+					"-pagezero_size",
+					10000,
+				);
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 armv7s";
+				VALID_ARCHS = "armv7 armv7s arm64";
 			};
 			name = Deploy;
 		};
@@ -460,34 +488,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/mjansson/projects/lua_lib/lib/ios/debug,
-				);
-				OTHER_LDFLAGS = (
-					"-lluajit",
-					"-ltest",
-					"-lfoundation",
-					"-pagezero_size",
-					10000,
-				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;

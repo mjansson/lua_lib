@@ -17,6 +17,10 @@
 		451388B3193DA95B00BA2092 /* read.c in Sources */ = {isa = PBXBuildFile; fileRef = 451388A9193DA95B00BA2092 /* read.c */; };
 		451388B4193DA95B00BA2092 /* read.h in Headers */ = {isa = PBXBuildFile; fileRef = 451388AA193DA95B00BA2092 /* read.h */; };
 		451388B5193DA95B00BA2092 /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = 451388AB193DA95B00BA2092 /* types.h */; };
+		CD384A591D970538006F177B /* network.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384A551D970538006F177B /* network.c */; };
+		CD384A5A1D970538006F177B /* network.h in Headers */ = {isa = PBXBuildFile; fileRef = CD384A561D970538006F177B /* network.h */; };
+		CD384A5B1D970538006F177B /* resource.c in Sources */ = {isa = PBXBuildFile; fileRef = CD384A571D970538006F177B /* resource.c */; };
+		CD384A5C1D970538006F177B /* resource.h in Headers */ = {isa = PBXBuildFile; fileRef = CD384A581D970538006F177B /* resource.h */; };
 		CDFE0C9B1D94081800E11451 /* bind.c in Sources */ = {isa = PBXBuildFile; fileRef = CDFE0C8E1D94081800E11451 /* bind.c */; };
 		CDFE0C9C1D94081800E11451 /* build.h in Headers */ = {isa = PBXBuildFile; fileRef = CDFE0C8F1D94081800E11451 /* build.h */; };
 		CDFE0C9D1D94081800E11451 /* compile.c in Sources */ = {isa = PBXBuildFile; fileRef = CDFE0C901D94081800E11451 /* compile.c */; };
@@ -44,6 +48,10 @@
 		451388A9193DA95B00BA2092 /* read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = read.c; path = ../../../lua/read.c; sourceTree = "<group>"; };
 		451388AA193DA95B00BA2092 /* read.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = read.h; path = ../../../lua/read.h; sourceTree = "<group>"; };
 		451388AB193DA95B00BA2092 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = types.h; path = ../../../lua/types.h; sourceTree = "<group>"; };
+		CD384A551D970538006F177B /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = network.c; path = ../../../lua/network.c; sourceTree = "<group>"; };
+		CD384A561D970538006F177B /* network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network.h; path = ../../../lua/network.h; sourceTree = "<group>"; };
+		CD384A571D970538006F177B /* resource.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = resource.c; path = ../../../lua/resource.c; sourceTree = "<group>"; };
+		CD384A581D970538006F177B /* resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = resource.h; path = ../../../lua/resource.h; sourceTree = "<group>"; };
 		CDFE0C8E1D94081800E11451 /* bind.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bind.c; path = ../../../lua/bind.c; sourceTree = "<group>"; };
 		CDFE0C8F1D94081800E11451 /* build.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = build.h; path = ../../../lua/build.h; sourceTree = "<group>"; };
 		CDFE0C901D94081800E11451 /* compile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = compile.c; path = ../../../lua/compile.c; sourceTree = "<group>"; };
@@ -106,8 +114,12 @@
 				451388A8193DA95B00BA2092 /* luajit.h */,
 				CDFE0C961D94081800E11451 /* module.c */,
 				CDFE0C971D94081800E11451 /* module.h */,
+				CD384A551D970538006F177B /* network.c */,
+				CD384A561D970538006F177B /* network.h */,
 				451388A9193DA95B00BA2092 /* read.c */,
 				451388AA193DA95B00BA2092 /* read.h */,
+				CD384A571D970538006F177B /* resource.c */,
+				CD384A581D970538006F177B /* resource.h */,
 				CDFE0C981D94081800E11451 /* symbol.c */,
 				CDFE0C991D94081800E11451 /* symbol.h */,
 				451388AB193DA95B00BA2092 /* types.h */,
@@ -132,10 +144,12 @@
 				451388AF193DA95B00BA2092 /* hashstrings.h in Headers */,
 				CDFE0C9C1D94081800E11451 /* build.h in Headers */,
 				CDFE0CA21D94081800E11451 /* import.h in Headers */,
+				CD384A5C1D970538006F177B /* resource.h in Headers */,
 				451388B2193DA95B00BA2092 /* luajit.h in Headers */,
 				CDFE0CA61D94081800E11451 /* symbol.h in Headers */,
 				451388AE193DA95B00BA2092 /* foundation.h in Headers */,
 				CDFE0CA01D94081800E11451 /* event.h in Headers */,
+				CD384A5A1D970538006F177B /* network.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -198,8 +212,10 @@
 				451388AD193DA95B00BA2092 /* foundation.c in Sources */,
 				CDFE0CA51D94081800E11451 /* symbol.c in Sources */,
 				451388B3193DA95B00BA2092 /* read.c in Sources */,
+				CD384A591D970538006F177B /* network.c in Sources */,
 				CDFE0CA11D94081800E11451 /* import.c in Sources */,
 				CDFE0CA31D94081800E11451 /* module.c in Sources */,
+				CD384A5B1D970538006F177B /* resource.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
