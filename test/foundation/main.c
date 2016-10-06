@@ -63,6 +63,7 @@ test_foundation_initialize(void) {
 	resource_config.enable_local_cache = true;
 	resource_config.enable_remote_sourced = true;
 	resource_config.enable_remote_compiled = true;
+	resource_config.enable_local_autoimport = true;
 
 	if (resource_module_initialize(resource_config) < 0)
 		return -1;
@@ -91,6 +92,7 @@ DECLARE_TEST(foundation, log) {
 	lua_t* env = lua_allocate();
 
 	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
+	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
 
 	EXPECT_NE(env, 0);
 

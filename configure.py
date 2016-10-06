@@ -32,6 +32,7 @@ if not target.is_ios() and not target.is_android():
     generator.bin('luadump', ['main.c'], 'luadump', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
     generator.bin('luaimport', ['main.c'], 'luaimport', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
     generator.bin('luacompile', ['main.c'], 'luacompile', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
+    generator.bin('', ['luacompile/main.c'], 'luagc64compile', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit-gc64'] + dependlibs + extralibs, configs = configs, variables = extravariables)
 
 includepaths = generator.test_includepaths()
 

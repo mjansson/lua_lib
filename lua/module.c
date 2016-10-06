@@ -15,12 +15,8 @@
 #define LUA_USE_INTERNAL_HEADER
 
 #include <lua/lua.h>
-
 #include <foundation/foundation.h>
-
-#include <resource/stream.h>
-#include <resource/compile.h>
-#include <resource/platform.h>
+#include <resource/resource.h>
 
 #undef LUA_API
 #define LUA_HAS_LUA_STATE_TYPE
@@ -200,6 +196,8 @@ lua_module_load_resource(const uuid_t uuid) {
 	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
 	);
 	error_context_push(STRING_CONST("loading module"), STRING_ARGS(uuidstr));
+
+	platform = lua_resource_platform();
 
 retry:
 

@@ -18,6 +18,24 @@
 #include <resource/resource.h>
 
 static bool _symbols_loaded;
+static uint64_t _resource_platform;
+
+uint64_t
+lua_resource_platform(void) {
+	if (_resource_platform)
+		return _resource_platform;
+	uint64_t platform = 0;
+#if FOUNDATION_ARCH_ARM8_64
+	resource_platform_t decl = {-1, ARCHITECTURE_ARM8_64, -1, -1, -1, -1};
+	platform = resource_platform(decl);
+#endif
+	return platform;
+}
+
+void
+lua_resource_set_platform(uint64_t platform) {
+	_resource_platform = platform;
+}
 
 void
 lua_symbol_load_resource(void) {

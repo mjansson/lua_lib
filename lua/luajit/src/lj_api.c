@@ -25,6 +25,7 @@
 #include "lj_vm.h"
 #include "lj_strscan.h"
 #include "lj_strfmt.h"
+#include "lj_arch.h"
 
 /* -- Common helper functions --------------------------------------------- */
 
@@ -1240,3 +1241,7 @@ LUA_API void lua_setallocf(lua_State *L, lua_Alloc f, void *ud)
   g->allocf = f;
 }
 
+LUA_API int (lua_is_fr2) (void);
+LUA_API int lua_is_fr2(void) {
+  return LJ_FR2;
+}

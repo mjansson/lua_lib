@@ -787,6 +787,11 @@ lua_module_initialize(const lua_config_t config) {
 	if (lua_modulemap_initialize() < 0)
 		return -1;
 
+	hashmap_t* symbol_map = lua_symbol_lookup_map();
+	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_foundation")), (void*)(uintptr_t)lua_symbol_load_foundation);
+	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_network")), (void*)(uintptr_t)lua_symbol_load_foundation);
+	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_resource")), (void*)(uintptr_t)lua_symbol_load_foundation);
+
 	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
 	                    lua_symbol_load_foundation);
 	lua_module_register(STRING_CONST("network"), LUA_NETWORK_UUID, lua_module_loader,

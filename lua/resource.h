@@ -23,3 +23,9 @@
 
 LUA_API void
 lua_symbol_load_resource(void);
+
+LUA_API uint64_t
+lua_resource_platform(void);
+
+LUA_API void
+lua_resource_set_platform(uint64_t platform);

@@ -18,84 +18,26 @@
 
 #if RESOURCE_ENABLE_LOCAL_SOURCE
 
-LUA_API int
-lua_load(lua_State* L, lua_Reader reader, void* dt, const char* chunkname);
-
-LUA_API int
-lua_dump(lua_State* L, lua_Writer writer, void* data);
-
-LUA_API int
-lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
-
 typedef struct {
-	char*   bytecode;
-	size_t  bytecode_size;
-} luaimport_dump_t;
-
-static FOUNDATION_NOINLINE int
-lua_import_dump_writer(lua_State* state, const void* buffer, size_t size, void* user_data) {
-	luaimport_dump_t* dump = user_data;
-
-	FOUNDATION_UNUSED(state);
-
-	if (size <= 0)
-		return 0;
-
-	dump->bytecode = (dump->bytecode ?
-	                  memory_reallocate(dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size) :
-	                  memory_allocate(HASH_LUA, size, 0, MEMORY_PERSISTENT));
-
-	memcpy(dump->bytecode + dump->bytecode_size, buffer, size);
-	dump->bytecode_size += size;
-
-	return 0;
-}
+	char*   sourcecode;
+	size_t  sourcecode_size;
+} luaimport_source_t;
 
 static int
-lua_import_stream(stream_t* stream, const uuid_t uuid, luaimport_dump_t* dump) {
-	lua_t* env;
-	lua_State* state;
-	int result = 0;
-	lua_readstream_t read_stream = {
-		.stream = stream,
-	};
+lua_import_stream(stream_t* stream, luaimport_source_t* source) {
+	int result = -1;
 
-	FOUNDATION_UNUSED(uuid);
+	source->sourcecode_size = stream_size(stream);
+	source->sourcecode = memory_allocate(HASH_LUA, source->sourcecode_size, 0, MEMORY_PERSISTENT);
 
-	env = lua_allocate();
-	state = lua_state(env);
-
-	if (lua_load(state, lua_read_stream, &read_stream, "import") != 0) {
-		const char* errstr = lua_tostring(state, -1);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua load failed: %s"),
-		           errstr ? errstr : "<no error>");
-		lua_pop(state, 1);
-		result = -1;
-		goto exit;
-	}
-
-	lua_dump(state, lua_import_dump_writer, dump);
-
-	if (lua_pcall(state, 0, 0, 0) != 0) {
-		const char* errstr = lua_tostring(state, -1);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Lua pcall failed: %s"),
-		           errstr ? errstr : "<no error>");
-		lua_pop(state, 1);
-		result = -1;
-		goto exit;
-	}
-
-	log_debug(HASH_LUA, STRING_CONST("Lua bytecode dump successful"));
-
-exit:
-
-	lua_deallocate(env);
+	if (stream_read(stream, source->sourcecode, source->sourcecode_size) == source->sourcecode_size)
+		result = 0;
 
 	return result;
 }
 
 static int
-lua_import_output(const uuid_t uuid, const luaimport_dump_t* dump) {
+lua_import_output(const uuid_t uuid, const luaimport_source_t* import) {
 	resource_source_t source;
 	hash_t checksum;
 	tick_t timestamp;
@@ -109,12 +51,12 @@ lua_import_output(const uuid_t uuid, const luaimport_dump_t* dump) {
 	timestamp = time_system();
 	platform = 0;
 
-	checksum = hash(dump->bytecode, dump->bytecode_size);
+	checksum = hash(import->sourcecode, import->sourcecode_size);
 	if (resource_source_write_blob(uuid, timestamp, HASH_SOURCE,
 	                               platform, checksum,
-	                               dump->bytecode, dump->bytecode_size)) {
+	                               import->sourcecode, import->sourcecode_size)) {
 		resource_source_set_blob(&source, timestamp, HASH_SOURCE,
-		                         platform, checksum, dump->bytecode_size);
+		                         platform, checksum, import->sourcecode_size);
 	}
 	else {
 		string_const_t uuidstr = string_from_uuid_static(uuid);
@@ -148,7 +90,7 @@ lua_import(stream_t* stream, const uuid_t uuid_given) {
 	string_const_t path;
 	string_const_t extension;
 	bool store_import = false;
-	luaimport_dump_t dump = {0, 0};
+	luaimport_source_t source = {0, 0};
 	int ret;
 
 	path = stream_path(stream);
@@ -181,17 +123,17 @@ lua_import(stream_t* stream, const uuid_t uuid_given) {
 		uuid = founduuid;
 	}
 
-	if ((ret = lua_import_stream(stream, uuid, &dump)) < 0)
+	if ((ret = lua_import_stream(stream, &source)) < 0)
 		goto exit;
 
-	if ((ret = lua_import_output(uuid, &dump)) < 0)
+	if ((ret = lua_import_output(uuid, &source)) < 0)
 		goto exit;
 
 	resource_import_map_store(STRING_ARGS(path), uuid, stream_sha256(stream));
 
 exit:
 
-	memory_deallocate(dump.bytecode);
+	memory_deallocate(source.sourcecode);
 
 	error_context_pop();
 

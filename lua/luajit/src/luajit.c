@@ -140,7 +140,11 @@ static int docall(lua_State *L, int narg, int clear)
 
 static void print_version(void)
 {
+#if LJ_FR2
+  fputs(LUAJIT_VERSION " (FR2) -- " LUAJIT_COPYRIGHT ". " LUAJIT_URL "\n", stdout);
+#else
   fputs(LUAJIT_VERSION " -- " LUAJIT_COPYRIGHT ". " LUAJIT_URL "\n", stdout);
+#endif
 }
 
 static void print_jit_status(lua_State *L)

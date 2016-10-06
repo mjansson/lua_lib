@@ -22,6 +22,7 @@
 typedef struct {
 	bool              display_help;
 	int               binary;
+	uint64_t          platform;
 	string_const_t    source_path;
 	string_const_t*   config_files;
 	string_const_t*   input_files;
@@ -63,6 +64,7 @@ main_initialize(void) {
 	resource_config.enable_local_source = true;
 	resource_config.enable_local_cache = true;
 	resource_config.enable_remote_sourced = true;
+	resource_config.enable_local_autoimport = true;
 
 	memset(&network_config, 0, sizeof(network_config_t));
 
@@ -106,6 +108,9 @@ main_run(void* main_arg) {
 		goto exit;
 	}
 
+	resource_compile_clear();
+	resource_compile_clear_path();
+
 	resource_compile_register(lua_compile);
 
 	size_t ifile, fsize;
@@ -125,7 +130,7 @@ main_run(void* main_arg) {
 			break;
 		}
 
-		if (resource_compile(uuid, RESOURCE_PLATFORM_ALL)) {
+		if (resource_compile(uuid, input.platform)) {
 			string_const_t uuidstr = string_from_uuid_static(uuid);
 			log_infof(HASH_RESOURCE, STRING_CONST("Successfully compiled: %.*s (%.*s)"),
 			          STRING_FORMAT(uuidstr), STRING_FORMAT(input.input_files[ifile]));
@@ -171,6 +176,8 @@ luacompile_parse_command_line(const string_const_t* cmdline) {
 	error_context_push(STRING_CONST("parse command line"), STRING_CONST(""));
 	memset(&input, 0, sizeof(input));
 
+	input.platform = RESOURCE_PLATFORM_ALL;
+
 	for (arg = 1, asize = array_size(cmdline); arg < asize; ++arg) {
 		if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--help")))
 			input.display_help = true;
@@ -182,21 +189,12 @@ luacompile_parse_command_line(const string_const_t* cmdline) {
 			if (arg < asize - 1)
 				array_push(input.config_files, cmdline[++arg]);
 		}
-		/*else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--uuid"))) {
+		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--platform"))) {
 			if (arg < asize - 1) {
 				++arg;
-				input.uuid = string_to_uuid(STRING_ARGS(cmdline[arg]));
-				if (uuid_is_null(input.uuid))
-					log_warnf(HASH_RESOURCE, WARNING_INVALID_VALUE, STRING_CONST("Invalid UUID: %.*s"),
-					          STRING_FORMAT(cmdline[arg]));
+				input.platform = resource_platform_parse(STRING_ARGS(cmdline[arg]));
 			}
 		}
-		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--set"))) {
-			if (arg < asize - 2) {
-				input.key = cmdline[++arg];
-				input.value = cmdline[++arg];
-			}
-		}*/
 		else if (string_equal(STRING_ARGS(cmdline[arg]), STRING_CONST("--binary"))) {
 			input.binary = 1;
 		}
@@ -232,7 +230,7 @@ luacompile_print_usage(void) {
 	log_set_suppress(0, ERRORLEVEL_DEBUG);
 	log_info(0, STRING_CONST(
 	             "luacompile usage:\n"
-	             "  luacompile [--source <path>] [--config <path> ...] [--ascii] [--binary]\n"
+	             "  luacompile [--source <path>] [--config <path> ...] [--platform <decl>] [--ascii] [--binary]\n"
 	             "             [--debug] [--help] <file> <uuid> ... [--]\n"
 	             "    Arguments:\n"
 	             "      <file> <uuid> ...            Any number of input files or UUIDs\n"
@@ -240,6 +238,7 @@ luacompile_print_usage(void) {
 	             "      --source <path>              Operate on resource file source structure given by <path>\n"
 	             "      --config <file>              Read and parse config file given by <path>\n"
 	             "                                   Loads all .json/.sjson files in <path> if it is a directory\n"
+	             "      --platform <decl>            Compile for given target platform declaration\n"
 	             "      --binary                     Write binary files\n"
 	             "      --ascii                      Write ASCII files (default)\n"
 	             "      --debug                      Enable debug output\n"

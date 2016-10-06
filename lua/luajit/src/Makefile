@@ -277,6 +277,11 @@ endif
 TARGET_XCFLAGS+= $(CCOPT_$(TARGET_LJARCH))
 TARGET_ARCH+= $(patsubst %,-DLUAJIT_TARGET=LUAJIT_ARCH_%,$(TARGET_LJARCH))
 
+ifeq (1,$(LUAJIT_ENABLE_GC64))
+  HOST_XCFLAGS+= -DLUAJIT_ENABLE_GC64=1 -DLUAJIT_DISABLE_JIT=1
+  TARGET_XCFLAGS+= -DLUAJIT_ENABLE_GC64=1 -DLUAJIT_DISABLE_JIT=1
+endif
+
 ifneq (,$(PREFIX))
 ifneq (/usr/local,$(PREFIX))
   TARGET_XCFLAGS+= -DLUA_ROOT=\"$(PREFIX)\"
@@ -307,7 +312,7 @@ ifeq (,$(shell $(TARGET_CC) -o /dev/null -c -x c /dev/null -fno-stack-protector 
 endif
 ifeq (Darwin,$(TARGET_SYS))
   ifeq (,$(MACOSX_DEPLOYMENT_TARGET))
-    export MACOSX_DEPLOYMENT_TARGET=10.4
+    export MACOSX_DEPLOYMENT_TARGET=10.7
   endif
   TARGET_STRIP+= -x
   TARGET_AR+= 2>/dev/null

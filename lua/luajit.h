@@ -98,6 +98,8 @@ LUA_EXTERN void            (lua_rawseti) (lua_State *L, int idx, int n);
 LUA_EXTERN int             (lua_setmetatable) (lua_State *L, int objindex);
 LUA_EXTERN int             (lua_setfenv) (lua_State *L, int idx);
 
+LUA_EXTERN int             (lua_is_fr2) (void);
+
 #define LUA_REGISTRYINDEX	(-10000)
 #define LUA_ENVIRONINDEX	(-10001)
 #define LUA_GLOBALSINDEX	(-10002)
