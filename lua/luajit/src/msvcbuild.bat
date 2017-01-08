@@ -20,10 +20,22 @@
 @set LJLIB=lib /nologo /nodefaultlib
 @set DASMDIR=..\dynasm
 @set DASM=%DASMDIR%\dynasm.lua
+@set DASMJITFLAG=-D JIT
+@set LJGC64=
 @set LJDLLNAME=lua51.dll
 @set LJLIBNAME=luajit.lib
 @set ALL_LIB=lib_base.c lib_math.c lib_bit.c lib_string.c lib_table.c lib_io.c lib_os.c lib_package.c lib_debug.c lib_jit.c lib_ffi.c
 
+@if "%1"=="staticgc64" goto :SETUPGC64
+goto :NOGC64
+
+:SETUPGC64
+@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /DLUAJIT_ENABLE_GC64=1 /DLUAJIT_DISABLE_JIT=1
+@set LJLIBNAME=luajit-gc64.lib
+@set LJGC64=-gc64
+@set DASMJITFLAG=
+
+:NOGC64
 %LJCOMPILE% host\minilua.c
 @if errorlevel 1 goto :BAD
 %LJLINK% /out:minilua.exe minilua.obj
@@ -31,14 +43,15 @@
 if exist minilua.exe.manifest^
   %LJMT% -manifest minilua.exe.manifest -outputresource:minilua.exe
 
-@set DASMFLAGS=-D WIN -D JIT -D FFI -D P64
+@set DASMFLAGS=-D WIN -D FFI -D P64
 @set LJARCH=x64
 @minilua
 @if errorlevel 8 goto :X64
-@set DASMFLAGS=-D WIN -D JIT -D FFI
+@set DASMFLAGS=-D WIN -D FFI
 @set LJARCH=x86
 @set LJCOMPILE=%LJCOMPILE% /arch:SSE2
 :X64
+@set DASMFLAGS=%DASMFLAGS% %DASMJITFLAG%
 minilua %DASM% -LN %DASMFLAGS% -o host\buildvm_arch.h vm_x86.dasc
 @if errorlevel 1 goto :BAD
 
@@ -71,12 +84,21 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 :NODEBUG
 @if "%1"=="amalg" goto :AMALGDLL
 @if "%1"=="static" goto :STATIC
+@if "%1"=="staticgc64" goto :STATICGC64
 %LJCOMPILE% /MD /DLUA_BUILD_AS_DLL lj_*.c lib_*.c
 @if errorlevel 1 goto :BAD
 %LJLINK% /DLL /out:%LJDLLNAME% lj_*.obj lib_*.obj
 @if errorlevel 1 goto :BAD
 @goto :MTDLL
 :STATIC
+%LJCOMPILE% ljamalg.c
+@if errorlevel 1 goto :BAD
+%LJLIB% /OUT:%LJLIBNAME% ljamalg.obj lj_vm.obj
+@if errorlevel 1 goto :BAD
+@if "%LJARCH%"=="x86" goto :COPYX86
+copy %LJLIBNAME% "..\..\..\lib\windows\x86-64\"
+@goto :MTDLL
+:STATICGC64
 %LJCOMPILE% ljamalg.c
 @if errorlevel 1 goto :BAD
 %LJLIB% /OUT:%LJLIBNAME% ljamalg.obj lj_vm.obj
@@ -105,7 +127,7 @@ if exist %LJDLLNAME%.manifest^
 
 @del *.obj *.manifest minilua.exe buildvm.exe
 @echo.
-@echo === Successfully built LuaJIT for Windows/%LJARCH% ===
+@echo === Successfully built LuaJIT for Windows/%LJARCH%%LJGC64% ===
 
 @goto :END
 :BAD

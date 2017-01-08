@@ -1207,7 +1207,7 @@ LUA_API int lua_gc(lua_State *L, int what, int data)
 	res = 1;
 	break;
       }
-    g->gc.stepmul = prev;
+    g->gc.stepmul = (MSize)prev;
     break;
   }
   case LUA_GCSETPAUSE:
