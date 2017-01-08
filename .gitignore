@@ -39,8 +39,9 @@ build/xcode/foundation/build
 #Doxygen generated
 doc/html
 
-#Local config
-SConfig
+#Coverity scan
+cov-int/
+cov-int.*
 
 #################
 ## Visual Studio
@@ -80,6 +81,8 @@ SConfig
 *.dotCover
 *.lastbuildstate
 *.unsuccessfulbuild
+*.opendb
+*.VC.db
 
 ## TODO: If you have NuGet Package Restore enabled, uncomment this
 #packages/
@@ -220,6 +223,8 @@ build.json
 codesign.json
 coveralls.json
 coverallsreport.json
+codecov.json
+codecovreport.json
 
 #LuaJIT local build generated files
 lua/luajit/src/host/buildvm
@@ -244,4 +249,3 @@ lua/luajit/src/*.lib
 lua/luajit/src/*.dll
 
 lua/luajit/build/*
-

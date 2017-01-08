@@ -172,7 +172,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_DEBUG=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -202,7 +202,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_DEBUG=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -232,7 +232,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_RELEASE=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -265,7 +265,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_RELEASE=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -297,7 +297,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_PROFILE=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -330,7 +330,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_PROFILE=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -362,7 +362,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_DEPLOY=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -395,7 +395,7 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\foundation_lib;..\..\..\network_lib;..\..\..\resource_lib;..\..;..\..\lua</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <PreprocessorDefinitions>BUILD_DEPLOY=1;LUA_COMPILE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -426,22 +426,30 @@
     <ClInclude Include="..\..\lua\bind.h" />
     <ClInclude Include="..\..\lua\build.h" />
     <ClInclude Include="..\..\lua\compile.h" />
+    <ClInclude Include="..\..\lua\event.h" />
     <ClInclude Include="..\..\lua\foundation.h" />
     <ClInclude Include="..\..\lua\hashstrings.h" />
+    <ClInclude Include="..\..\lua\import.h" />
     <ClInclude Include="..\..\lua\lua.h" />
     <ClInclude Include="..\..\lua\luajit.h" />
     <ClInclude Include="..\..\lua\module.h" />
+    <ClInclude Include="..\..\lua\network.h" />
     <ClInclude Include="..\..\lua\read.h" />
+    <ClInclude Include="..\..\lua\resource.h" />
     <ClInclude Include="..\..\lua\symbol.h" />
     <ClInclude Include="..\..\lua\types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\lua\bind.c" />
     <ClCompile Include="..\..\lua\compile.c" />
+    <ClCompile Include="..\..\lua\event.c" />
     <ClCompile Include="..\..\lua\foundation.c" />
+    <ClCompile Include="..\..\lua\import.c" />
     <ClCompile Include="..\..\lua\lua.c" />
     <ClCompile Include="..\..\lua\module.c" />
+    <ClCompile Include="..\..\lua\network.c" />
     <ClCompile Include="..\..\lua\read.c" />
+    <ClCompile Include="..\..\lua\resource.c" />
     <ClCompile Include="..\..\lua\symbol.c" />
     <ClCompile Include="..\..\lua\version.c" />
   </ItemGroup>
