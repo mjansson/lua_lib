@@ -169,7 +169,7 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 		if (!block)
 			block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS);
 		else
-			block = memory_reallocate(block, nsize, 0, osize);
+			block = memory_reallocate(block, nsize, 0, osize, MEMORY_32BIT_ADDRESS);
 		if (block == 0 && env && ((lua_t*)env)->state)
 			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%" PRIsize " bytes)"),
 			           nsize);

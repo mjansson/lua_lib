@@ -60,7 +60,7 @@ lua_dump_writer(lua_State* state, const void* buffer, size_t size, void* user_da
 		return 0;
 
 	dump->bytecode = (dump->bytecode ?
-	                  memory_reallocate(dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size) :
+	                  memory_reallocate(dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size, 0) :
 	                  memory_allocate(HASH_LUA, size, 0, MEMORY_PERSISTENT));
 
 	memcpy(dump->bytecode + dump->bytecode_size, buffer, size);
