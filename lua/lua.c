@@ -54,6 +54,9 @@ lua_module_registry_finalize(lua_State* state);
 LUA_EXTERN void
 lua_module_registry_initialize(lua_State* state);
 
+LUA_EXTERN int
+lua_is_fr2(void);
+
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 
 bool
@@ -166,10 +169,11 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 		memory_deallocate(block);
 	}
 	else if (nsize) {
+		unsigned int flags = MEMORY_PERSISTENT | (!lua_is_fr2() ? MEMORY_32BIT_ADDRESS : 0);
 		if (!block)
-			block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS);
+			block = memory_allocate(HASH_LUA, nsize, 0, flags);
 		else
-			block = memory_reallocate(block, nsize, 0, osize, MEMORY_32BIT_ADDRESS);
+			block = memory_reallocate(block, nsize, 0, osize, flags);
 		if (block == 0 && env && ((lua_t*)env)->state)
 			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%" PRIsize " bytes)"),
 			           nsize);
