@@ -54,8 +54,6 @@ test_foundation_initialize(void) {
 	lua_config_t lua_config;
 	resource_config_t resource_config;
 
-	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
-
 	memset(&lua_config, 0, sizeof(lua_config));
 	memset(&resource_config, 0, sizeof(resource_config));
 
@@ -92,7 +90,7 @@ DECLARE_TEST(foundation, log) {
 	lua_t* env = lua_allocate();
 
 	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
-	log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
+	//log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
 
 	EXPECT_NE(env, 0);
 
