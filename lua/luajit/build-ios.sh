@@ -1,6 +1,6 @@
 LUAJIT=.
 DEVDIR=`xcode-select -print-path`
-IOSSDKVER=8.0
+IOSSDKVER=9.0
 IOSDIR=$DEVDIR/Platforms
 IOSBIN=$DEVDIR/Toolchains/XcodeDefault.xctoolchain/usr/bin/
 
