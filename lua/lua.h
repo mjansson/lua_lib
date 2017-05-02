@@ -133,6 +133,11 @@ lua_execute(lua_t* env, int gc_time, bool force);
 LUA_API void
 lua_timed_gc(lua_t* env, int milliseconds);
 
+LUA_API int
+lua_is_fr2(void);
+
+LUA_API int
+lua_arch_is_fr2(int arch);
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 

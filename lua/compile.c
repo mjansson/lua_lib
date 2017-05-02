@@ -101,7 +101,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 	resource_source_map_clear(map);
 
 	resource_platform_t platform_decl = resource_platform_decompose(platform);
-	if ((platform_decl.arch == ARCHITECTURE_ARM8_64) && (array_size(subplatforms) == 1))
+	if (lua_arch_is_fr2(platform_decl.arch) && (array_size(subplatforms) == 1))
 		array_push(subplatforms, platform);
 
 	for (iplat = 1, psize = array_size(subplatforms); (iplat != psize) && (result == 0); ++iplat) {
@@ -110,14 +110,13 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 		stream_t* stream;
 		uint64_t subplatform = subplatforms[iplat];
 
-		bool need_fr2 = false;
 		platform_decl = resource_platform_decompose(subplatform);
-		if (platform_decl.arch == ARCHITECTURE_ARM8_64)
-			need_fr2 = true;
+		bool need_fr2 = lua_arch_is_fr2(platform_decl.arch);
 
 		//We cannot compile for a non-matching FR2 mode
 		if (need_fr2 != lua_is_fr2()) {
-			log_infof(HASH_RESOURCE, STRING_CONST("Unable to compile for non-matching FR2 mode, platform %" PRIx64 " (%s)"),
+			log_infof(HASH_RESOURCE, STRING_CONST("Unable to compile for non-matching FR2 mode, platform %"
+			                                      PRIx64 " (FR2 %s)"),
 			          subplatform, need_fr2 ? "true" : "false");
 			result = -1;
 			break;

@@ -24,16 +24,23 @@ uint64_t
 lua_resource_platform(void) {
 	if (_resource_platform)
 		return _resource_platform;
-	uint64_t platform = 0;
-#if FOUNDATION_ARCH_ARM8_64
-	resource_platform_t decl = {-1, ARCHITECTURE_ARM8_64, -1, -1, -1, -1};
-	platform = resource_platform(decl);
-#endif
-	return platform;
+	architecture_t arch = system_architecture();
+	if (lua_arch_is_fr2(arch)) {
+		resource_platform_t decl;
+		memset(&decl, 0xFF, sizeof(decl));
+		decl.arch = (1 << 7);
+		return resource_platform(decl);
+	}
+	return 0;
 }
 
 void
 lua_resource_set_platform(uint64_t platform) {
+	resource_platform_t decl = resource_platform_decompose(platform);
+	if (lua_arch_is_fr2(decl.arch)) {
+		decl.arch |= (1 << 7);
+		platform = resource_platform(decl);
+	}
 	_resource_platform = platform;
 }
 

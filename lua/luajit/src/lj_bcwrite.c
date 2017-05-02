@@ -1,6 +1,6 @@
 /*
 ** Bytecode writer.
-** Copyright (C) 2005-2016 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2017 Mike Pall. See Copyright Notice in luajit.h
 */
 
 #define lj_bcwrite_c
@@ -300,9 +300,6 @@ static void bcwrite_proto(BCWriteCtx *ctx, GCproto *pt)
 /* Write header of bytecode dump. */
 static void bcwrite_header(BCWriteCtx *ctx)
 {
-#if LJ_BE
-#  error BE targets not supported yet by resource system, implement like LJ_FR2
-#endif
   GCstr *chunkname = proto_chunkname(ctx->pt);
   const char *name = strdata(chunkname);
   MSize len = chunkname->len;

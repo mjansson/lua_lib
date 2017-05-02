@@ -54,9 +54,6 @@ lua_module_registry_finalize(lua_State* state);
 LUA_EXTERN void
 lua_module_registry_initialize(lua_State* state);
 
-LUA_EXTERN int
-lua_is_fr2(void);
-
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 
 bool
@@ -758,6 +755,23 @@ lua_from_state(lua_State* state) {
 lua_State*
 lua_state(lua_t* env) {
 	return env->state;
+}
+
+int
+lua_arch_is_fr2(int arch) {
+	switch (arch) {
+	case ARCHITECTURE_X86:
+	case ARCHITECTURE_PPC:
+	case ARCHITECTURE_ARM5:
+	case ARCHITECTURE_ARM6:
+	case ARCHITECTURE_ARM7:
+	case ARCHITECTURE_ARM8:
+	case ARCHITECTURE_MIPS:
+		return false;
+	default:
+		break;
+	}
+	return true;
 }
 
 extern int
