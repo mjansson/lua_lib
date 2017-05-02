@@ -269,7 +269,7 @@ ifneq (,$(findstring LJ_TARGET_MIPS ,$(TARGET_TESTARCH)))
     TARGET_LJARCH= mips
   endif
 else
-  $(error Unsupported target architecture)
+  $(error Unsupported target architecture $(TARGET_TESTARCH))
 endif
 endif
 endif
@@ -513,7 +513,7 @@ LUAJIT_A= libluajit.a
 LUAJIT_SO= libluajit.so
 LUAJIT_T= luajit
 
-ALL_T= $(LUAJIT_T) $(LUAJIT_A) $(LUAJIT_SO) $(HOST_T)
+ALL_T= $(LUAJIT_A) $(HOST_T)
 ALL_HDRGEN= lj_bcdef.h lj_ffdef.h lj_libdef.h lj_recdef.h lj_folddef.h \
 	    host/buildvm_arch.h
 ALL_GEN= $(LJVM_S) $(ALL_HDRGEN) $(LIB_VMDEFP)
@@ -526,8 +526,8 @@ ALL_RM= $(ALL_T) $(ALL_GEN) *.o host/*.o $(WIN_RM)
 
 # Mixed mode defaults.
 TARGET_O= $(LUAJIT_A)
-TARGET_T= $(LUAJIT_T) $(LUAJIT_SO)
-TARGET_DEP= $(LIB_VMDEF) $(LUAJIT_SO)
+TARGET_T= $(LUAJIT_A)
+TARGET_DEP= $(LIB_VMDEF)
 
 ifeq (Windows,$(TARGET_SYS))
   TARGET_DYNCC= $(STATIC_CC)
