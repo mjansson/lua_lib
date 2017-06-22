@@ -15,7 +15,7 @@
 
 @setlocal
 @set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
-@set LJLINK=link /nologo
+@set LJLINK=link /nologo /MACHINE:X64
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
 @set DASMDIR=..\dynasm
@@ -36,12 +36,14 @@ if exist minilua.exe.manifest^
 @set LJARCH=x64
 @minilua
 @if errorlevel 8 goto :X64
+@echo Compiling for x86
 @set DASMFLAGS=-D WIN -D JIT -D FFI
 @set LJARCH=x86
 @set LJCOMPILE=%LJCOMPILE% /arch:SSE2
 :X64
 @if "%1" neq "gc64" goto :NOGC64
 @shift
+@echo Compiling for x86-64
 @set DASC=vm_x64.dasc
 @set LJCOMPILE=%LJCOMPILE% /DLUAJIT_ENABLE_GC64=1
 :NOGC64
@@ -87,7 +89,7 @@ buildvm -m folddef -o lj_folddef.h lj_opt_fold.c
 @if errorlevel 1 goto :BAD
 %LJLIB% /OUT:%LJLIBNAME% ljamalg.obj lj_vm.obj
 @if errorlevel 1 goto :BAD
-@goto :MTDLL
+@goto :end
 :AMALGDLL
 %LJCOMPILE% /MD /DLUA_BUILD_AS_DLL ljamalg.c
 @if errorlevel 1 goto :BAD

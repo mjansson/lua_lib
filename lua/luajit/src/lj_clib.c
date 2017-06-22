@@ -20,6 +20,10 @@
 
 /* -- OS-specific functions ----------------------------------------------- */
 
+#if LJ_TARGET_WINDOWS
+#include <windows.h>
+#endif
+
 #if 0 //LJ_TARGET_DLOPEN
 
 #include <dlfcn.h>

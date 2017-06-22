@@ -165,6 +165,7 @@ lua_run_gc(lua_t* env, int milliseconds) {
 }
 
 #if FOUNDATION_PLATFORM_WINDOWS
+#include <foundation/windows.h>
 typedef long (*NtAllocateVirtualMemoryFn)(HANDLE, PVOID*, ULONG, SIZE_T*, ULONG, ULONG);
 typedef long (*NtFreeVirtualMemoryFn)(HANDLE, PVOID*, SIZE_T*, ULONG);
 static NtAllocateVirtualMemoryFn NtAllocateVirtualMemory;
@@ -930,7 +931,7 @@ lua_module_initialize(const lua_config_t config) {
 
 #if FOUNDATION_SIZE_POINTER == 8
 	if (!lua_is_fr2())
-		log_info(HASH_LUA, STRING_CONST("Initialized compatibility 32-bit LuaJIT on 64-bit architecture"));
+		log_info(HASH_LUA, STRING_CONST("Initialized LuaJIT in compatibility 32-bit mode"));
 #endif
 
 	return 0;
