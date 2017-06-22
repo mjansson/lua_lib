@@ -578,13 +578,14 @@ HASH_SYM_TYPE_SSIZE_T                   type_ssize_t
 HASH_SYM_NETWORK_ADDRESS_CLONE          network_address_clone
 HASH_SYM_NETWORK_ADDRESS_RESOLVE        network_address_resolve
 HASH_SYM_NETWORK_ADDRESS_TO_STRING      network_address_to_string
-HASH_SYM_NETWORK_ADDRESS_IPV4_ANY       network_address_ipv4_any
-HASH_SYM_NETWORK_ADDRESS_IPV6_ANY       network_address_ipv6_any
+HASH_SYM_NETWORK_ADDRESS_IPV4_INITIALIZE network_address_ipv4_initialize
+HASH_SYM_NETWORK_ADDRESS_IPV6_INITIALIZE network_address_ipv6_initialize
 HASH_SYM_NETWORK_ADDRESS_IP_SET_PORT    network_address_ip_set_port
 HASH_SYM_NETWORK_ADDRESS_IP_PORT        network_address_ip_port
-HASH_SYM_NETWORK_ADDRESS_IPV4_FROM_IP   network_address_ipv4_from_ip
 HASH_SYM_NETWORK_ADDRESS_IPV4_SET_IP    network_address_ipv4_set_ip
 HASH_SYM_NETWORK_ADDRESS_IPV4_IP        network_address_ipv4_ip
+HASH_SYM_NETWORK_ADDRESS_IPV6_SET_IP    network_address_ipv6_set_ip
+HASH_SYM_NETWORK_ADDRESS_IPV6_IP        network_address_ipv6_ip
 HASH_SYM_NETWORK_ADDRESS_TYPE           network_address_type
 HASH_SYM_NETWORK_ADDRESS_FAMILY         network_address_family
 HASH_SYM_NETWORK_ADDRESS_LOCAL          network_address_local

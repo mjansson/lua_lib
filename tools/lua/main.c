@@ -232,14 +232,12 @@ main_finalize(void) {
 
 static bool
 _lua_should_terminate(void) {
-	atomic_thread_fence_acquire();
-	return atomic_load32(&_lua_terminate_flag) > 0;
+	return atomic_load32(&_lua_terminate_flag, memory_order_acquire) > 0;
 }
 
 static void
 _lua_terminate(void) {
-	atomic_store32(&_lua_terminate_flag, 1);
-	atomic_thread_fence_release();
+	atomic_store32(&_lua_terminate_flag, 1, memory_order_release);
 }
 
 static int

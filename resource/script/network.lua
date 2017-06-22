@@ -9,6 +9,8 @@ ffi.cdef[[
 
 typedef struct network_config_t      network_config_t;
 typedef struct network_address_t     network_address_t;
+typedef struct network_address_ipv4_t network_address_ipv4_t;
+typedef struct network_address_ipv6_t network_address_ipv6_t;
 typedef struct network_poll_slot_t   network_poll_slot_t;
 typedef struct network_poll_event_t  network_poll_event_t;
 typedef struct network_poll_t        network_poll_t;
@@ -23,13 +25,15 @@ typedef void (*socket_stream_initialize_fn)(socket_t*, stream_t*);
 network_address_t* network_address_clone(const network_address_t*);
 network_address_t** network_address_resolve(const char*, size_t);
 string_t network_address_to_string(char*, size_t, const network_address_t*, bool);
-network_address_t* network_address_ipv4_any(void);
-network_address_t* network_address_ipv6_any(void);
+network_address_t* network_address_ipv4_initialize(network_address_ipv4_t* addr);
+network_address_t* network_address_ipv6_initialize(network_address_ipv6_t* addr);
 void network_address_ip_set_port(network_address_t*, unsigned int);
 unsigned int network_address_ip_port(const network_address_t*);
-network_address_t* network_address_ipv4_from_ip(uint32_t);
 void network_address_ipv4_set_ip(network_address_t*, uint32_t);
 uint32_t network_address_ipv4_ip(network_address_t*);
+void network_address_ipv6_set_ip(network_address_t* address, struct in6_addr ip);
+struct in6_addr network_address_ipv6_ip(const network_address_t* address);
+uint32_t network_address_ipv4_make_ip(unsigned char c0, unsigned char c1, unsigned char c2, unsigned char c3);
 int network_address_type(const network_address_t*);
 int network_address_family(const network_address_t*);
 network_address_t** network_address_local(void);

@@ -29,6 +29,10 @@
 #include "luajit/src/lauxlib.h"
 #include "luajit/src/lualib.h"
 
+#if !FOUNDATION_PLATFORM_WINDOWS
+#include <sys/mman.h>
+#endif
+
 #undef LUA_API
 
 static lua_config_t _lua_config;
@@ -160,18 +164,123 @@ lua_run_gc(lua_t* env, int milliseconds) {
 	lua_gc(env->state, LUA_GCSTEP, milliseconds);
 }
 
+#if FOUNDATION_PLATFORM_WINDOWS
+typedef long (*NtAllocateVirtualMemoryFn)(HANDLE, PVOID*, ULONG, SIZE_T*, ULONG, ULONG);
+typedef long (*NtFreeVirtualMemoryFn)(HANDLE, PVOID*, SIZE_T*, ULONG);
+static NtAllocateVirtualMemoryFn NtAllocateVirtualMemory;
+static NtFreeVirtualMemoryFn NtFreeVirtualMemory;
+#endif
+
 static FOUNDATION_NOINLINE void*
 lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 	if (!nsize && osize) {
-		memory_deallocate(block);
+#if FOUNDATION_SIZE_POINTER == 8
+		if (!lua_is_fr2()) {
+#  if FOUNDATION_PLATFORM_WINDOWS
+			if (!NtFreeVirtualMemory)
+				NtFreeVirtualMemory = (NtFreeVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"),
+				                                                            "NtFreeVirtualMemory");
+			if (NtFreeVirtualMemory) {
+				SIZE_T old_size = 0;
+				NtFreeVirtualMemory(INVALID_HANDLE_VALUE, &block, &old_size, MEM_RELEASE);
+			}
+#else
+			munmap(block, osize);
+#endif
+		}
+		else
+#endif
+		{
+			memory_deallocate(block);
+		}
 	}
 	else if (nsize) {
-		unsigned int flags = MEMORY_PERSISTENT | (!lua_is_fr2() ? MEMORY_32BIT_ADDRESS : 0);
-		if (!block)
-			block = memory_allocate(HASH_LUA, nsize, 0, flags);
+#if FOUNDATION_SIZE_POINTER == 8
+		if (!lua_is_fr2()) {
+			void* raw_memory = 0;
+			//Non-performance path, used only for compatibility tools
+#  if FOUNDATION_PLATFORM_WINDOWS
+			size_t allocate_size = nsize;
+			if (!NtAllocateVirtualMemory)
+				NtAllocateVirtualMemory = (NtAllocateVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"),
+				                                                                    "NtAllocateVirtualMemory");
+			long vmres = NtAllocateVirtualMemory ? 
+			             NtAllocateVirtualMemory(INVALID_HANDLE_VALUE, &raw_memory, 1, &allocate_size,
+			                                     MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE) :
+			             0;
+			if (!raw_memory || (vmres != 0)) {
+				log_errorf(HASH_LUA, ERROR_OUT_OF_MEMORY,
+				           STRING_CONST("Unable to allocate %" PRIsize " bytes of memory in low 32bit address space"), nsize);
+				return 0;
+			}
+#  else
+#    ifndef MAP_UNINITIALIZED
+#      define MAP_UNINITIALIZED 0
+#    endif
+#    ifndef MAP_ANONYMOUS
+#      define MAP_ANONYMOUS MAP_ANON
+#    endif			
+#    ifdef MAP_32BIT
+			raw_memory = mmap(0, nsize, PROT_READ | PROT_WRITE,
+			                 MAP_32BIT | MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
+			if (raw_memory == MAP_FAILED) {
+				raw_memory = 0;
+			}
+#    endif
+			//On MacOSX app needs to be linked with -pagezero_size 10000 -image_base 100000000 to
+			// 1) Free up low 4Gb address range by reducing page zero size
+			// 2) Move executable base address above 4Gb to free up more memory address space
+#    define MMAP_REGION_START ((uintptr_t)0x10000)
+#    define MMAP_REGION_END   ((uintptr_t)0x80000000)
+			static atomicptr_t baseaddr = (void*)MMAP_REGION_START;
+			bool retried = false;
+			while (!raw_memory) {
+				raw_memory = mmap(atomic_load_ptr(&baseaddr, memory_order_acquire), nsize,
+				             PROT_READ | PROT_WRITE,
+				             MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
+				if (((uintptr_t)raw_memory >= MMAP_REGION_START) &&
+				        (uintptr_t)pointer_offset(raw_memory, nsize) < MMAP_REGION_END) {
+					atomic_store_ptr(&baseaddr, pointer_offset(raw_memory, nsize), memory_order_release);
+					break;
+				}
+				if (raw_memory && (raw_memory != MAP_FAILED)) {
+					if (munmap(raw_memory, nsize) < 0)
+						log_warn(HASH_MEMORY, WARNING_SYSTEM_CALL_FAIL,
+						         STRING_CONST("Failed to munmap pages outside wanted 32-bit range"));
+				}
+				raw_memory = 0;
+				if (retried)
+					break;
+				retried = true;
+				atomic_store_ptr(&baseaddr, (void*)MMAP_REGION_START, memory_order_release);
+			}
+#  endif
+			if (block) {
+				if (raw_memory)
+					memcpy(raw_memory, block, (nsize < osize) ? nsize : osize);
+#  if FOUNDATION_PLATFORM_WINDOWS
+				if (!NtFreeVirtualMemory)
+					NtFreeVirtualMemory = (NtFreeVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"),
+					                                                            "NtFreeVirtualMemory");
+				if (NtFreeVirtualMemory) {
+					SIZE_T old_size = 0;
+					NtFreeVirtualMemory(INVALID_HANDLE_VALUE, &block, &old_size, MEM_RELEASE);
+				}
+#else
+				munmap(block, osize);
+#endif
+			}
+			block = raw_memory;
+		}
 		else
-			block = memory_reallocate(block, nsize, 0, osize, flags);
-		if (block == 0 && env && ((lua_t*)env)->state)
+#endif
+		{
+			if (!block)
+				block = memory_allocate(HASH_LUA, nsize, 0, MEMORY_PERSISTENT);
+			else
+				block = memory_reallocate(block, nsize, 0, osize, MEMORY_PERSISTENT);
+		}
+		if (!block && env && ((lua_t*)env)->state)
 			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%" PRIsize " bytes)"),
 			           nsize);
 	}
@@ -191,11 +300,10 @@ lua_panic(lua_State* state) {
 
 lua_t*
 lua_allocate(void) {
-	lua_t* env = memory_allocate(HASH_LUA, sizeof(lua_t), 0,
-	                             MEMORY_PERSISTENT | MEMORY_32BIT_ADDRESS | MEMORY_ZERO_INITIALIZED);
+	lua_t* env = lua_allocator(0, 0, 0, sizeof(lua_t));
 
 	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
-	lua_State* state = lua_newstate(lua_allocator, env);
+	lua_State* state = env ? lua_newstate(lua_allocator, env) : nullptr;
 	if (!state) {
 		log_error(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Unable to allocate Lua state"));
 		memory_deallocate(env);
@@ -819,6 +927,11 @@ lua_module_initialize(const lua_config_t config) {
 
 	resource_import_register(lua_import);
 	resource_compile_register(lua_compile);
+
+#if FOUNDATION_SIZE_POINTER == 8
+	if (!lua_is_fr2())
+		log_info(HASH_LUA, STRING_CONST("Initialized compatibility 32-bit LuaJIT on 64-bit architecture"));
+#endif
 
 	return 0;
 }

@@ -32,13 +32,14 @@ lua_symbol_load_network(void) {
 	NETWORK_SYM(network_address_clone, NETWORK_ADDRESS_CLONE);
 	NETWORK_SYM(network_address_resolve, NETWORK_ADDRESS_RESOLVE);
 	NETWORK_SYM(network_address_to_string, NETWORK_ADDRESS_TO_STRING);
-	NETWORK_SYM(network_address_ipv4_any, NETWORK_ADDRESS_IPV4_ANY);
-	NETWORK_SYM(network_address_ipv6_any, NETWORK_ADDRESS_IPV6_ANY);
+	NETWORK_SYM(network_address_ipv4_initialize, NETWORK_ADDRESS_IPV4_INITIALIZE);
+	NETWORK_SYM(network_address_ipv6_initialize, NETWORK_ADDRESS_IPV6_INITIALIZE);
 	NETWORK_SYM(network_address_ip_set_port, NETWORK_ADDRESS_IP_SET_PORT);
 	NETWORK_SYM(network_address_ip_port, NETWORK_ADDRESS_IP_PORT);
-	NETWORK_SYM(network_address_ipv4_from_ip, NETWORK_ADDRESS_IPV4_FROM_IP);
 	NETWORK_SYM(network_address_ipv4_set_ip, NETWORK_ADDRESS_IPV4_SET_IP);
 	NETWORK_SYM(network_address_ipv4_ip, NETWORK_ADDRESS_IPV4_IP);
+	NETWORK_SYM(network_address_ipv6_set_ip, NETWORK_ADDRESS_IPV6_SET_IP);
+	NETWORK_SYM(network_address_ipv6_ip, NETWORK_ADDRESS_IPV6_IP);
 	NETWORK_SYM(network_address_type, NETWORK_ADDRESS_TYPE);
 	NETWORK_SYM(network_address_family, NETWORK_ADDRESS_FAMILY);
 	NETWORK_SYM(network_address_local, NETWORK_ADDRESS_LOCAL);
