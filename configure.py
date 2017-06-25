@@ -34,6 +34,10 @@ if not target.is_ios() and not target.is_android():
     generator.bin('luacompile', ['main.c'], 'luacompile', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
     generator.bin('', ['luacompile/main.c'], 'luacompile32', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit32'] + dependlibs + extralibs, configs = configs, variables = dict({'support_lua': True}, **extravariables))
 
+#No test cases if we're a submodule
+if generator.is_subninja():
+  sys.exit()
+
 includepaths = generator.test_includepaths()
 
 test_cases = [
