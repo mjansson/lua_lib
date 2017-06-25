@@ -337,9 +337,6 @@
 #define LJ_ARCH_BITS		32
 #define LJ_TARGET_MIPS32	1
 #else
-#if LJ_ABI_SOFTFP || !LJ_ARCH_HASFPU
-#define LJ_ARCH_NOJIT		1	/* NYI */
-#endif
 #define LJ_ARCH_BITS		64
 #define LJ_TARGET_MIPS64	1
 #define LJ_TARGET_GC64		1
@@ -391,14 +388,8 @@
 #endif
 #endif
 #elif !LJ_TARGET_PS3
-#if __clang__
-#if ((__clang_major__ < 3) || ((__clang_major__ == 3) && __clang_minor__ < 5)) && !defined(__NX_TOOLCHAIN_MAJOR__)
-#error "Need at least Clang 3.5 or newer"
-#endif
-#else
 #if (__GNUC__ < 4) || ((__GNUC__ == 4) && __GNUC_MINOR__ < 3)
 #error "Need at least GCC 4.3 or newer"
-#endif
 #endif
 #endif
 #endif
@@ -518,6 +509,7 @@
 #define LJ_ABI_SOFTFP		0
 #endif
 #define LJ_SOFTFP		(!LJ_ARCH_HASFPU)
+#define LJ_SOFTFP32		(LJ_SOFTFP && LJ_32)
 
 #if LJ_ARCH_ENDIAN == LUAJIT_BE
 #define LJ_LE			0

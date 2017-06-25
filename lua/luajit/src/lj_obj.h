@@ -908,7 +908,6 @@ static LJ_AINLINE void setint64V(TValue *o, int64_t i)
     setnumV(o, (lua_Number)i);
 }
 
-#define setobjectV(o, x)  ((o)->u64 = (x))
 #if LJ_64
 #define setintptrV(o, i)	setint64V((o), (i))
 #else
@@ -925,6 +924,9 @@ static LJ_AINLINE void copyTV(lua_State *L, TValue *o1, const TValue *o2)
 
 #if LJ_SOFTFP
 LJ_ASMF int32_t lj_vm_tobit(double x);
+#if LJ_TARGET_MIPS64
+LJ_ASMF int32_t lj_vm_tointg(double x);
+#endif
 #endif
 
 static LJ_AINLINE int32_t lj_num2bit(lua_Number n)

@@ -382,12 +382,6 @@ LUALIB_API lua_Number luaL_optnumber(lua_State *L, int idx, lua_Number def)
   return numV(&tmp);
 }
 
-LUALIB_API uint64_t lua_toobject(lua_State *L, int idx)
-{
-  cTValue* o = index2adr(L, idx);
-  return tvisnil(o) ? 0 : o->u64;
-}
-
 LUA_API lua_Integer lua_tointeger(lua_State *L, int idx)
 {
   cTValue *o = index2adr(L, idx);
@@ -636,15 +630,6 @@ LUA_API void lua_pushnumber(lua_State *L, lua_Number n)
 LUA_API void lua_pushinteger(lua_State *L, lua_Integer n)
 {
   setintptrV(L->top, n);
-  incr_top(L);
-}
-
-LUA_API void lua_pushobject(lua_State *L, uint64_t n)
-{
-  if (!n)
-    setnilV(L->top);
-  else
-    setobjectV(L->top, n);
   incr_top(L);
 }
 
