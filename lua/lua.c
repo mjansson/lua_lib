@@ -481,7 +481,7 @@ lua_do_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg
 				break;
 
 			case LUADATA_OBJ:
-				lua_pushobject(state, arg->value[i].obj);
+				lua_pushinteger(state, arg->value[i].obj);
 				break;
 
 			case LUADATA_INT:
