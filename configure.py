@@ -28,11 +28,11 @@ lua_lib = generator.lib(module = 'lua', sources = [
 if not target.is_ios() and not target.is_android():
   configs = [config for config in toolchain.configs if config not in ['profile', 'deploy']]
   if not configs == []:
-    generator.bin('lua', ['main.c'], 'lua', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
-    generator.bin('luadump', ['main.c'], 'luadump', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
-    generator.bin('luaimport', ['main.c'], 'luaimport', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
-    generator.bin('luacompile', ['main.c'], 'luacompile', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit'] + dependlibs + extralibs, configs = configs, variables = extravariables)
-    generator.bin('', ['luacompile/main.c'], 'luacompile32', basepath = 'tools', implicit_deps = [lua_lib], libs = ['lua', 'luajit32'] + dependlibs + extralibs, configs = configs, variables = dict({'support_lua': True}, **extravariables))
+    generator.bin('lua', ['main.c'], 'lua', basepath = 'tools', implicit_deps = [lua_lib], dependlibs = dependlibs, libs = ['lua', 'luajit'] + extralibs, configs = configs, variables = extravariables)
+    generator.bin('luadump', ['main.c'], 'luadump', basepath = 'tools', implicit_deps = [lua_lib], dependlibs = dependlibs, libs = ['lua', 'luajit'] + extralibs, configs = configs, variables = extravariables)
+    generator.bin('luaimport', ['main.c'], 'luaimport', basepath = 'tools', implicit_deps = [lua_lib], dependlibs = dependlibs, libs = ['lua', 'luajit'] + extralibs, configs = configs, variables = extravariables)
+    generator.bin('luacompile', ['main.c'], 'luacompile', basepath = 'tools', implicit_deps = [lua_lib], dependlibs = dependlibs, libs = ['lua', 'luajit'] + extralibs, configs = configs, variables = extravariables)
+    generator.bin('', ['luacompile/main.c'], 'luacompile32', basepath = 'tools', implicit_deps = [lua_lib], dependlibs = dependlibs, libs = ['lua', 'luajit32'] + extralibs, configs = configs, variables = dict({'support_lua': True}, **extravariables))
 
 #No test cases if we're a submodule
 if generator.is_subninja():
