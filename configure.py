@@ -41,7 +41,7 @@ if generator.is_subninja():
 includepaths = generator.test_includepaths()
 
 test_cases = [
-  'bind', 'foundation'
+  'bind', 'foundation', 'network'
 ]
 if target.is_ios() or target.is_android():
   #Build one fat binary with all test cases
