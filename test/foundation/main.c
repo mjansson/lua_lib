@@ -14,6 +14,7 @@
 
 #include <foundation/foundation.h>
 #include <resource/resource.h>
+#include <network/network.h>
 #include <lua/lua.h>
 #include <test/test.h>
 
@@ -53,15 +54,20 @@ static int
 test_foundation_initialize(void) {
 	lua_config_t lua_config;
 	resource_config_t resource_config;
+	network_config_t network_config;
 
 	memset(&lua_config, 0, sizeof(lua_config));
 	memset(&resource_config, 0, sizeof(resource_config));
+	memset(&network_config, 0, sizeof(network_config));
 
 	resource_config.enable_local_source = true;
 	resource_config.enable_local_cache = true;
 	resource_config.enable_remote_sourced = true;
 	resource_config.enable_remote_compiled = true;
 	resource_config.enable_local_autoimport = true;
+
+	if (network_module_initialize(network_config) < 0)
+		return -1;
 
 	if (resource_module_initialize(resource_config) < 0)
 		return -1;
@@ -79,6 +85,7 @@ static void
 test_foundation_finalize(void) {
 	lua_module_finalize();
 	resource_module_finalize();
+	network_module_finalize();
 }
 
 static void
