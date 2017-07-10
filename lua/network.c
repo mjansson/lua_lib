@@ -32,6 +32,12 @@ lua_symbol_load_network(void) {
 	NETWORK_SYM(network_address_clone, NETWORK_ADDRESS_CLONE);
 	NETWORK_SYM(network_address_resolve, NETWORK_ADDRESS_RESOLVE);
 	NETWORK_SYM(network_address_to_string, NETWORK_ADDRESS_TO_STRING);
+	NETWORK_SYM(network_address_type, NETWORK_ADDRESS_TYPE);
+	NETWORK_SYM(network_address_family, NETWORK_ADDRESS_FAMILY);
+	NETWORK_SYM(network_address_local, NETWORK_ADDRESS_LOCAL);
+	NETWORK_SYM(network_address_equal, NETWORK_ADDRESS_EQUAL);
+	NETWORK_SYM(network_address_deallocate, NETWORK_ADDRESS_DEALLOCATE);
+	NETWORK_SYM(network_address_array_deallocate, NETWORK_ADDRESS_ARRAY_DEALLOCATE);
 	NETWORK_SYM(network_address_ipv4_initialize, NETWORK_ADDRESS_IPV4_INITIALIZE);
 	NETWORK_SYM(network_address_ipv6_initialize, NETWORK_ADDRESS_IPV6_INITIALIZE);
 	NETWORK_SYM(network_address_ip_set_port, NETWORK_ADDRESS_IP_SET_PORT);
@@ -40,16 +46,13 @@ lua_symbol_load_network(void) {
 	NETWORK_SYM(network_address_ipv4_ip, NETWORK_ADDRESS_IPV4_IP);
 	NETWORK_SYM(network_address_ipv6_set_ip, NETWORK_ADDRESS_IPV6_SET_IP);
 	NETWORK_SYM(network_address_ipv6_ip, NETWORK_ADDRESS_IPV6_IP);
-	NETWORK_SYM(network_address_type, NETWORK_ADDRESS_TYPE);
-	NETWORK_SYM(network_address_family, NETWORK_ADDRESS_FAMILY);
-	NETWORK_SYM(network_address_local, NETWORK_ADDRESS_LOCAL);
-	NETWORK_SYM(network_address_equal, NETWORK_ADDRESS_EQUAL);
-	NETWORK_SYM(network_address_array_deallocate, NETWORK_ADDRESS_ARRAY_DEALLOCATE);
+	NETWORK_SYM(network_address_ipv4_make_ip, NETWORK_ADDRESS_IPV4_MAKE_IP);
 
 	NETWORK_SYM(network_module_initialize, NETWORK_MODULE_INITIALIZE);
 	NETWORK_SYM(network_module_finalize, NETWORK_MODULE_FINALIZE);
 	NETWORK_SYM(network_module_is_initialized, NETWORK_MODULE_IS_INITIALIZED);
 	NETWORK_SYM(network_module_config, NETWORK_MODULE_CONFIG);
+	NETWORK_SYM(network_module_parse_config, NETWORK_MODULE_PARSE_CONFIG);
 	NETWORK_SYM(network_module_version, NETWORK_MODULE_VERSION);
 	NETWORK_SYM(network_supports_ipv4, NETWORK_SUPPORTS_IPV4);
 	NETWORK_SYM(network_supports_ipv6, NETWORK_SUPPORTS_IPV6);

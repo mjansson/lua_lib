@@ -584,18 +584,21 @@ HASH_SYM_NETWORK_ADDRESS_IP_SET_PORT    network_address_ip_set_port
 HASH_SYM_NETWORK_ADDRESS_IP_PORT        network_address_ip_port
 HASH_SYM_NETWORK_ADDRESS_IPV4_SET_IP    network_address_ipv4_set_ip
 HASH_SYM_NETWORK_ADDRESS_IPV4_IP        network_address_ipv4_ip
+HASH_SYM_NETWORK_ADDRESS_IPV4_MAKE_IP   network_address_ipv4_make_ip
 HASH_SYM_NETWORK_ADDRESS_IPV6_SET_IP    network_address_ipv6_set_ip
 HASH_SYM_NETWORK_ADDRESS_IPV6_IP        network_address_ipv6_ip
 HASH_SYM_NETWORK_ADDRESS_TYPE           network_address_type
 HASH_SYM_NETWORK_ADDRESS_FAMILY         network_address_family
 HASH_SYM_NETWORK_ADDRESS_LOCAL          network_address_local
 HASH_SYM_NETWORK_ADDRESS_EQUAL          network_address_equal
+HASH_SYM_NETWORK_ADDRESS_DEALLOCATE network_address_deallocate
 HASH_SYM_NETWORK_ADDRESS_ARRAY_DEALLOCATE network_address_array_deallocate
 
 HASH_SYM_NETWORK_MODULE_INITIALIZE      network_module_initialize
 HASH_SYM_NETWORK_MODULE_FINALIZE        network_module_finalize
 HASH_SYM_NETWORK_MODULE_IS_INITIALIZED  network_module_is_initialized
 HASH_SYM_NETWORK_MODULE_CONFIG          network_module_config
+HASH_SYM_NETWORK_MODULE_PARSE_CONFIG    network_module_parse_config
 HASH_SYM_NETWORK_MODULE_VERSION         network_module_version
 HASH_SYM_NETWORK_SUPPORTS_IPV4          network_supports_ipv4
 HASH_SYM_NETWORK_SUPPORTS_IPV6          network_supports_ipv6

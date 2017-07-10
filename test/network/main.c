@@ -14,6 +14,7 @@
 
 #include <foundation/foundation.h>
 #include <resource/resource.h>
+#include <network/network.h>
 #include <lua/lua.h>
 #include <test/test.h>
 
@@ -103,22 +104,15 @@ DECLARE_TEST(network, log) {
 	string_const_t testcode = string_const(STRING_CONST(
 	    "local ffi = require(\"ffi\")\n"
 	    "local foundation = require(\"foundation\")\n"
+	    "local network = require(\"network\")\n"
 	    "local C = ffi.C\n"
 	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
-	    "foundation.log.debug(\"Testing log debug output\")\n"
-	    "foundation.log.info(\"Testing log info output\")\n"
-	    "foundation.log.warn(\"Testing log warning output\")\n"
-	    "C.log_enable_prefix(false)\n"
-	    "foundation.log.error(\"Testing log error output without prefix\")\n"
-	    "C.log_enable_stdout(false)\n"
-	    "foundation.log.debug(\"Invisible on stdout\")\n"
-	    "C.log_enable_stdout(true)\n"
-	    "C.log_enable_prefix(true)\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
+	    "if C.network_module_is_initialized then"
+	    "	foundation.log.debug(\"Network module was initialized\")\n"
+	    "end\n"
 	));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
-	EXPECT_EQ(error(), ERROR_SCRIPT);
 
 	lua_deallocate(env);
 
