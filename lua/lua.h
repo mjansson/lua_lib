@@ -32,6 +32,7 @@
 #include <lua/foundation.h>
 #include <lua/network.h>
 #include <lua/resource.h>
+#include <lua/window.h>
 
 LUA_API int
 lua_module_initialize(const lua_config_t config);

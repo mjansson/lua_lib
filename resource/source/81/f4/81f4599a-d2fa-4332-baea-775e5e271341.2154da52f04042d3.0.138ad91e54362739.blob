@@ -3,7 +3,6 @@ local ffi = require("ffi")
 local C = ffi.C
 
 local foundation = require("foundation")
-local network = require("network")
 
 -- Resource types and functions
 ffi.cdef[[

@@ -178,3 +178,4 @@ struct lua_modulemap_entry_t {
 #define LUA_FOUNDATION_UUID uuid_make(0x4666006cd11e65efULL, 0x291433d0785ef08dULL)
 #define LUA_NETWORK_UUID uuid_make(0x49b42426567b296bULL, 0x894c85dde917c397ULL)
 #define LUA_RESOURCE_UUID uuid_make(0x4332d2fa81f4599aULL, 0x4113275e5e77eabaULL)
+#define LUA_WINDOW_UUID uuid_make(0x4a189d6f4b43ec66ULL, 0xa6debe148715d0b0ULL)

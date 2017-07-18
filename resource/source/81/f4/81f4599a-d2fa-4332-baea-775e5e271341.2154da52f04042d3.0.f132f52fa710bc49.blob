@@ -2,8 +2,7 @@
 local ffi = require("ffi")
 local C = ffi.C
 
-local foundation = require("foundation")
-local network = require("network")
+C.lua_symbol_load_foundation()
 
 -- Resource types and functions
 ffi.cdef[[

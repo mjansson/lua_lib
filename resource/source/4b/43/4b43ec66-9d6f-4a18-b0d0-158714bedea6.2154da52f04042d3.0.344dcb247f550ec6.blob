@@ -2,8 +2,6 @@
 local ffi = require("ffi")
 local C = ffi.C
 
-local foundation = require("foundation")
-
 -- Window types and functions
 ffi.cdef[[
 

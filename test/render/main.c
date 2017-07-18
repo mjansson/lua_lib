@@ -1,4 +1,4 @@
-/* main.c  -  Resource bind test for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Render bind test for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
@@ -15,15 +15,16 @@
 #include <foundation/foundation.h>
 #include <resource/resource.h>
 #include <network/network.h>
+#include <window/window.h>
 #include <lua/lua.h>
 #include <test/test.h>
 
 static application_t
-test_resource_application(void) {
+test_render_application(void) {
 	application_t app;
 	memset(&app, 0, sizeof(app));
-	app.name = string_const(STRING_CONST("Lua resource tests"));
-	app.short_name = string_const(STRING_CONST("test_lua_resource"));
+	app.name = string_const(STRING_CONST("Lua render tests"));
+	app.short_name = string_const(STRING_CONST("test_lua_render"));
 	app.company = string_const(STRING_CONST("Rampant Pixels"));
 	app.flags = APPLICATION_UTILITY;
 	app.exception_handler = test_exception_handler;
@@ -31,12 +32,12 @@ test_resource_application(void) {
 }
 
 static memory_system_t
-test_resource_memory_system(void) {
+test_render_memory_system(void) {
 	return memory_system_malloc();
 }
 
 static foundation_config_t
-test_resource_config(void) {
+test_render_config(void) {
 	foundation_config_t config;
 	memset(&config, 0, sizeof(config));
 	return config;
@@ -51,14 +52,18 @@ test_parse_config(const char* path, size_t path_size,
 }
 
 static int
-test_resource_initialize(void) {
+test_render_initialize(void) {
 	lua_config_t lua_config;
 	resource_config_t resource_config;
 	network_config_t network_config;
+	window_config_t window_config;
+	render_config_t render_config;
 
 	memset(&lua_config, 0, sizeof(lua_config));
 	memset(&resource_config, 0, sizeof(resource_config));
 	memset(&network_config, 0, sizeof(network_config));
+	memset(&window_config, 0, sizeof(window_config));
+	memset(&render_config, 0, sizeof(render_config));
 
 	resource_config.enable_local_source = true;
 	resource_config.enable_local_cache = true;
@@ -72,6 +77,12 @@ test_resource_initialize(void) {
 	if (resource_module_initialize(resource_config) < 0)
 		return -1;
 
+	if (window_module_initialize(window_config) < 0)
+		return -1;
+
+	if (render_module_initialize(render_config) < 0)
+		return -1;
+
 	if (lua_module_initialize(lua_config) < 0)
 		return -1;
 
@@ -82,18 +93,20 @@ test_resource_initialize(void) {
 }
 
 static void
-test_resource_finalize(void) {
+test_render_finalize(void) {
 	lua_module_finalize();
+	render_module_finalize();
+	window_module_finalize();
 	resource_module_finalize();
 	network_module_finalize();
 }
 
 static void
-test_resource_event(event_t* event) {
+test_render_event(event_t* event) {
 	resource_event_handle(event);
 }
 
-DECLARE_TEST(resource, log) {
+DECLARE_TEST(render, log) {
 	lua_t* env = lua_allocate();
 
 	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
@@ -104,11 +117,11 @@ DECLARE_TEST(resource, log) {
 	string_const_t testcode = string_const(STRING_CONST(
 	    "local ffi = require(\"ffi\")\n"
 	    "local foundation = require(\"foundation\")\n"
-	    "local resource = require(\"resource\")\n"
+	    "local window = require(\"render\")\n"
 	    "local C = ffi.C\n"
 	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
-	    "if C.resource_module_is_initialized then"
-	    "	foundation.log.debug(\"Resource module was initialized\")\n"
+	    "if C.render_module_is_initialized then"
+	    "	foundation.log.debug(\"Render module was initialized\")\n"
 	    "end\n"
 	));
 
@@ -120,28 +133,28 @@ DECLARE_TEST(resource, log) {
 }
 
 static void
-test_resource_declare(void) {
-	ADD_TEST(resource, log);
+test_render_declare(void) {
+	ADD_TEST(render, log);
 }
 
-static test_suite_t test_resource_suite = {
-	test_resource_application,
-	test_resource_memory_system,
-	test_resource_config,
-	test_resource_declare,
-	test_resource_initialize,
-	test_resource_finalize,
-	test_resource_event
+static test_suite_t test_render_suite = {
+	test_render_application,
+	test_render_memory_system,
+	test_render_config,
+	test_render_declare,
+	test_render_initialize,
+	test_render_finalize,
+	test_render_event
 };
 
 #if BUILD_MONOLITHIC
 
 int
-test_resource_run(void);
+test_render_run(void);
 
 int
-test_resource_run(void) {
-	test_suite = test_resource_suite;
+test_render_run(void) {
+	test_suite = test_render_suite;
 	return test_run_all();
 }
 
@@ -152,7 +165,7 @@ test_suite_define(void);
 
 test_suite_t
 test_suite_define(void) {
-	return test_resource_suite;
+	return test_render_suite;
 }
 
 #endif

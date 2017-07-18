@@ -766,3 +766,57 @@ HASH_SYM_RESOURCE_STREAM_OPEN_DYNAMIC         resource_stream_open_dynamic
 HASH_SYM_RESOURCE_STREAM_MAKE_PATH            resource_stream_make_path
 HASH_SYM_RESOURCE_STREAM_WRITE_HEADER         resource_stream_write_header
 HASH_SYM_RESOURCE_STREAM_READ_HEADER          resource_stream_read_header
+
+HASH_SYM_WINDOW_MODULE_INITIALIZE             window_module_initialize
+HASH_SYM_WINDOW_MODULE_FINALIZE               window_module_finalize
+HASH_SYM_WINDOW_MODULE_IS_INITIALIZED         window_module_is_initialized
+HASH_SYM_WINDOW_MODULE_VERSION                window_module_version
+
+HASH_SYM_WINDOW_CREATE                        window_create
+HASH_SYM_WINDOW_ALLOCATE                      window_allocate
+HASH_SYM_WINDOW_INITIALIZE                    window_initialize
+HASH_SYM_WINDOW_FINALIZE                      window_finalize
+HASH_SYM_WINDOW_DEALLOCATE                    window_deallocate
+HASH_SYM_WINDOW_ADAPTER                       window_adapter
+HASH_SYM_WINDOW_MAXIMIZE                      window_maximize
+HASH_SYM_WINDOW_MINIMIZE                      window_minimize
+HASH_SYM_WINDOW_RESTORE                       window_restore
+HASH_SYM_WINDOW_RESIZE                        window_resize
+HASH_SYM_WINDOW_MOVE                          window_move
+HASH_SYM_WINDOW_IS_OPEN                       window_is_open
+HASH_SYM_WINDOW_IS_VISIBLE                    window_is_visible
+HASH_SYM_WINDOW_IS_MAXIMIZED                  window_is_maximized
+HASH_SYM_WINDOW_IS_MINIMIZED                  window_is_minimized
+HASH_SYM_WINDOW_HAS_FOCUS                     window_has_focus
+HASH_SYM_WINDOW_SHOW_CURSOR                   window_show_cursor
+HASH_SYM_WINDOW_SET_CURSOR_POS                window_set_cursor
+HASH_SYM_WINDOW_IS_CURSOR_LOCKED              window_is_cursor_locked
+HASH_SYM_WINDOW_SET_TITLE                     window_set_title
+HASH_SYM_WINDOW_WIDTH                         window_width
+HASH_SYM_WINDOW_HEIGHT                        window_height
+HASH_SYM_WINDOW_POSITION_X                    window_position_x
+HASH_SYM_WINDOW_POSITION_Y                    window_position_y
+HASH_SYM_WINDOW_FIT_TO_SCREEN                 window_fit_to_screen
+
+HASH_SYM_WINDOW_HWND                          window_hwnd
+HASH_SYM_WINDOW_HINSTANCE                     window_hinstance
+HASH_SYM_WINDOW_HDC                           window_hdc
+HASH_SYM_WINDOW_RELEASE_HDC                   window_release_hdc
+
+HASH_SYM_WINDOW_DISPLAY                       window_display
+HASH_SYM_WINDOW_DRAWABLE                      window_drawable
+HASH_SYM_WINDOW_VISUAL                        window_visual
+HASH_SYM_WINDOW_SCREEN                        window_screen
+HASH_SYM_WINDOW_VIEW                          window_view
+HASH_SYM_WINDOW_LAYER                         window_layer
+
+HASH_SYM_WINDOW_ADD_DISPLAYLINK               window_add_displaylink
+
+HASH_SYM_WINDOW_SHOW_KEYBOARD                 window_show_keyboard
+HASH_SYM_WINDOW_HIDE_KEYBOARD                 window_hide_keyboard
+
+HASH_SYM_WINDOW_SCREEN_WIDTH                  window_screen_width
+HASH_SYM_WINDOW_SCREEN_HEIGHT                 window_screen_height
+
+HASH_SYM_WINDOW_VIEW_WIDTH                    window_view_width
+HASH_SYM_WINDOW_VIEW_HEIGHT                   window_view_height
