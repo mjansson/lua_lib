@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join('build', 'ninja'))
 
 import generator
 
-dependlibs = ['resource', 'network', 'foundation']
+dependlibs = ['window', 'resource', 'network', 'foundation']
 extralibs = []
 extravariables = {}
 
@@ -23,7 +23,7 @@ if target.is_windows():
 
 lua_lib = generator.lib(module = 'lua', sources = [
   'bind.c', 'compile.c', 'event.c', 'foundation.c', 'import.c', 'lua.c', 'module.c', 'network.c',
-  'read.c', 'resource.c', 'symbol.c', 'version.c'])
+  'read.c', 'resource.c', 'symbol.c', 'version.c', 'window.c'])
 
 if not target.is_ios() and not target.is_android():
   configs = [config for config in toolchain.configs if config not in ['profile', 'deploy']]
@@ -41,7 +41,7 @@ if generator.is_subninja():
 includepaths = generator.test_includepaths()
 
 test_cases = [
-  'bind', 'foundation', 'network', 'resource'
+  'bind', 'foundation', 'network', 'render', 'resource', 'window'
 ]
 if target.is_ios() or target.is_android():
   #Build one fat binary with all test cases
