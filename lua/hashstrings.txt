@@ -190,7 +190,7 @@ HASH_SYM_JSON_ESCAPE                    json_escape
 
 HASH_SYM_LIBRARY_LOAD                   library_load
 HASH_SYM_LIBRARY_REF                    library_ref
-HASH_SYM_LIBRARY_UNLOAD                 library_unload
+HASH_SYM_LIBRARY_RELEASE                library_release
 HASH_SYM_LIBRARY_SYMBOL                 library_symbol
 HASH_SYM_LIBRARY_NAME                   library_name
 HASH_SYM_LIBRARY_VALID                  library_valid
@@ -243,8 +243,8 @@ HASH_SYM_OBJECTMAP_RESERVE              objectmap_reserve
 HASH_SYM_OBJECTMAP_FREE                 objectmap_free
 HASH_SYM_OBJECTMAP_SET                  objectmap_set
 HASH_SYM_OBJECTMAP_RAW_LOOKUP           objectmap_raw_lookup
-HASH_SYM_OBJECTMAP_LOOKUP_REF           objectmap_lookup_ref
-HASH_SYM_OBJECTMAP_LOOKUP_UNREF         objectmap_lookup_unref
+HASH_SYM_OBJECTMAP_ACQUIRE              objectmap_acquire
+HASH_SYM_OBJECTMAP_RELEASE              objectmap_release
 HASH_SYM_OBJECTMAP_LOOKUP               objectmap_lookup
 
 HASH_SYM_PATH_BASE_FILE_NAME            path_base_file_name

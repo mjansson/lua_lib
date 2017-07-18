@@ -16,6 +16,7 @@
 #include <resource/resource.h>
 #include <network/network.h>
 #include <window/window.h>
+#include <render/render.h>
 #include <lua/lua.h>
 #include <test/test.h>
 

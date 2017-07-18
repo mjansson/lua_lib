@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.join('build', 'ninja'))
 
 import generator
 
-dependlibs = ['window', 'resource', 'network', 'foundation']
+dependlibs = ['render', 'window', 'resource', 'network', 'foundation']
 extralibs = []
 extravariables = {}
 
@@ -40,6 +40,17 @@ if generator.is_subninja():
 
 includepaths = generator.test_includepaths()
 
+gllibs = []
+glframeworks = []
+if target.is_macos():
+  glframeworks = ['OpenGL']
+elif target.is_ios():
+  glframeworks = ['QuartzCore', 'OpenGLES']
+if target.is_windows():
+  gllibs = ['opengl32', 'gdi32']
+if target.is_linux():
+  gllibs = ['GL', 'Xxf86vm', 'Xext', 'X11']
+
 test_cases = [
   'bind', 'foundation', 'network', 'render', 'resource', 'window'
 ]
@@ -62,9 +73,9 @@ if target.is_ios() or target.is_android():
   if target.is_pnacl():
     generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, resources = test_resources, includepaths = includepaths)
   else:
-    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, resources = test_resources, includepaths = includepaths, variables = extravariables)
+    generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs + gllibs, frameworks = glframeworks, resources = test_resources, includepaths = includepaths, variables = extravariables)
 else:
   #Build one binary per test case
   generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['lua'] + dependlibs + extralibs, includepaths = includepaths)
   for test in test_cases:
-    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs, includepaths = includepaths, variables = extravariables)
+    generator.bin(module = test, sources = ['main.c'], binname = 'test-' + test, basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'lua', 'luajit'] + dependlibs + extralibs + gllibs, frameworks = glframeworks, includepaths = includepaths, variables = extravariables)

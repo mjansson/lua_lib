@@ -461,7 +461,7 @@ lua_symbol_load_foundation(void) {
 
 	FOUNDATION_SYM(library_load, LIBRARY_LOAD);
 	FOUNDATION_SYM(library_ref, LIBRARY_REF);
-	FOUNDATION_SYM(library_unload, LIBRARY_UNLOAD);
+	FOUNDATION_SYM(library_release, LIBRARY_RELEASE);
 	FOUNDATION_SYM(library_symbol, LIBRARY_SYMBOL);
 	FOUNDATION_SYM(library_name, LIBRARY_NAME);
 	FOUNDATION_SYM(library_valid, LIBRARY_VALID);
@@ -531,8 +531,8 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(objectmap_free, OBJECTMAP_FREE);
 	FOUNDATION_SYM(objectmap_set, OBJECTMAP_SET);
 	FOUNDATION_SYM(objectmap_raw_lookup, OBJECTMAP_RAW_LOOKUP);
-	FOUNDATION_SYM(objectmap_lookup_ref, OBJECTMAP_LOOKUP_REF);
-	FOUNDATION_SYM(objectmap_lookup_unref, OBJECTMAP_LOOKUP_UNREF);
+	FOUNDATION_SYM(objectmap_acquire, OBJECTMAP_ACQUIRE);
+	FOUNDATION_SYM(objectmap_release, OBJECTMAP_RELEASE);
 	FOUNDATION_SYM(objectmap_lookup, OBJECTMAP_LOOKUP);
 
 	FOUNDATION_SYM(path_base_file_name, PATH_BASE_FILE_NAME);
