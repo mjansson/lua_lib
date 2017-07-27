@@ -220,6 +220,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 			break;
 		case LUACMD_WAIT:
 		case LUACMD_LOAD:
+		case LUACMD_LOAD_RESOURCE:
 		case LUACMD_EVAL:
 		case LUACMD_CALL:
 		default:
@@ -245,6 +246,7 @@ lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, 
 			break;
 		case LUACMD_WAIT:
 		case LUACMD_LOAD:
+		case LUACMD_LOAD_RESOURCE:
 		case LUACMD_EVAL:
 		case LUACMD_CALL:
 		default:

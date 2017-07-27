@@ -22,16 +22,18 @@ lua_read_stream(lua_State* state, void* user_data, size_t* size) {
 
 	FOUNDATION_UNUSED(state);
 
-	if (stream_eos(read->stream)) {
+	if (stream_eos(read->stream) || !read->remain) {
 		if (*size)
 			*size = 0;
 		return 0;
 	}
 
-	uint64_t num_read = stream_read(read->stream, read->chunk, 512);
+	uint64_t num_read = stream_read(read->stream, read->chunk,
+		(read->remain > sizeof(read->chunk)) ? sizeof(read->chunk) : read->remain);
 
 	if (size)
 		*size = (size_t)num_read;
+	read->remain -= num_read;
 
 	return num_read ? read->chunk : 0;
 }

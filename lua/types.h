@@ -71,6 +71,7 @@ typedef enum {
 typedef enum {
 	LUACMD_WAIT = 0,
 	LUACMD_LOAD,
+	LUACMD_LOAD_RESOURCE,
 	LUACMD_EVAL,
 	LUACMD_CALL,
 	LUACMD_BIND,
@@ -105,6 +106,7 @@ union lua_value_t {
 	const char* str;
 	bool        flag;
 	lua_fn      fn;
+	uuid_t      uuid;
 };
 
 struct lua_arg_t {
@@ -126,6 +128,7 @@ struct lua_op_t {
 
 struct lua_readstream_t {
 	stream_t* stream;
+	uint64_t  remain;
 	char      chunk[512];
 };
 

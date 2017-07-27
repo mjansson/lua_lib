@@ -183,11 +183,11 @@ lua_module_register(const char* name, size_t length, const uuid_t uuid, lua_fn l
 
 static lua_module_t
 lua_module_load_resource(const uuid_t uuid) {
-	lua_module_t module = {0, 0};
-	bool success = false;
 	const uint32_t expected_version = LUA_RESOURCE_MODULE_VERSION;
+	lua_module_t module = {0, 0};
 	uint64_t platform = 0;
 	stream_t* stream;
+	bool success = false;
 	bool recompile = false;
 	bool recompiled = false;
 

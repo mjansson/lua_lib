@@ -19,6 +19,7 @@
 #include <foundation/foundation.h>
 #include <resource/import.h>
 #include <resource/compile.h>
+#include <resource/stream.h>
 
 #include <setjmp.h>
 
@@ -47,7 +48,10 @@ static lua_result_t
 lua_do_eval_string(lua_t* env, const char* code, size_t length);
 
 static lua_result_t
-lua_do_eval_stream(lua_t* env, stream_t* stream);
+lua_do_eval_stream(lua_t* env, stream_t* stream, uint64_t size_limit);
+
+static lua_result_t
+lua_do_eval_uuid(lua_t* env, const uuid_t uuid);
 
 static lua_result_t
 lua_do_get(lua_t* env, const char* property, size_t length);
@@ -124,7 +128,11 @@ lua_execute_pending(lua_t* env) {
 		//Execute
 		switch (env->queue[head].cmd) {
 		case LUACMD_LOAD:
-			lua_do_eval_stream(env, env->queue[head].data.ptr);
+			lua_do_eval_stream(env, env->queue[head].data.ptr, 0);
+			break;
+
+		case LUACMD_LOAD_RESOURCE:
+			lua_do_eval_uuid(env, env->queue[head].data.ptr);
 			break;
 
 		case LUACMD_EVAL:
@@ -617,11 +625,30 @@ lua_eval_stream(lua_t* env, stream_t* stream) {
 		return LUA_QUEUED;
 	}
 	lua_execute_pending(env);
-	lua_result_t res = lua_do_eval_stream(env, stream);
+	lua_result_t res = lua_do_eval_stream(env, stream, 0);
 	lua_release_execution_right(env);
 	return res;
 #else
-	return lua_do_eval_stream(env, stream);
+	return lua_do_eval_stream(env, stream, 0);
+#endif
+}
+
+lua_result_t
+lua_eval_resource(lua_t* env, const uuid_t uuid) {
+#if BUILD_ENABLE_LUA_THREAD_SAFE
+	if (!lua_acquire_execution_right(env, true)) {
+		lua_op_t op;
+		op.cmd = LUACMD_LOAD_RESOURCE;
+		op.data.uuid = uuid;
+		lua_push_op(env, &op);
+		return LUA_QUEUED;
+	}
+	lua_execute_pending(env);
+	lua_result_t res = lua_do_eval_uuid(env, uuid);
+	lua_release_execution_right(env);
+	return res;
+#else
+	return lua_do_eval_uuid(env, uuid);
 #endif
 }
 
@@ -661,7 +688,7 @@ lua_do_eval_string(lua_t* env, const char* code, size_t length) {
 }
 
 static lua_result_t
-lua_do_eval_stream(lua_t* env, stream_t* stream) {
+lua_do_eval_stream(lua_t* env, stream_t* stream, uint64_t size_limit) {
 	lua_State* state;
 
 	if (!env || !stream)
@@ -670,7 +697,8 @@ lua_do_eval_stream(lua_t* env, stream_t* stream) {
 	state = env->state;
 
 	lua_readstream_t read_stream = {
-		.stream = stream
+		.stream = stream,
+		.remain = size_limit ? size_limit : 0x7FFFFFFFFFFFFFFFULL
 	};
 
 	if (lua_load(state, lua_read_stream, &read_stream, "=eval") != 0) {
@@ -692,6 +720,75 @@ lua_do_eval_stream(lua_t* env, stream_t* stream) {
 	}
 
 	return LUA_OK;
+}
+
+static lua_result_t
+lua_do_eval_uuid(lua_t* env, const uuid_t uuid) {
+	if (!env || uuid_is_null(uuid))
+		return LUA_ERROR;
+
+	const uint32_t expected_version = LUA_RESOURCE_MODULE_VERSION;
+	uint64_t platform = 0;
+	stream_t* stream;
+	bool success = false;
+	bool recompile = false;
+	bool recompiled = false;
+
+	error_context_declare_local(
+	    char uuidbuf[40];
+	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
+	);
+	error_context_push(STRING_CONST("loading resource"), STRING_ARGS(uuidstr));
+
+	platform = lua_resource_platform();
+
+retry:
+
+	stream = resource_stream_open_static(uuid, platform);
+	if (stream) {
+		resource_header_t header = resource_stream_read_header(stream);
+		if ((header.type == HASH_LUA) && (header.version == expected_version)) {
+			success = true;
+		}
+		else {
+			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
+			          STRING_CONST("Got unexpected type/version: %" PRIx64 " : %u"),
+			          header.type, header.version);
+			recompile = true;
+		}
+		stream_deallocate(stream);
+		stream = nullptr;
+	}
+	if (success) {
+		success = false;
+		stream = resource_stream_open_dynamic(uuid, platform);
+	}
+	if (stream) {
+		uint32_t version = stream_read_uint32(stream);
+		size_t size = (size_t)stream_read_uint64(stream);
+		if (version == expected_version) {
+			if (lua_do_eval_stream(env, stream, size) == LUA_OK)
+				success = true;
+		}
+		else {
+			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
+			          STRING_CONST("Got unexpected type/version: %u"),
+			          version);
+			recompile = true;
+		}
+		stream_deallocate(stream);
+		stream = nullptr;
+	}
+
+	if (recompile && !recompiled) {
+		recompiled = resource_compile(uuid, platform);
+		if (recompiled)
+			goto retry;
+	}
+
+	error_context_pop();
+
+	return success ? LUA_OK : LUA_ERROR;
 }
 
 string_const_t

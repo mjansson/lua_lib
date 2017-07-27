@@ -86,6 +86,10 @@ lua_eval_string(lua_t* env, const char* code, size_t length);
 LUA_API lua_result_t
 lua_eval_stream(lua_t* env, stream_t* stream);
 
+//! Load code from resource
+LUA_API lua_result_t
+lua_eval_resource(lua_t* env, const uuid_t uuid);
+
 //! Call method
 LUA_API lua_result_t
 lua_call_void(lua_t* env, const char* method, size_t length);
