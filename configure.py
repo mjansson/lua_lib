@@ -22,7 +22,7 @@ if target.is_windows():
   extralibs += ['ws2_32', 'iphlpapi']
 
 lua_lib = generator.lib(module = 'lua', sources = [
-  'bind.c', 'compile.c', 'event.c', 'foundation.c', 'import.c', 'lua.c', 'module.c', 'network.c',
+  'bind.c', 'call.c', 'compile.c', 'eval.c', 'event.c', 'foundation.c', 'import.c', 'lua.c', 'module.c', 'network.c',
   'read.c', 'resource.c', 'symbol.c', 'version.c', 'window.c'])
 
 if not target.is_ios() and not target.is_android():
