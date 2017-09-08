@@ -28,6 +28,8 @@
 #include <lua/read.h>
 #include <lua/import.h>
 #include <lua/compile.h>
+#include <lua/eval.h>
+#include <lua/call.h>
 
 #include <lua/foundation.h>
 #include <lua/network.h>
@@ -77,50 +79,6 @@ lua_from_state(lua_State* state);
 //! Get lua state associated with environment
 LUA_API lua_State*
 lua_state(lua_t* env);
-
-//! Load code from string
-LUA_API lua_result_t
-lua_eval_string(lua_t* env, const char* code, size_t length);
-
-//! Load code from stream
-LUA_API lua_result_t
-lua_eval_stream(lua_t* env, stream_t* stream);
-
-//! Load code from resource
-LUA_API lua_result_t
-lua_eval_resource(lua_t* env, const uuid_t uuid);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_void(lua_t* env, const char* method, size_t length);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_ptr(lua_t* env, const char* method, size_t length, void* arg);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_object(lua_t* env, const char* method, size_t length, object_t arg);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_real(lua_t* env, const char* method, size_t length, real arg);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_int(lua_t* env, const char* method, size_t length, int arg);
-
-//! Call method (arglength must fit in a uint16_t)
-LUA_API lua_result_t
-lua_call_string(lua_t* env, const char* method, size_t length, const char* arg, size_t arglength);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_bool(lua_t* env, const char* method, size_t length, bool arg);
-
-//! Call method
-LUA_API lua_result_t
-lua_call_custom(lua_t* env, const char* method, size_t length, lua_arg_t* arg);
 
 //! Access value
 LUA_API string_const_t

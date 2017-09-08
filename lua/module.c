@@ -358,81 +358,82 @@ lua_module_is_loaded(lua_t* lua, const uuid_t uuid) {
 
 int
 lua_module_reload(lua_t* lua, const uuid_t uuid) {
-	int ret = -1;
 	lua_State* state = lua_state(lua);
 	lua_modulemap_entry_t* entry = lua_module_registry_lookup(state, uuid);
-	if (entry) {
-		int stacksize = lua_gettop(state);
-
-		lua_module_t module = lua_module_load_resource(uuid);
-		if (module.size) {
-			string_const_t uuidstr = string_from_uuid_static(uuid);
-			log_debugf(HASH_LUA, STRING_CONST("Reloading module: %.*s"), STRING_FORMAT(uuidstr));
-			if (lua_module_upload(state, module.bytecode, module.size) == 0) {
-				//Check if module loaded as a table
-				if (lua_istable(state, -1)) {
-					lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
-					lua_gettable(state, LUA_REGISTRYINDEX);
-
-					//Get and replace the old loaded module table
-					lua_pushlightuserdata(state, entry);
-					lua_gettable(state, -2);
-					lua_replace(state, -2); //Get rid of loaded-modules registry table from stack
-					if (lua_istable(state, -1)) {
-						lua_pushlstring(state, STRING_CONST("__modulename"));
-						lua_gettable(state, -2);
-
-						size_t name_length = 0;
-						const char* modulename = lua_isnil(state, -1)
-						                         ? nullptr
-						                         : luaL_checklstring(state, -1, &name_length);
-						log_debugf(HASH_LUA, STRING_CONST("Replacing module table: %.*s (%.*s)"),
-						           STRING_FORMAT(uuidstr), (int)name_length, modulename);
-						lua_pop(state, 1); //Get rid of name from stack
-
-						//Clear previous loaded-modules table
-						lua_pushnil(state);
-						while (lua_next(state, -2) != 0) {
-							lua_pop(state, 1); //Old value
-							lua_pushnil(state); //Replace with nil
-							lua_settable(state, -3); //Erase in previous loaded-modules table
-							lua_pushnil(state); //Restart lua_next
-						}
-
-						//Copy new module table to previous loaded-modules table
-						lua_pushnil(state);
-						while (lua_next(state, -3) != 0) { //Lookup in new module table
-							lua_pushvalue(state, -2); //Copy key
-							lua_pushvalue(state, -2); //Copy value
-							lua_settable(state, -5); //Set in previous loaded-modules table
-							lua_pop(state, 1); //Pop value, leaving key for lua_next iteration
-						}
-
-						lua_pushlstring(state, STRING_CONST("__modulename"));
-						lua_pushlstring(state, modulename, name_length);
-						lua_settable(state, -3);
-					}
-				}
-				ret = 0;
-			}
-			else {
-				uuidstr = string_from_uuid_static(uuid);
-				log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to reload module '%.*s'"),
-				          STRING_FORMAT(uuidstr));
-			}
-		}
-		else {
-			string_const_t uuidstr = string_from_uuid_static(uuid);
-			log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to load module '%.*s'"),
-			          STRING_FORMAT(uuidstr));
-		}
-
-		lua_settop(state, stacksize);
-	}
-	else {
+	if (!entry) {
 		string_const_t uuidstr = string_from_uuid_static(uuid);
 		log_debugf(HASH_LUA, STRING_CONST("Reloading module ignored, not loaded: %.*s"),
 		           STRING_FORMAT(uuidstr));
+		return -1;
 	}
+
+	int ret = -1;
+	int stacksize = lua_gettop(state);
+
+	lua_module_t module = lua_module_load_resource(uuid);
+	if (module.size) {
+		string_const_t uuidstr = string_from_uuid_static(uuid);
+		log_debugf(HASH_LUA, STRING_CONST("Reloading module: %.*s"), STRING_FORMAT(uuidstr));
+		if (lua_module_upload(state, module.bytecode, module.size) == 0) {
+			//Check if module loaded as a table
+			if (lua_istable(state, -1)) {
+				lua_pushlstring(state, STRING_CONST(BUILD_REGISTRY_LOADED_MODULES));
+				lua_gettable(state, LUA_REGISTRYINDEX);
+
+				//Get and replace the old loaded module table
+				lua_pushlightuserdata(state, entry);
+				lua_gettable(state, -2);
+				lua_replace(state, -2); //Get rid of loaded-modules registry table from stack
+				if (lua_istable(state, -1)) {
+					lua_pushlstring(state, STRING_CONST("__modulename"));
+					lua_gettable(state, -2);
+
+					size_t name_length = 0;
+					const char* modulename = lua_isnil(state, -1)
+					                         ? nullptr
+					                         : luaL_checklstring(state, -1, &name_length);
+					log_debugf(HASH_LUA, STRING_CONST("Replacing module table: %.*s (%.*s)"),
+					           STRING_FORMAT(uuidstr), (int)name_length, modulename);
+					lua_pop(state, 1); //Get rid of name from stack
+
+					//Clear previous loaded-modules table
+					lua_pushnil(state);
+					while (lua_next(state, -2) != 0) {
+						lua_pop(state, 1); //Old value
+						lua_pushnil(state); //Replace with nil
+						lua_settable(state, -3); //Erase in previous loaded-modules table
+						lua_pushnil(state); //Restart lua_next
+					}
+
+					//Copy new module table to previous loaded-modules table
+					lua_pushnil(state);
+					while (lua_next(state, -3) != 0) { //Lookup in new module table
+						lua_pushvalue(state, -2); //Copy key
+						lua_pushvalue(state, -2); //Copy value
+						lua_settable(state, -5); //Set in previous loaded-modules table
+						lua_pop(state, 1); //Pop value, leaving key for lua_next iteration
+					}
+
+					lua_pushlstring(state, STRING_CONST("__modulename"));
+					lua_pushlstring(state, modulename, name_length);
+					lua_settable(state, -3);
+				}
+			}
+			ret = 0;
+		}
+		else {
+			uuidstr = string_from_uuid_static(uuid);
+			log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to reload module '%.*s'"),
+			          STRING_FORMAT(uuidstr));
+		}
+	}
+	else {
+		string_const_t uuidstr = string_from_uuid_static(uuid);
+		log_warnf(HASH_LUA, WARNING_RESOURCE, STRING_CONST("Unable to load module '%.*s'"),
+		          STRING_FORMAT(uuidstr));
+	}
+
+	lua_settop(state, stacksize);
+
 	return ret;
 }
