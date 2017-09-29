@@ -19,7 +19,7 @@ writer = generator.writer
 toolchain = generator.toolchain
 
 if target.is_windows():
-  extralibs += ['ws2_32', 'iphlpapi']
+  extralibs += ['gdi32', 'ws2_32', 'iphlpapi']
 
 lua_lib = generator.lib(module = 'lua', sources = [
   'bind.c', 'call.c', 'compile.c', 'eval.c', 'event.c', 'foundation.c', 'import.c', 'lua.c', 'module.c', 'network.c',
