@@ -15,12 +15,18 @@
 #include <lua/event.h>
 #include <lua/module.h>
 
+#include <foundation/array.h>
 #include <resource/event.h>
 
+extern lua_t**
+lua_instances(void);
+
 void
-lua_event_handle_resource(lua_t* lua, const event_t* event) {
+lua_event_handle_resource(const event_t* event) {
 	if (event->id != RESOURCEEVENT_MODIFY)
 		return;
 
-	lua_module_reload(lua, resource_event_uuid(event));
+	lua_t** instances = lua_instances();
+	for (size_t ienv = 0, esize = array_size(instances); ienv < esize; ++ienv)
+		lua_module_reload(instances[ienv], resource_event_uuid(event));
 }

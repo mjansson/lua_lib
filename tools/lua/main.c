@@ -335,7 +335,7 @@ static void
 _lua_process_resource_event(lua_t* lua, mutex_t* lock, const event_t* event) {
 	if (lock)
 		mutex_lock(lock);
-	lua_event_handle_resource(lua, event);
+	lua_event_handle_resource(event);
 	if (lock)
 		mutex_unlock(lock);
 }

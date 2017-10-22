@@ -23,7 +23,6 @@
 
 /*! Handle resource events. No other event types should be
 passed to this function.
-\param lua Lua instance
 \param event Resource event */
 LUA_API void
-lua_event_handle_resource(lua_t* lua, const event_t* event);
+lua_event_handle_resource(const event_t* event);

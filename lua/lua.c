@@ -37,6 +37,10 @@
 #undef LUA_API
 
 static lua_config_t _lua_config;
+static lua_t** _lua_instances;
+
+lua_t**
+lua_instances(void);
 
 extern lua_result_t
 lua_do_bind(lua_t* env, const char* property, size_t length, lua_command_t cmd, lua_value_t val);
@@ -307,6 +311,11 @@ lua_panic(lua_State* state) {
 	return 0;
 }
 
+lua_t**
+lua_instances(void) {
+	return _lua_instances;
+}
+
 lua_t*
 lua_allocate(void) {
 	lua_t* env = lua_allocator(0, 0, 0, sizeof(lua_t));
@@ -344,6 +353,8 @@ lua_allocate(void) {
 
 	lua_pop(state, lua_gettop(state) - stacksize);
 
+	array_push(_lua_instances, env);
+
 	return env;
 }
 
@@ -364,6 +375,13 @@ lua_deallocate(lua_t* env) {
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 	semaphore_finalize(&env->execution_right);
 #endif
+
+	for (size_t ienv = 0, esize = array_size(_lua_instances); ienv != esize; ++ienv) {
+		if (_lua_instances[ienv] == env) {
+			array_erase(_lua_instances, ienv);
+			break;
+		}
+	}
 
 	memory_deallocate(env);
 }
@@ -621,6 +639,8 @@ lua_module_finalize(void) {
 
 	lua_modulemap_finalize();
 	lua_symbol_finalize();
+
+	array_deallocate(_lua_instances);
 
 	_module_initialized = false;
 }
