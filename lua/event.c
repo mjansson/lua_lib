@@ -23,7 +23,7 @@ lua_instances(void);
 
 void
 lua_event_handle_resource(const event_t* event) {
-	if (event->id != RESOURCEEVENT_MODIFY)
+	if ((event->id != RESOURCEEVENT_MODIFY) && (event->id != RESOURCEEVENT_DEPENDS))
 		return;
 
 	lua_t** instances = lua_instances();
