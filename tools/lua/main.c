@@ -333,6 +333,7 @@ _lua_interpreter(lua_t* lua, mutex_t* lock) {
 
 static void
 _lua_process_resource_event(lua_t* lua, mutex_t* lock, const event_t* event) {
+	FOUNDATION_UNUSED(lua);
 	if (lock)
 		mutex_lock(lock);
 	lua_event_handle_resource(event);
