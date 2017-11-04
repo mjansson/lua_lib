@@ -682,7 +682,7 @@
 #define HASH_SYM_RESOURCE_MODULE_PARSE_CONFIG static_hash_string("resource_module_parse_config", 28, 0x4d8a35306ac205d1ULL)
 #define HASH_SYM_RESOURCE_SOURCE_PATH static_hash_string("resource_source_path", 20, 0xc6bb73312661ad52ULL)
 #define HASH_SYM_RESOURCE_SOURCE_SET_PATH static_hash_string("resource_source_set_path", 24, 0xaa8da2e46465668bULL)
-#define HASH_SYM_RESOURCE_SOURCE_READ_HASH static_hash_string("resource_source_read_hash", 25, 0x88c91c6313e32de1ULL)
+#define HASH_SYM_RESOURCE_SOURCE_HASH static_hash_string("resource_source_hash", 20, 0x1c3857b1262a6b4bULL)
 #define HASH_SYM_RESOURCE_SOURCE_ALLOCATE static_hash_string("resource_source_allocate", 24, 0x6d02ae6ea0470776ULL)
 #define HASH_SYM_RESOURCE_SOURCE_DEALLOCATE static_hash_string("resource_source_deallocate", 26, 0x3477295581337ec1ULL)
 #define HASH_SYM_RESOURCE_SOURCE_INITIALIZE static_hash_string("resource_source_initialize", 26, 0xaf5906c2180eecf5ULL)

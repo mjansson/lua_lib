@@ -737,7 +737,7 @@ HASH_SYM_RESOURCE_MODULE_PARSE_CONFIG         resource_module_parse_config
 
 HASH_SYM_RESOURCE_SOURCE_PATH                 resource_source_path
 HASH_SYM_RESOURCE_SOURCE_SET_PATH             resource_source_set_path
-HASH_SYM_RESOURCE_SOURCE_READ_HASH            resource_source_read_hash
+HASH_SYM_RESOURCE_SOURCE_HASH                 resource_source_hash
 HASH_SYM_RESOURCE_SOURCE_ALLOCATE             resource_source_allocate
 HASH_SYM_RESOURCE_SOURCE_DEALLOCATE           resource_source_deallocate
 HASH_SYM_RESOURCE_SOURCE_INITIALIZE           resource_source_initialize

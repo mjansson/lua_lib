@@ -360,12 +360,8 @@ int
 lua_module_reload(lua_t* lua, const uuid_t uuid) {
 	lua_State* state = lua_state(lua);
 	lua_modulemap_entry_t* entry = lua_module_registry_lookup(state, uuid);
-	if (!entry) {
-		string_const_t uuidstr = string_from_uuid_static(uuid);
-		log_debugf(HASH_LUA, STRING_CONST("Reloading module ignored, not loaded: %.*s"),
-		           STRING_FORMAT(uuidstr));
+	if (!entry)
 		return -1;
-	}
 
 	int ret = -1;
 	int stacksize = lua_gettop(state);

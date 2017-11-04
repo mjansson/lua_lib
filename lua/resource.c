@@ -138,7 +138,7 @@ lua_symbol_load_resource(void) {
 
 	RESOURCE_SYM(resource_source_path, RESOURCE_SOURCE_PATH);
 	RESOURCE_SYM(resource_source_set_path, RESOURCE_SOURCE_SET_PATH);
-	RESOURCE_SYM(resource_source_read_hash, RESOURCE_SOURCE_READ_HASH);
+	RESOURCE_SYM(resource_source_hash, RESOURCE_SOURCE_HASH);
 	RESOURCE_SYM(resource_source_allocate, RESOURCE_SOURCE_ALLOCATE);
 	RESOURCE_SYM(resource_source_deallocate, RESOURCE_SOURCE_DEALLOCATE);
 	RESOURCE_SYM(resource_source_initialize, RESOURCE_SOURCE_INITIALIZE);
