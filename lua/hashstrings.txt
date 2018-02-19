@@ -773,8 +773,6 @@ HASH_SYM_WINDOW_MODULE_IS_INITIALIZED         window_module_is_initialized
 HASH_SYM_WINDOW_MODULE_VERSION                window_module_version
 
 HASH_SYM_WINDOW_CREATE                        window_create
-HASH_SYM_WINDOW_ALLOCATE                      window_allocate
-HASH_SYM_WINDOW_INITIALIZE                    window_initialize
 HASH_SYM_WINDOW_FINALIZE                      window_finalize
 HASH_SYM_WINDOW_DEALLOCATE                    window_deallocate
 HASH_SYM_WINDOW_ADAPTER                       window_adapter

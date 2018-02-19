@@ -93,7 +93,7 @@ window_visual(window_t* window) {
 
 #if !FOUNDATION_PLATFORM_MACOS && !FOUNDATION_PLATFORM_IOS
 
-void*
+static void*
 window_view(window_t* window, unsigned int tag) {
 	FOUNDATION_UNUSED(window);
 	FOUNDATION_UNUSED(tag);
@@ -163,8 +163,6 @@ lua_symbol_load_window(void) {
 	RESOURCE_SYM(window_module_version, WINDOW_MODULE_VERSION);
 
 	RESOURCE_SYM(window_create, WINDOW_CREATE);
-	RESOURCE_SYM(window_allocate, WINDOW_ALLOCATE);
-	RESOURCE_SYM(window_initialize, WINDOW_INITIALIZE);
 	RESOURCE_SYM(window_finalize, WINDOW_FINALIZE);
 	RESOURCE_SYM(window_deallocate, WINDOW_DEALLOCATE);
 	RESOURCE_SYM(window_adapter, WINDOW_ADAPTER);
