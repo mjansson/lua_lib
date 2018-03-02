@@ -70,7 +70,7 @@
 		454170BE1A03CC7B00CA967E /* lua */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lua; sourceTree = BUILT_PRODUCTS_DIR; };
 		454170C71A03CCA700CA967E /* errorcodes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = errorcodes.h; path = ../../../tools/lua/errorcodes.h; sourceTree = "<group>"; };
 		454170C81A03CCA700CA967E /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../tools/lua/main.c; sourceTree = "<group>"; };
-		454170CA1A03D15000CA967E /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../../../lib/macosx/debug/liblua.a; sourceTree = "<group>"; };
+		454170CA1A03D15000CA967E /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../../../lib/macos/debug/liblua.a; sourceTree = "<group>"; };
 		454170CC1A03D19900CA967E /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		454170CD1A03D19900CA967E /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		454170D51A03D43B00CA967E /* luadump */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = luadump; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -362,7 +362,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/debug;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macos/debug;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -384,10 +384,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/debug,
-					../../../../resource_lib/lib/macosx/debug,
-					../../../../network_lib/lib/macosx/debug,
-					../../../../foundation_lib/lib/macosx/debug,
+					../../../lib/macos/debug,
+					../../../../resource_lib/lib/macos/debug,
+					../../../../network_lib/lib/macos/debug,
+					../../../../foundation_lib/lib/macos/debug,
 					"$(inherited)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -413,7 +413,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_MODULES = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/release;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macos/release;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -435,10 +435,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/debug,
-					../../../../resource_lib/lib/macosx/debug,
-					../../../../network_lib/lib/macosx/debug,
-					../../../../foundation_lib/lib/macosx/debug,
+					../../../lib/macos/debug,
+					../../../../resource_lib/lib/macos/debug,
+					../../../../network_lib/lib/macos/debug,
+					../../../../foundation_lib/lib/macos/debug,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;

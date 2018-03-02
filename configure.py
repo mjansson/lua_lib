@@ -72,10 +72,10 @@ if target.is_ios() or target.is_android():
     test_extrasources = [os.path.join('all', 'android', 'java', 'com', 'rampantpixels', 'foundation', 'test', item) for item in [
       'TestActivity.java'
     ]]
-  if target.is_pnacl():
-    generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'luajit'] + dependlibs + extralibs, resources = test_resources, includepaths = includepaths)
-  else:
+  if target.is_macos() or target.is_ios() or target.is_android() or target.is_tizen():
     generator.app(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'luajit'] + dependlibs + extralibs + gllibs, frameworks = glframeworks, resources = test_resources, includepaths = includepaths, variables = extravariables)
+  else:
+    generator.bin(module = '', sources = [os.path.join(module, 'main.c') for module in test_cases] + test_extrasources, binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = ['test', 'luajit'] + dependlibs + extralibs + gllibs, frameworks = glframeworks, resources = test_resources, includepaths = includepaths, variables = extravariables)
 else:
   #Build one binary per test case
   generator.bin(module = 'all', sources = ['main.c'], binname = 'test-all', basepath = 'test', implicit_deps = [lua_lib], libs = dependlibs + extralibs, includepaths = includepaths)

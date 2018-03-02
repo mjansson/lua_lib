@@ -8,7 +8,7 @@ make clean
 make amalg
 mv src/libluajit.a $BUILD_DIR/libluajit32.a
 
-#libtool -o ../../lib/macosx/libluajit.a $BUILD_DIR/libluajit32.a $BUILD_DIR/libluajit64.a 2> /dev/null
+#libtool -o ../../lib/macos/libluajit.a $BUILD_DIR/libluajit32.a $BUILD_DIR/libluajit64.a 2> /dev/null
 cp $BUILD_DIR/libluajit32.a ../../lib/macos/libluajit32.a
 
 make clean

@@ -57,7 +57,7 @@
 		451388D4193F858E00BA2092 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		451388D5193F858E00BA2092 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		451388DE193F85BC00BA2092 /* test-foundation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "test-foundation"; sourceTree = BUILT_PRODUCTS_DIR; };
-		451388EA193F85DA00BA2092 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../../../lib/macosx/debug/liblua.a; sourceTree = "<group>"; };
+		451388EA193F85DA00BA2092 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../../../lib/macos/debug/liblua.a; sourceTree = "<group>"; };
 		451388EE193F868B00BA2092 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../../test/foundation/main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -238,7 +238,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/debug;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macos/debug;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -262,11 +262,11 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					../../../lib/macosx,
-					../../../lib/macosx/debug,
-					../../../../resource_lib/lib/macosx/debug,
-					../../../../network_lib/lib/macosx/debug,
-					../../../../foundation_lib/lib/macosx/debug,
+					../../../lib/macos,
+					../../../lib/macos/debug,
+					../../../../resource_lib/lib/macos/debug,
+					../../../../network_lib/lib/macos/debug,
+					../../../../foundation_lib/lib/macos/debug,
 					"$(inherited)",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
@@ -289,7 +289,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/release;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macos/release;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -315,10 +315,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/debug,
-					../../../../resource_lib/lib/macosx/release,
-					../../../../network_lib/lib/macosx/release,
-					../../../../foundation_lib/lib/macosx/release,
+					../../../lib/macos/debug,
+					../../../../resource_lib/lib/macos/release,
+					../../../../network_lib/lib/macos/release,
+					../../../../foundation_lib/lib/macos/release,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
@@ -442,7 +442,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/profile;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macos/profile;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -468,10 +468,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/debug,
-					../../../../resource_lib/lib/macosx/profile,
-					../../../../network_lib/lib/macosx/profile,
-					../../../../foundation_lib/lib/macosx/profile,
+					../../../lib/macos/debug,
+					../../../../resource_lib/lib/macos/profile,
+					../../../../network_lib/lib/macos/profile,
+					../../../../foundation_lib/lib/macos/profile,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
@@ -545,7 +545,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CONFIGURATION_BUILD_DIR = ../../../bin/macosx/deploy;
+				CONFIGURATION_BUILD_DIR = ../../../bin/macos/deploy;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = c11;
@@ -571,10 +571,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					../../../lib/macosx,
-					../../../lib/macosx/debug,
-					../../../../resource_lib/lib/macosx/deploy,
-					../../../../network_lib/lib/macosx/deploy,
-					../../../../foundation_lib/lib/macosx/deploy,
+					../../../lib/macos/debug,
+					../../../../resource_lib/lib/macos/deploy,
+					../../../../network_lib/lib/macos/deploy,
+					../../../../foundation_lib/lib/macos/deploy,
 					"$(inherited)",
 				);
 				LLVM_LTO = YES;
