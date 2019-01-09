@@ -25,7 +25,7 @@ lua_resource_platform(void) {
 	if (_resource_platform)
 		return _resource_platform;
 	architecture_t arch = system_architecture();
-	if (lua_arch_is_fr2(arch)) {
+	if (lua_arch_is_fr2((int)arch)) {
 		resource_platform_t decl;
 		memset(&decl, 0xFF, sizeof(decl));
 		decl.arch = (1 << 7);
