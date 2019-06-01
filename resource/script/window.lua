@@ -17,7 +17,7 @@ void window_module_finalize(void);
 bool window_module_is_initialized(void);
 version_t window_module_version(void);
 
-window_t* window_create(unsigned int, const char*, size_t, int, int, bool);
+window_t* window_create(unsigned int, const char*, size_t, int, int, unsigned int);
 window_t* window_allocate(void*);
 void window_initialize(window_t*, void*);
 void window_finalize(window_t*);
