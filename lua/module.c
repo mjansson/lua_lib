@@ -193,7 +193,7 @@ lua_module_load_resource(const uuid_t uuid) {
 
 	error_context_declare_local(
 	    char uuidbuf[40];
-	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
+	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid)
 	);
 	error_context_push(STRING_CONST("loading module"), STRING_ARGS(uuidstr));
 

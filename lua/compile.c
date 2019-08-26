@@ -89,7 +89,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 
 	error_context_declare_local(
 	    char uuidbuf[40];
-	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid);
+	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid)
 	);
 	error_context_push(STRING_CONST("compiling module"), STRING_ARGS(uuidstr));
 
