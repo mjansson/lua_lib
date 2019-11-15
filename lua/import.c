@@ -19,8 +19,9 @@
 #if RESOURCE_ENABLE_LOCAL_SOURCE
 
 typedef struct {
-	char*   sourcecode;
-	size_t  sourcecode_size;
+	char* sourcecode;
+	size_t sourcecode_size;
+	tick_t timestamp;
 } luaimport_source_t;
 
 static int
@@ -29,6 +30,7 @@ lua_import_stream(stream_t* stream, luaimport_source_t* source) {
 
 	source->sourcecode_size = stream_size(stream);
 	source->sourcecode = memory_allocate(HASH_LUA, source->sourcecode_size, 0, MEMORY_PERSISTENT);
+	source->timestamp = stream_last_modified(stream);
 
 	if (stream_read(stream, source->sourcecode, source->sourcecode_size) == source->sourcecode_size)
 		result = 0;
@@ -48,30 +50,29 @@ lua_import_output(const uuid_t uuid, const luaimport_source_t* import) {
 	resource_source_initialize(&source);
 	resource_source_read(&source, uuid);
 
-	timestamp = time_system();
+	timestamp = import->timestamp;
 	platform = 0;
 
 	checksum = hash(import->sourcecode, import->sourcecode_size);
-	if (resource_source_write_blob(uuid, timestamp, HASH_SOURCE,
-	                               platform, checksum,
+	if (resource_source_write_blob(uuid, timestamp, HASH_SOURCE, platform, checksum,
 	                               import->sourcecode, import->sourcecode_size)) {
-		resource_source_set_blob(&source, timestamp, HASH_SOURCE,
-		                         platform, checksum, import->sourcecode_size);
-	}
-	else {
+		resource_source_set_blob(&source, timestamp, HASH_SOURCE, platform, checksum,
+		                         import->sourcecode_size);
+	} else {
 		string_const_t uuidstr = string_from_uuid_static(uuid);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Failed to write resource source blob file: %.*s"),
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE,
+		           STRING_CONST("Failed to write resource source blob file: %.*s"),
 		           STRING_FORMAT(uuidstr));
 		ret = -1;
 		goto finalize;
 	}
 
-	resource_source_set(&source, timestamp, HASH_RESOURCE_TYPE,
-	                    0, STRING_ARGS(type));
+	resource_source_set(&source, timestamp, HASH_RESOURCE_TYPE, 0, STRING_ARGS(type));
 
 	if (!resource_source_write(&source, uuid, false)) {
 		string_const_t uuidstr = string_from_uuid_static(uuid);
-		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Failed to write resource source file: %.*s"),
+		log_errorf(HASH_LUA, ERROR_INTERNAL_FAILURE,
+		           STRING_CONST("Failed to write resource source file: %.*s"),
 		           STRING_FORMAT(uuidstr));
 		ret = -1;
 		goto finalize;
@@ -106,10 +107,8 @@ lua_import(stream_t* stream, const uuid_t uuid_given) {
 		store_import = true;
 	}
 
-	error_context_declare_local(
-	    char uuidbuf[40];
-	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid)
-	);
+	error_context_declare_local(char uuidbuf[40]; const string_t uuidstr = string_from_uuid(
+	                                                  uuidbuf, sizeof(uuidbuf), uuid));
 	error_context_push(STRING_CONST("importing module"), STRING_ARGS(uuidstr));
 
 	if (store_import) {
