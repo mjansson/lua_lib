@@ -1,9 +1,9 @@
-/* foundation.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* foundation.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -31,7 +31,7 @@ _log_debugf_disabled(uint64_t context, const char* format, size_t format_size, .
 
 static log_handler_fn
 _log_handler(void) {
-	return (log_handler_fn)nullptr;
+	return (log_handler_fn) nullptr;
 }
 
 static void
@@ -64,18 +64,20 @@ _log_suppress_clear(void) {
 
 #if !BUILD_ENABLE_ERROR_CONTEXT
 
-static void _error_context_push_disabled(const char* name, size_t name_length, const char* data,
-                                         size_t data_length) {
+static void
+_error_context_push_disabled(const char* name, size_t name_length, const char* data, size_t data_length) {
 	FOUNDATION_UNUSED(name);
 	FOUNDATION_UNUSED(name_length);
 	FOUNDATION_UNUSED(data);
 	FOUNDATION_UNUSED(data_length);
 }
 
-static void _error_context_pop_disabled() {
+static void
+_error_context_pop_disabled() {
 }
 
-static error_context_t* _error_context_disabled() {
+static error_context_t*
+_error_context_disabled() {
 	return 0;
 }
 
@@ -126,9 +128,7 @@ _array_size(const void* arr) {
 
 static const void*
 _array_element_pointer(const void* arr, int pos) {
-	return (arr && (pos >= 0) && (pos < (int)array_size(arr))) ?
-	       ((const void* const*)arr)[pos] :
-	       0;
+	return (arr && (pos >= 0) && (pos < (int)array_size(arr))) ? ((const void* const*)arr)[pos] : 0;
 }
 
 static void
@@ -139,9 +139,7 @@ _array_set_element_pointer(const void** arr, int pos, void* ptr) {
 
 static string_const_t
 _array_element_string(const void* arr, int pos) {
-	return (arr && (pos >= 0) && (pos < (int)array_size(arr))) ?
-	       ((const string_const_t*)arr)[pos] :
-	       string_empty();
+	return (arr && (pos >= 0) && (pos < (int)array_size(arr))) ? ((const string_const_t*)arr)[pos] : string_empty();
 }
 
 static void
@@ -239,7 +237,8 @@ _string_array_deallocate(string_t* array) {
 	string_array_deallocate(array);
 }
 
-static uuid_t uuid_dns(void) {
+static uuid_t
+uuid_dns(void) {
 	return UUID_DNS;
 }
 
@@ -341,8 +340,7 @@ lua_symbol_load_foundation(void) {
 	FOUNDATION_SYM(environment_executable_path, ENVIRONMENT_EXECUTABLE_PATH);
 	FOUNDATION_SYM(environment_initial_working_directory, ENVIRONMENT_INITIAL_WORKING_DIRECTORY);
 	FOUNDATION_SYM(environment_current_working_directory, ENVIRONMENT_CURRENT_WORKING_DIRECTORY);
-	FOUNDATION_SYM(environment_set_current_working_directory,
-	               ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
+	FOUNDATION_SYM(environment_set_current_working_directory, ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY);
 	FOUNDATION_SYM(environment_application_directory, ENVIRONMENT_APPLICATION_DIRECTORY);
 	FOUNDATION_SYM(environment_temporary_directory, ENVIRONMENT_TEMPORARY_DIRECTORY);
 	FOUNDATION_SYM(environment_variable, ENVIRONMENT_VARIABLE);

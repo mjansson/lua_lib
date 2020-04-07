@@ -1,9 +1,9 @@
-/* main.c  -  Foundation bind test for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Foundation bind test for lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -23,7 +23,7 @@ test_bind_application(void) {
 	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Lua bind tests"));
 	app.short_name = string_const(STRING_CONST("test_lua_bind"));
-	app.company = string_const(STRING_CONST("Rampant Pixels"));
+	app.company = string_const(STRING_CONST(""));
 	app.flags = APPLICATION_UTILITY;
 	app.exception_handler = test_exception_handler;
 	return app;
@@ -42,9 +42,8 @@ test_bind_config(void) {
 }
 
 static void
-test_parse_config(const char* path, size_t path_size,
-                  const char* buffer, size_t size,
-                  const json_token_t* tokens, size_t num_tokens) {
+test_parse_config(const char* path, size_t path_size, const char* buffer, size_t size, const json_token_t* tokens,
+                  size_t num_tokens) {
 	resource_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 	lua_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 }
@@ -71,7 +70,7 @@ test_bind_initialize(void) {
 	test_set_suitable_working_directory();
 	test_load_config(test_parse_config);
 
-	return 0;	
+	return 0;
 }
 
 static void
@@ -92,9 +91,6 @@ DECLARE_TEST(bind, bind) {
 
 	EXPECT_NE(env, 0);
 
-
-
-
 	lua_deallocate(env);
 
 	return 0;
@@ -105,15 +101,9 @@ test_bind_declare(void) {
 	ADD_TEST(bind, bind);
 }
 
-static test_suite_t test_bind_suite = {
-	test_bind_application,
-	test_bind_memory_system,
-	test_bind_config,
-	test_bind_declare,
-	test_bind_initialize,
-	test_bind_finalize,
-	test_bind_event
-};
+static test_suite_t test_bind_suite = {test_bind_application, test_bind_memory_system, test_bind_config,
+                                       test_bind_declare,     test_bind_initialize,    test_bind_finalize,
+                                       test_bind_event};
 
 #if BUILD_MONOLITHIC
 

@@ -1,9 +1,9 @@
-/* lua.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* lua.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -59,10 +59,8 @@ lua_module_config(void);
 \param tokens JSON tokens
 \param num_tokens Number of JSON tokens */
 LUA_API void
-lua_module_parse_config(const char* path, size_t path_size,
-                        const char* buffer, size_t size,
-                        const json_token_t* tokens, size_t num_tokens);
-
+lua_module_parse_config(const char* path, size_t path_size, const char* buffer, size_t size, const json_token_t* tokens,
+                        size_t num_tokens);
 
 //! Allocate environment
 LUA_API lua_t*

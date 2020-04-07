@@ -1,9 +1,9 @@
-/* window.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* window.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -22,8 +22,7 @@ static bool _symbols_loaded;
 #if FOUNDATION_PLATFORM_MACOS || FOUNDATION_PLATFORM_IOS || FOUNDATION_PLATFORM_ANDROID
 
 static window_t*
-window_create(unsigned int adapter, const char* title, size_t length, int width,
-              int height, bool show) {
+window_create(unsigned int adapter, const char* title, size_t length, int width, int height, bool show) {
 	FOUNDATION_UNUSED(adapter);
 	FOUNDATION_UNUSED(title);
 	FOUNDATION_UNUSED(length);
@@ -52,7 +51,7 @@ window_hinstance(window_t* window) {
 static void*
 window_hdc(window_t* window) {
 	FOUNDATION_UNUSED(window);
-	return 0;	
+	return 0;
 }
 
 static void

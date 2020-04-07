@@ -32,8 +32,10 @@
 #define HASH_SYM_BITBUFFER_ALLOCATE_BUFFER static_hash_string("bitbuffer_allocate_buffer", 25, 0x28270a1f86ad003eULL)
 #define HASH_SYM_BITBUFFER_ALLOCATE_STREAM static_hash_string("bitbuffer_allocate_stream", 25, 0x7e288ec5f086b3c9ULL)
 #define HASH_SYM_BITBUFFER_DEALLOCATE static_hash_string("bitbuffer_deallocate", 20, 0x31768a0cf995c86bULL)
-#define HASH_SYM_BITBUFFER_INITIALIZE_BUFFER static_hash_string("bitbuffer_initialize_buffer", 27, 0x6d3160f4489d04ddULL)
-#define HASH_SYM_BITBUFFER_INITIALIZE_STREAM static_hash_string("bitbuffer_initialize_stream", 27, 0x2752dba8b35efaefULL)
+#define HASH_SYM_BITBUFFER_INITIALIZE_BUFFER \
+	static_hash_string("bitbuffer_initialize_buffer", 27, 0x6d3160f4489d04ddULL)
+#define HASH_SYM_BITBUFFER_INITIALIZE_STREAM \
+	static_hash_string("bitbuffer_initialize_stream", 27, 0x2752dba8b35efaefULL)
 #define HASH_SYM_BITBUFFER_FINALIZE static_hash_string("bitbuffer_finalize", 18, 0x8f25be15f1d585b0ULL)
 #define HASH_SYM_BITBUFFER_READ32 static_hash_string("bitbuffer_read32", 16, 0x78c4a4443e3a8ac1ULL)
 #define HASH_SYM_BITBUFFER_READ64 static_hash_string("bitbuffer_read64", 16, 0x587956ec778fb3a1ULL)
@@ -82,14 +84,22 @@
 #define HASH_SYM_CONFIG_WRITE static_hash_string("config_write", 12, 0x6fcd682e53a5c0b8ULL)
 #define HASH_SYM_CONFIG_PARSE_COMMANDLINE static_hash_string("config_parse_commandline", 24, 0xc5055bbe6d5bfdd4ULL)
 #define HASH_SYM_ENVIRONMENT_COMMAND_LINE static_hash_string("environment_command_line", 24, 0x15198430aa0b7f7dULL)
-#define HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME static_hash_string("environment_executable_name", 27, 0x1805e6c27176d00fULL)
-#define HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY static_hash_string("environment_executable_directory", 32, 0x23b7e0b08c936a9dULL)
-#define HASH_SYM_ENVIRONMENT_EXECUTABLE_PATH static_hash_string("environment_executable_path", 27, 0x859cb60dae122355ULL)
-#define HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY static_hash_string("environment_initial_working_directory", 37, 0x79bd440024b14941ULL)
-#define HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY static_hash_string("environment_current_working_directory", 37, 0x13f11d4d83652cfcULL)
-#define HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY static_hash_string("environment_set_current_working_directory", 41, 0x709a4b6cf1c9bf0dULL)
-#define HASH_SYM_ENVIRONMENT_APPLICATION_DIRECTORY static_hash_string("environment_application_directory", 33, 0x7c64528e7519694aULL)
-#define HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY static_hash_string("environment_temporary_directory", 31, 0x5684713af3f50f18ULL)
+#define HASH_SYM_ENVIRONMENT_EXECUTABLE_NAME \
+	static_hash_string("environment_executable_name", 27, 0x1805e6c27176d00fULL)
+#define HASH_SYM_ENVIRONMENT_EXECUTABLE_DIRECTORY \
+	static_hash_string("environment_executable_directory", 32, 0x23b7e0b08c936a9dULL)
+#define HASH_SYM_ENVIRONMENT_EXECUTABLE_PATH \
+	static_hash_string("environment_executable_path", 27, 0x859cb60dae122355ULL)
+#define HASH_SYM_ENVIRONMENT_INITIAL_WORKING_DIRECTORY \
+	static_hash_string("environment_initial_working_directory", 37, 0x79bd440024b14941ULL)
+#define HASH_SYM_ENVIRONMENT_CURRENT_WORKING_DIRECTORY \
+	static_hash_string("environment_current_working_directory", 37, 0x13f11d4d83652cfcULL)
+#define HASH_SYM_ENVIRONMENT_SET_CURRENT_WORKING_DIRECTORY \
+	static_hash_string("environment_set_current_working_directory", 41, 0x709a4b6cf1c9bf0dULL)
+#define HASH_SYM_ENVIRONMENT_APPLICATION_DIRECTORY \
+	static_hash_string("environment_application_directory", 33, 0x7c64528e7519694aULL)
+#define HASH_SYM_ENVIRONMENT_TEMPORARY_DIRECTORY \
+	static_hash_string("environment_temporary_directory", 31, 0x5684713af3f50f18ULL)
 #define HASH_SYM_ENVIRONMENT_VARIABLE static_hash_string("environment_variable", 20, 0x89e2ba51af95195fULL)
 #define HASH_SYM_ERROR static_hash_string("error", 5, 0xd11972493b76d277ULL)
 #define HASH_SYM_ERROR_REPORT static_hash_string("error_report", 12, 0xfaa57007b4bf59e7ULL)
@@ -229,7 +239,8 @@
 #define HASH_SYM_OBJECTMAP_RELEASE static_hash_string("objectmap_release", 17, 0x43d0f6ba17c36f66ULL)
 #define HASH_SYM_OBJECTMAP_LOOKUP static_hash_string("objectmap_lookup", 16, 0xadf9f051db06d576ULL)
 #define HASH_SYM_PATH_BASE_FILE_NAME static_hash_string("path_base_file_name", 19, 0xe33c7fb5532a55e7ULL)
-#define HASH_SYM_PATH_BASE_FILE_NAME_WITH_DIRECTORY static_hash_string("path_base_file_name_with_directory", 34, 0xb54e10bbc72ef17ULL)
+#define HASH_SYM_PATH_BASE_FILE_NAME_WITH_DIRECTORY \
+	static_hash_string("path_base_file_name_with_directory", 34, 0xb54e10bbc72ef17ULL)
 #define HASH_SYM_PATH_FILE_EXTENSION static_hash_string("path_file_extension", 19, 0x82249367d3841995ULL)
 #define HASH_SYM_PATH_FILE_NAME static_hash_string("path_file_name", 14, 0xf6cd2a86d938bf0ULL)
 #define HASH_SYM_PATH_DIRECTORY_NAME static_hash_string("path_directory_name", 19, 0x1ca2738b60de3a2ULL)
@@ -253,8 +264,10 @@
 #define HASH_SYM_PROCESS_DEALLOCATE static_hash_string("process_deallocate", 18, 0xa668e9c97403aebcULL)
 #define HASH_SYM_PROCESS_INITIALIZE static_hash_string("process_initialize", 18, 0x6a733fd9e518ab1cULL)
 #define HASH_SYM_PROCESS_FINALIZE static_hash_string("process_finalize", 16, 0xc288065feb887e5fULL)
-#define HASH_SYM_PROCESS_SET_WORKING_DIRECTORY static_hash_string("process_set_working_directory", 29, 0xf95c52c518161621ULL)
-#define HASH_SYM_PROCESS_SET_EXECUTABLE_PATH static_hash_string("process_set_executable_path", 27, 0x5e1ffd253f08b3a4ULL)
+#define HASH_SYM_PROCESS_SET_WORKING_DIRECTORY \
+	static_hash_string("process_set_working_directory", 29, 0xf95c52c518161621ULL)
+#define HASH_SYM_PROCESS_SET_EXECUTABLE_PATH \
+	static_hash_string("process_set_executable_path", 27, 0x5e1ffd253f08b3a4ULL)
 #define HASH_SYM_PROCESS_SET_ARGUMENTS static_hash_string("process_set_arguments", 21, 0x545c14348c8b4de2ULL)
 #define HASH_SYM_PROCESS_SET_FLAGS static_hash_string("process_set_flags", 17, 0x602ccd98fd25158cULL)
 #define HASH_SYM_PROCESS_SET_VERB static_hash_string("process_set_verb", 16, 0xa6d3edbf0c7888b3ULL)
@@ -310,7 +323,8 @@
 #define HASH_SYM_RINGBUFFER_TOTAL_READ static_hash_string("ringbuffer_total_read", 21, 0x5b15c434dca574daULL)
 #define HASH_SYM_RINGBUFFER_TOTAL_WRITTEN static_hash_string("ringbuffer_total_written", 24, 0xa7ad53c097668e16ULL)
 #define HASH_SYM_RINGBUFFER_STREAM_ALLOCATE static_hash_string("ringbuffer_stream_allocate", 26, 0xaa969cc82d8508eeULL)
-#define HASH_SYM_RINGBUFFER_STREAM_INITIALIZE static_hash_string("ringbuffer_stream_initialize", 28, 0x4220b64314143204ULL)
+#define HASH_SYM_RINGBUFFER_STREAM_INITIALIZE \
+	static_hash_string("ringbuffer_stream_initialize", 28, 0x4220b64314143204ULL)
 #define HASH_SYM_SHA256_ALLOCATE static_hash_string("sha256_allocate", 15, 0x681e78f78097d578ULL)
 #define HASH_SYM_SHA256_DEALLOCATE static_hash_string("sha256_deallocate", 17, 0x515ced85e14e4ae2ULL)
 #define HASH_SYM_SHA256_DIGEST static_hash_string("sha256_digest", 13, 0x48984cae72fa314dULL)
@@ -342,7 +356,8 @@
 #define HASH_SYM_STREAM_SIZE static_hash_string("stream_size", 11, 0x5c87125d9c5e0543ULL)
 #define HASH_SYM_STREAM_SET_BYTEORDER static_hash_string("stream_set_byteorder", 20, 0xb1f22682a098998cULL)
 #define HASH_SYM_STREAM_SET_BINARY static_hash_string("stream_set_binary", 17, 0x9bb06aa0bb31e60cULL)
-#define HASH_SYM_STREAM_DETERMINE_BINARY_MODE static_hash_string("stream_determine_binary_mode", 28, 0xd1ebef62159a6d6dULL)
+#define HASH_SYM_STREAM_DETERMINE_BINARY_MODE \
+	static_hash_string("stream_determine_binary_mode", 28, 0xd1ebef62159a6d6dULL)
 #define HASH_SYM_STREAM_IS_BINARY static_hash_string("stream_is_binary", 16, 0x1aef1003baabe1a4ULL)
 #define HASH_SYM_STREAM_IS_SEQUENTIAL static_hash_string("stream_is_sequential", 20, 0xbe9515eaaa26c563ULL)
 #define HASH_SYM_STREAM_IS_RELIABLE static_hash_string("stream_is_reliable", 18, 0x388ea35447ac6b5dULL)
@@ -390,7 +405,8 @@
 #define HASH_SYM_STREAM_OPEN_STDOUT static_hash_string("stream_open_stdout", 18, 0xb994f1b289bf29ffULL)
 #define HASH_SYM_STREAM_OPEN_STDERR static_hash_string("stream_open_stderr", 18, 0xe725150a64b13aa9ULL)
 #define HASH_SYM_STREAM_OPEN_STDIN static_hash_string("stream_open_stdin", 17, 0x858c8617e9557572ULL)
-#define HASH_SYM_STREAM_SET_PROTOCOL_HANDLER static_hash_string("stream_set_protocol_handler", 27, 0x42e5ecc836f8ebf3ULL)
+#define HASH_SYM_STREAM_SET_PROTOCOL_HANDLER \
+	static_hash_string("stream_set_protocol_handler", 27, 0x42e5ecc836f8ebf3ULL)
 #define HASH_SYM_STREAM_PROTOCOL_HANDLER static_hash_string("stream_protocol_handler", 23, 0x3f2ea591db8eabfaULL)
 #define HASH_SYM_STRING_ALLOCATE static_hash_string("string_allocate", 15, 0x2d89d07721da5ad3ULL)
 #define HASH_SYM_STRING_DEALLOCATE static_hash_string("string_deallocate", 17, 0x6edc9b8d361ad861ULL)
@@ -434,14 +450,17 @@
 #define HASH_SYM_STRING_MERGE static_hash_string("string_merge", 12, 0x5b8cb28149d42399ULL)
 #define HASH_SYM_STRING_GLYPH static_hash_string("string_glyph", 12, 0xb9cd4d352b127074ULL)
 #define HASH_SYM_STRING_ARRAY_FIND static_hash_string("string_array_find", 17, 0x67e84fb4042a9162ULL)
-#define HASH_SYM_STRING_ARRAY_DEALLOCATE_ELEMENTS static_hash_string("string_array_deallocate_elements", 32, 0xb409370c089ed5ebULL)
+#define HASH_SYM_STRING_ARRAY_DEALLOCATE_ELEMENTS \
+	static_hash_string("string_array_deallocate_elements", 32, 0xb409370c089ed5ebULL)
 #define HASH_SYM_STRING_ARRAY_DEALLOCATE static_hash_string("string_array_deallocate", 23, 0xf31a905a57cb89fcULL)
-#define HASH_SYM_WSTRING_ALLOCATE_FROM_STRING static_hash_string("wstring_allocate_from_string", 28, 0xcdda4f21bf1ad2d5ULL)
+#define HASH_SYM_WSTRING_ALLOCATE_FROM_STRING \
+	static_hash_string("wstring_allocate_from_string", 28, 0xcdda4f21bf1ad2d5ULL)
 #define HASH_SYM_WSTRING_FROM_STRING static_hash_string("wstring_from_string", 19, 0x51116da3c9ebda0cULL)
 #define HASH_SYM_WSTRING_DEALLOCATE static_hash_string("wstring_deallocate", 18, 0x49fcf1172c8b43b6ULL)
 #define HASH_SYM_WSTRING_LENGTH static_hash_string("wstring_length", 14, 0x9be38505b78433e8ULL)
 #define HASH_SYM_WSTRING_EQUAL static_hash_string("wstring_equal", 13, 0xec4b19ca14df4dcbULL)
-#define HASH_SYM_STRING_ALLOCATE_FROM_WSTRING static_hash_string("string_allocate_from_wstring", 28, 0x9728c09acc9273c9ULL)
+#define HASH_SYM_STRING_ALLOCATE_FROM_WSTRING \
+	static_hash_string("string_allocate_from_wstring", 28, 0x9728c09acc9273c9ULL)
 #define HASH_SYM_STRING_ALLOCATE_FROM_UTF16 static_hash_string("string_allocate_from_utf16", 26, 0x87cdd26647c9c760ULL)
 #define HASH_SYM_STRING_ALLOCATE_FROM_UTF32 static_hash_string("string_allocate_from_utf32", 26, 0x5f92d6492ba36e3bULL)
 #define HASH_SYM_STRING_CONVERT_UTF16 static_hash_string("string_convert_utf16", 20, 0x8496a4ccee9cb86cULL)
@@ -487,7 +506,8 @@
 #define HASH_SYM_SYSTEM_COUNTRY static_hash_string("system_country", 14, 0x47e07f5a88ef493aULL)
 #define HASH_SYM_SYSTEM_LOCALE static_hash_string("system_locale", 13, 0xd6bdf27e7b1ad541ULL)
 #define HASH_SYM_SYSTEM_LOCALE_STRING static_hash_string("system_locale_string", 20, 0x5ecd0eacfab44275ULL)
-#define HASH_SYM_SYSTEM_SET_DEVICE_ORIENTATION static_hash_string("system_set_device_orientation", 29, 0xb7237cb485387d00ULL)
+#define HASH_SYM_SYSTEM_SET_DEVICE_ORIENTATION \
+	static_hash_string("system_set_device_orientation", 29, 0xb7237cb485387d00ULL)
 #define HASH_SYM_SYSTEM_DEVICE_ORIENTATION static_hash_string("system_device_orientation", 25, 0xd945d10d30e08020ULL)
 #define HASH_SYM_SYSTEM_PROCESS_EVENTS static_hash_string("system_process_events", 21, 0x708eec0394ad604dULL)
 #define HASH_SYM_SYSTEM_MESSAGE_BOX static_hash_string("system_message_box", 18, 0xdd9cc82488ec86f0ULL)
@@ -540,26 +560,35 @@
 #define HASH_SYM_NETWORK_ADDRESS_CLONE static_hash_string("network_address_clone", 21, 0x468080d8529e6f7aULL)
 #define HASH_SYM_NETWORK_ADDRESS_RESOLVE static_hash_string("network_address_resolve", 23, 0xc7efc19478d26b95ULL)
 #define HASH_SYM_NETWORK_ADDRESS_TO_STRING static_hash_string("network_address_to_string", 25, 0x480ebf3463ab0f28ULL)
-#define HASH_SYM_NETWORK_ADDRESS_IPV4_INITIALIZE static_hash_string("network_address_ipv4_initialize", 31, 0x88207b68edc01d26ULL)
-#define HASH_SYM_NETWORK_ADDRESS_IPV6_INITIALIZE static_hash_string("network_address_ipv6_initialize", 31, 0xcda9fd19c1e29a31ULL)
-#define HASH_SYM_NETWORK_ADDRESS_IP_SET_PORT static_hash_string("network_address_ip_set_port", 27, 0xfdd18de03cfbedffULL)
+#define HASH_SYM_NETWORK_ADDRESS_IPV4_INITIALIZE \
+	static_hash_string("network_address_ipv4_initialize", 31, 0x88207b68edc01d26ULL)
+#define HASH_SYM_NETWORK_ADDRESS_IPV6_INITIALIZE \
+	static_hash_string("network_address_ipv6_initialize", 31, 0xcda9fd19c1e29a31ULL)
+#define HASH_SYM_NETWORK_ADDRESS_IP_SET_PORT \
+	static_hash_string("network_address_ip_set_port", 27, 0xfdd18de03cfbedffULL)
 #define HASH_SYM_NETWORK_ADDRESS_IP_PORT static_hash_string("network_address_ip_port", 23, 0xf015b335d3dbe294ULL)
-#define HASH_SYM_NETWORK_ADDRESS_IPV4_SET_IP static_hash_string("network_address_ipv4_set_ip", 27, 0xed8f25b7d12f44a6ULL)
+#define HASH_SYM_NETWORK_ADDRESS_IPV4_SET_IP \
+	static_hash_string("network_address_ipv4_set_ip", 27, 0xed8f25b7d12f44a6ULL)
 #define HASH_SYM_NETWORK_ADDRESS_IPV4_IP static_hash_string("network_address_ipv4_ip", 23, 0x1bd0122b445ea468ULL)
-#define HASH_SYM_NETWORK_ADDRESS_IPV4_MAKE_IP static_hash_string("network_address_ipv4_make_ip", 28, 0xb5897466bf2052cbULL)
-#define HASH_SYM_NETWORK_ADDRESS_IPV6_SET_IP static_hash_string("network_address_ipv6_set_ip", 27, 0x9d636f0ee55ac593ULL)
+#define HASH_SYM_NETWORK_ADDRESS_IPV4_MAKE_IP \
+	static_hash_string("network_address_ipv4_make_ip", 28, 0xb5897466bf2052cbULL)
+#define HASH_SYM_NETWORK_ADDRESS_IPV6_SET_IP \
+	static_hash_string("network_address_ipv6_set_ip", 27, 0x9d636f0ee55ac593ULL)
 #define HASH_SYM_NETWORK_ADDRESS_IPV6_IP static_hash_string("network_address_ipv6_ip", 23, 0xd2d89ed20623afe8ULL)
 #define HASH_SYM_NETWORK_ADDRESS_TYPE static_hash_string("network_address_type", 20, 0xdfe2d24a668d1e69ULL)
 #define HASH_SYM_NETWORK_ADDRESS_FAMILY static_hash_string("network_address_family", 22, 0x4316ff125c2467c4ULL)
 #define HASH_SYM_NETWORK_ADDRESS_LOCAL static_hash_string("network_address_local", 21, 0x1064a5ec42a6d908ULL)
 #define HASH_SYM_NETWORK_ADDRESS_EQUAL static_hash_string("network_address_equal", 21, 0x5ce9f5b820f441a0ULL)
 #define HASH_SYM_NETWORK_ADDRESS_DEALLOCATE static_hash_string("network_address_deallocate", 26, 0xe0a515139f44233cULL)
-#define HASH_SYM_NETWORK_ADDRESS_ARRAY_DEALLOCATE static_hash_string("network_address_array_deallocate", 32, 0x15fa2e0ecc03f5ecULL)
+#define HASH_SYM_NETWORK_ADDRESS_ARRAY_DEALLOCATE \
+	static_hash_string("network_address_array_deallocate", 32, 0x15fa2e0ecc03f5ecULL)
 #define HASH_SYM_NETWORK_MODULE_INITIALIZE static_hash_string("network_module_initialize", 25, 0x8629963e1d5fe98ULL)
 #define HASH_SYM_NETWORK_MODULE_FINALIZE static_hash_string("network_module_finalize", 23, 0x1f7d4470fc0a717aULL)
-#define HASH_SYM_NETWORK_MODULE_IS_INITIALIZED static_hash_string("network_module_is_initialized", 29, 0x28ca3a5d9df04f87ULL)
+#define HASH_SYM_NETWORK_MODULE_IS_INITIALIZED \
+	static_hash_string("network_module_is_initialized", 29, 0x28ca3a5d9df04f87ULL)
 #define HASH_SYM_NETWORK_MODULE_CONFIG static_hash_string("network_module_config", 21, 0x6417cca9191716deULL)
-#define HASH_SYM_NETWORK_MODULE_PARSE_CONFIG static_hash_string("network_module_parse_config", 27, 0xdbb46db6034edd33ULL)
+#define HASH_SYM_NETWORK_MODULE_PARSE_CONFIG \
+	static_hash_string("network_module_parse_config", 27, 0xdbb46db6034edd33ULL)
 #define HASH_SYM_NETWORK_MODULE_VERSION static_hash_string("network_module_version", 22, 0xf6f2af97ac01f7a1ULL)
 #define HASH_SYM_NETWORK_SUPPORTS_IPV4 static_hash_string("network_supports_ipv4", 21, 0x7da0dd3a3f1a97c1ULL)
 #define HASH_SYM_NETWORK_SUPPORTS_IPV6 static_hash_string("network_supports_ipv6", 21, 0x7d9e7851351e4f2bULL)
@@ -612,74 +641,110 @@
 #define HASH_SYM_RESOURCE_BUNDLE_STREAM static_hash_string("resource_bundle_stream", 22, 0xef7f18f0ce6bef55ULL)
 #define HASH_SYM_RESOURCE_CHANGE_IS_VALUE static_hash_string("resource_change_is_value", 24, 0xb6baad0ee440aa47ULL)
 #define HASH_SYM_RESOURCE_CHANGE_IS_BLOB static_hash_string("resource_change_is_blob", 23, 0xa6d46b4cf4d1e2dcULL)
-#define HASH_SYM_RESOURCE_CHANGE_DATA_ALLOCATE static_hash_string("resource_change_data_allocate", 29, 0xa19318c1f500a85dULL)
-#define HASH_SYM_RESOURCE_CHANGE_DATA_DEALLOCATE static_hash_string("resource_change_data_deallocate", 31, 0x70fae15b54d220ccULL)
-#define HASH_SYM_RESOURCE_CHANGE_DATA_INITIALIZE static_hash_string("resource_change_data_initialize", 31, 0x1cb1132aee046d17ULL)
-#define HASH_SYM_RESOURCE_CHANGE_DATA_FINALIZE static_hash_string("resource_change_data_finalize", 29, 0xb8d135ce5bbe27c1ULL)
-#define HASH_SYM_RESOURCE_CHANGE_BLOCK_ALLOCATE static_hash_string("resource_change_block_allocate", 30, 0x9d1e304466febdbcULL)
-#define HASH_SYM_RESOURCE_CHANGE_BLOCK_DEALLOCATE static_hash_string("resource_change_block_deallocate", 32, 0xc2746195e3dded51ULL)
-#define HASH_SYM_RESOURCE_CHANGE_BLOCK_INITIALIZE static_hash_string("resource_change_block_initialize", 32, 0x5d98dc2400f34cb2ULL)
-#define HASH_SYM_RESOURCE_CHANGE_BLOCK_FINALIZE static_hash_string("resource_change_block_finalize", 30, 0xb2d5ce194530a673ULL)
-#define HASH_SYM_RESOURCE_COMPILE_NEED_UPDATE static_hash_string("resource_compile_need_update", 28, 0x3e0d808ea9071b5eULL)
+#define HASH_SYM_RESOURCE_CHANGE_DATA_ALLOCATE \
+	static_hash_string("resource_change_data_allocate", 29, 0xa19318c1f500a85dULL)
+#define HASH_SYM_RESOURCE_CHANGE_DATA_DEALLOCATE \
+	static_hash_string("resource_change_data_deallocate", 31, 0x70fae15b54d220ccULL)
+#define HASH_SYM_RESOURCE_CHANGE_DATA_INITIALIZE \
+	static_hash_string("resource_change_data_initialize", 31, 0x1cb1132aee046d17ULL)
+#define HASH_SYM_RESOURCE_CHANGE_DATA_FINALIZE \
+	static_hash_string("resource_change_data_finalize", 29, 0xb8d135ce5bbe27c1ULL)
+#define HASH_SYM_RESOURCE_CHANGE_BLOCK_ALLOCATE \
+	static_hash_string("resource_change_block_allocate", 30, 0x9d1e304466febdbcULL)
+#define HASH_SYM_RESOURCE_CHANGE_BLOCK_DEALLOCATE \
+	static_hash_string("resource_change_block_deallocate", 32, 0xc2746195e3dded51ULL)
+#define HASH_SYM_RESOURCE_CHANGE_BLOCK_INITIALIZE \
+	static_hash_string("resource_change_block_initialize", 32, 0x5d98dc2400f34cb2ULL)
+#define HASH_SYM_RESOURCE_CHANGE_BLOCK_FINALIZE \
+	static_hash_string("resource_change_block_finalize", 30, 0xb2d5ce194530a673ULL)
+#define HASH_SYM_RESOURCE_COMPILE_NEED_UPDATE \
+	static_hash_string("resource_compile_need_update", 28, 0x3e0d808ea9071b5eULL)
 #define HASH_SYM_RESOURCE_COMPILE static_hash_string("resource_compile", 16, 0xa5e56a307256643eULL)
 #define HASH_SYM_RESOURCE_COMPILE_REGISTER static_hash_string("resource_compile_register", 25, 0x63a924ea14dfd0b0ULL)
-#define HASH_SYM_RESOURCE_COMPILE_REGISTER_PATH static_hash_string("resource_compile_register_path", 30, 0x6dbd3e455e41e9a1ULL)
-#define HASH_SYM_RESOURCE_COMPILE_UNREGISTER static_hash_string("resource_compile_unregister", 27, 0xee9f782379aefdf8ULL)
-#define HASH_SYM_RESOURCE_COMPILE_UNREGISTER_PATH static_hash_string("resource_compile_unregister_path", 32, 0x80027f80a089f7f7ULL)
+#define HASH_SYM_RESOURCE_COMPILE_REGISTER_PATH \
+	static_hash_string("resource_compile_register_path", 30, 0x6dbd3e455e41e9a1ULL)
+#define HASH_SYM_RESOURCE_COMPILE_UNREGISTER \
+	static_hash_string("resource_compile_unregister", 27, 0xee9f782379aefdf8ULL)
+#define HASH_SYM_RESOURCE_COMPILE_UNREGISTER_PATH \
+	static_hash_string("resource_compile_unregister_path", 32, 0x80027f80a089f7f7ULL)
 #define HASH_SYM_RESOURCE_EVENT_UUID static_hash_string("resource_event_uuid", 19, 0xcc79c6251c331222ULL)
 #define HASH_SYM_RESOURCE_EVENT_TOKEN static_hash_string("resource_event_token", 20, 0xa610e0813a5d5071ULL)
 #define HASH_SYM_RESOURCE_EVENT_POST static_hash_string("resource_event_post", 19, 0xe16928708e7dba57ULL)
 #define HASH_SYM_RESOURCE_EVENT_STREAM static_hash_string("resource_event_stream", 21, 0x494c19fc82cbef28ULL)
 #define HASH_SYM_RESOURCE_EVENT_HANDLE static_hash_string("resource_event_handle", 21, 0x8415b2b01feb13e8ULL)
 #define HASH_SYM_RESOURCE_IMPORT_BASE_PATH static_hash_string("resource_import_base_path", 25, 0x284c92bec5e2f959ULL)
-#define HASH_SYM_RESOURCE_IMPORT_SET_BASE_PATH static_hash_string("resource_import_set_base_path", 29, 0xaf15dae844a18690ULL)
+#define HASH_SYM_RESOURCE_IMPORT_SET_BASE_PATH \
+	static_hash_string("resource_import_set_base_path", 29, 0xaf15dae844a18690ULL)
 #define HASH_SYM_RESOURCE_IMPORT static_hash_string("resource_import", 15, 0x9558f18cc2c71b32ULL)
 #define HASH_SYM_RESOURCE_IMPORT_REGISTER static_hash_string("resource_import_register", 24, 0x2da4a6a61696fef3ULL)
-#define HASH_SYM_RESOURCE_IMPORT_REGISTER_PATH static_hash_string("resource_import_register_path", 29, 0x54e7afc74f179baeULL)
+#define HASH_SYM_RESOURCE_IMPORT_REGISTER_PATH \
+	static_hash_string("resource_import_register_path", 29, 0x54e7afc74f179baeULL)
 #define HASH_SYM_RESOURCE_IMPORT_UNREGISTER static_hash_string("resource_import_unregister", 26, 0xedc9907c13e91437ULL)
-#define HASH_SYM_RESOURCE_IMPORT_UNREGISTER_PATH static_hash_string("resource_import_unregister_path", 31, 0xa99f1cff93baca45ULL)
+#define HASH_SYM_RESOURCE_IMPORT_UNREGISTER_PATH \
+	static_hash_string("resource_import_unregister_path", 31, 0xa99f1cff93baca45ULL)
 #define HASH_SYM_RESOURCE_IMPORT_LOOKUP static_hash_string("resource_import_lookup", 22, 0xf5af1b5874029c0cULL)
 #define HASH_SYM_RESOURCE_IMPORT_MAP_STORE static_hash_string("resource_import_map_store", 25, 0x25ae2549224cba76ULL)
 #define HASH_SYM_RESOURCE_IMPORT_MAP_PURGE static_hash_string("resource_import_map_purge", 25, 0xb15a3e15f3989646ULL)
 #define HASH_SYM_RESOURCE_AUTOIMPORT static_hash_string("resource_autoimport", 19, 0x67d5c1241dd2d18bULL)
-#define HASH_SYM_RESOURCE_AUTOIMPORT_NEED_UPDATE static_hash_string("resource_autoimport_need_update", 31, 0x17df4b15a8a90894ULL)
+#define HASH_SYM_RESOURCE_AUTOIMPORT_NEED_UPDATE \
+	static_hash_string("resource_autoimport_need_update", 31, 0x17df4b15a8a90894ULL)
 #define HASH_SYM_RESOURCE_AUTOIMPORT_WATCH static_hash_string("resource_autoimport_watch", 25, 0x7f9ab14431b42e8ULL)
-#define HASH_SYM_RESOURCE_AUTOIMPORT_UNWATCH static_hash_string("resource_autoimport_unwatch", 27, 0x3452772d93fba282ULL)
+#define HASH_SYM_RESOURCE_AUTOIMPORT_UNWATCH \
+	static_hash_string("resource_autoimport_unwatch", 27, 0x3452772d93fba282ULL)
 #define HASH_SYM_RESOURCE_AUTOIMPORT_CLEAR static_hash_string("resource_autoimport_clear", 25, 0xa83265ea3e99a1baULL)
-#define HASH_SYM_RESOURCE_AUTOIMPORT_EVENT_HANDLE static_hash_string("resource_autoimport_event_handle", 32, 0xa049cb618c8eaa63ULL)
+#define HASH_SYM_RESOURCE_AUTOIMPORT_EVENT_HANDLE \
+	static_hash_string("resource_autoimport_event_handle", 32, 0xa049cb618c8eaa63ULL)
 #define HASH_SYM_RESOURCE_LOCAL_PATHS static_hash_string("resource_local_paths", 20, 0xef265343cef5f9f1ULL)
 #define HASH_SYM_RESOURCE_LOCAL_SET_PATHS static_hash_string("resource_local_set_paths", 24, 0x9260167bfbf9ec1cULL)
 #define HASH_SYM_RESOURCE_LOCAL_ADD_PATH static_hash_string("resource_local_add_path", 23, 0xbbf7b90d0629381dULL)
 #define HASH_SYM_RESOURCE_LOCAL_REMOVE_PATH static_hash_string("resource_local_remove_path", 26, 0x3d0a120a6029f60bULL)
 #define HASH_SYM_RESOURCE_LOCAL_CLEAR_PATHS static_hash_string("resource_local_clear_paths", 26, 0xe3beade608a7a166ULL)
 #define HASH_SYM_RESOURCE_LOCAL_OPEN_STATIC static_hash_string("resource_local_open_static", 26, 0x5ec13d2bdbc09283ULL)
-#define HASH_SYM_RESOURCE_LOCAL_OPEN_DYNAMIC static_hash_string("resource_local_open_dynamic", 27, 0xf9254cc42198b1b6ULL)
-#define HASH_SYM_RESOURCE_LOCAL_CREATE_STATIC static_hash_string("resource_local_create_static", 28, 0xedfb4e9c8eb75c20ULL)
-#define HASH_SYM_RESOURCE_LOCAL_CREATE_DYNAMIC static_hash_string("resource_local_create_dynamic", 29, 0x45a9011c0c599d44ULL)
+#define HASH_SYM_RESOURCE_LOCAL_OPEN_DYNAMIC \
+	static_hash_string("resource_local_open_dynamic", 27, 0xf9254cc42198b1b6ULL)
+#define HASH_SYM_RESOURCE_LOCAL_CREATE_STATIC \
+	static_hash_string("resource_local_create_static", 28, 0xedfb4e9c8eb75c20ULL)
+#define HASH_SYM_RESOURCE_LOCAL_CREATE_DYNAMIC \
+	static_hash_string("resource_local_create_dynamic", 29, 0x45a9011c0c599d44ULL)
 #define HASH_SYM_RESOURCE_PLATFORM static_hash_string("resource_platform", 17, 0x61606b61172b165bULL)
-#define HASH_SYM_RESOURCE_PLATFORM_DECOMPOSE static_hash_string("resource_platform_decompose", 27, 0x8c85574ace5a6c2dULL)
-#define HASH_SYM_RESOURCE_PLATFORM_IS_EQUAL_OR_MORE_SPECIFIC static_hash_string("resource_platform_is_equal_or_more_specific", 43, 0x1f04d92b62fd34ULL)
+#define HASH_SYM_RESOURCE_PLATFORM_DECOMPOSE \
+	static_hash_string("resource_platform_decompose", 27, 0x8c85574ace5a6c2dULL)
+#define HASH_SYM_RESOURCE_PLATFORM_IS_EQUAL_OR_MORE_SPECIFIC \
+	static_hash_string("resource_platform_is_equal_or_more_specific", 43, 0x1f04d92b62fd34ULL)
 #define HASH_SYM_RESOURCE_PLATFORM_REDUCE static_hash_string("resource_platform_reduce", 24, 0xf77803176e736281ULL)
 #define HASH_SYM_RESOURCE_REMOTE_SOURCED static_hash_string("resource_remote_sourced", 23, 0x96fe067df66088b8ULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_CONNECT static_hash_string("resource_remote_sourced_connect", 31, 0xa81a7b1142076fcdULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_DISCONNECT static_hash_string("resource_remote_sourced_disconnect", 34, 0x62706407a9b81bfaULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_IS_CONNECTED static_hash_string("resource_remote_sourced_is_connected", 36, 0x1ad81c5eb5e4b723ULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_LOOKUP static_hash_string("resource_remote_sourced_lookup", 30, 0x9c236c00a844a044ULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_HASH static_hash_string("resource_remote_sourced_hash", 28, 0xece759fea7344504ULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_DEPENDENCIES static_hash_string("resource_remote_sourced_dependencies", 36, 0xd02513e6d384cba8ULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_READ static_hash_string("resource_remote_sourced_read", 28, 0x69a297561d809699ULL)
-#define HASH_SYM_RESOURCE_REMOTE_SOURCED_READ_BLOB static_hash_string("resource_remote_sourced_read_blob", 33, 0x5d385043c0b3c366ULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_CONNECT \
+	static_hash_string("resource_remote_sourced_connect", 31, 0xa81a7b1142076fcdULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_DISCONNECT \
+	static_hash_string("resource_remote_sourced_disconnect", 34, 0x62706407a9b81bfaULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_IS_CONNECTED \
+	static_hash_string("resource_remote_sourced_is_connected", 36, 0x1ad81c5eb5e4b723ULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_LOOKUP \
+	static_hash_string("resource_remote_sourced_lookup", 30, 0x9c236c00a844a044ULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_HASH \
+	static_hash_string("resource_remote_sourced_hash", 28, 0xece759fea7344504ULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_DEPENDENCIES \
+	static_hash_string("resource_remote_sourced_dependencies", 36, 0xd02513e6d384cba8ULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_READ \
+	static_hash_string("resource_remote_sourced_read", 28, 0x69a297561d809699ULL)
+#define HASH_SYM_RESOURCE_REMOTE_SOURCED_READ_BLOB \
+	static_hash_string("resource_remote_sourced_read_blob", 33, 0x5d385043c0b3c366ULL)
 #define HASH_SYM_RESOURCE_REMOTE_COMPILED static_hash_string("resource_remote_compiled", 24, 0x42cbfb73a7ab6ff9ULL)
-#define HASH_SYM_RESOURCE_REMOTE_COMPILED_CONNECT static_hash_string("resource_remote_compiled_connect", 32, 0x2345cc8bda8fe905ULL)
-#define HASH_SYM_RESOURCE_REMOTE_COMPILED_DISCONNECT static_hash_string("resource_remote_compiled_disconnect", 35, 0xbc2cb050aff92892ULL)
+#define HASH_SYM_RESOURCE_REMOTE_COMPILED_CONNECT \
+	static_hash_string("resource_remote_compiled_connect", 32, 0x2345cc8bda8fe905ULL)
+#define HASH_SYM_RESOURCE_REMOTE_COMPILED_DISCONNECT \
+	static_hash_string("resource_remote_compiled_disconnect", 35, 0xbc2cb050aff92892ULL)
 #define HASH_SYM_RESOURCE_REMOTE_OPEN_STATIC static_hash_string("resource_remote_open_static", 27, 0x79c6866c68838daULL)
-#define HASH_SYM_RESOURCE_REMOTE_OPEN_DYNAMIC static_hash_string("resource_remote_open_dynamic", 28, 0xc4e2a97196615143ULL)
+#define HASH_SYM_RESOURCE_REMOTE_OPEN_DYNAMIC \
+	static_hash_string("resource_remote_open_dynamic", 28, 0xc4e2a97196615143ULL)
 #define HASH_SYM_RESOURCE_MODULE_INITIALIZE static_hash_string("resource_module_initialize", 26, 0xe91507ae9a3f6476ULL)
 #define HASH_SYM_RESOURCE_MODULE_FINALIZE static_hash_string("resource_module_finalize", 24, 0xe93004d39337059bULL)
-#define HASH_SYM_RESOURCE_MODULE_IS_INITIALIZED static_hash_string("resource_module_is_initialized", 30, 0x54662cf202f5d824ULL)
+#define HASH_SYM_RESOURCE_MODULE_IS_INITIALIZED \
+	static_hash_string("resource_module_is_initialized", 30, 0x54662cf202f5d824ULL)
 #define HASH_SYM_RESOURCE_MODULE_VERSION static_hash_string("resource_module_version", 23, 0x225b1640f7189034ULL)
 #define HASH_SYM_RESOURCE_MODULE_CONFIG static_hash_string("resource_module_config", 22, 0xebc8197bdb370cfeULL)
-#define HASH_SYM_RESOURCE_MODULE_PARSE_CONFIG static_hash_string("resource_module_parse_config", 28, 0x4d8a35306ac205d1ULL)
+#define HASH_SYM_RESOURCE_MODULE_PARSE_CONFIG \
+	static_hash_string("resource_module_parse_config", 28, 0x4d8a35306ac205d1ULL)
 #define HASH_SYM_RESOURCE_SOURCE_PATH static_hash_string("resource_source_path", 20, 0xc6bb73312661ad52ULL)
 #define HASH_SYM_RESOURCE_SOURCE_SET_PATH static_hash_string("resource_source_set_path", 24, 0xaa8da2e46465668bULL)
 #define HASH_SYM_RESOURCE_SOURCE_HASH static_hash_string("resource_source_hash", 20, 0x1c3857b1262a6b4bULL)
@@ -695,24 +760,34 @@
 #define HASH_SYM_RESOURCE_SOURCE_SET_BLOB static_hash_string("resource_source_set_blob", 24, 0x5dc60e6de4012f33ULL)
 #define HASH_SYM_RESOURCE_SOURCE_READ_BLOB static_hash_string("resource_source_read_blob", 25, 0x126d7373eb6f6df5ULL)
 #define HASH_SYM_RESOURCE_SOURCE_WRITE_BLOB static_hash_string("resource_source_write_blob", 26, 0x1e59ae30c746bdcULL)
-#define HASH_SYM_RESOURCE_SOURCE_COLLAPSE_HISTORY static_hash_string("resource_source_collapse_history", 32, 0xbe6095ca4d7322cULL)
-#define HASH_SYM_RESOURCE_SOURCE_CLEAR_BLOB_HISTORY static_hash_string("resource_source_clear_blob_history", 34, 0x5ebad6a92e1e2aaeULL)
+#define HASH_SYM_RESOURCE_SOURCE_COLLAPSE_HISTORY \
+	static_hash_string("resource_source_collapse_history", 32, 0xbe6095ca4d7322cULL)
+#define HASH_SYM_RESOURCE_SOURCE_CLEAR_BLOB_HISTORY \
+	static_hash_string("resource_source_clear_blob_history", 34, 0x5ebad6a92e1e2aaeULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP static_hash_string("resource_source_map", 19, 0xd10f22198508f078ULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP_ALL static_hash_string("resource_source_map_all", 23, 0x8a83eb3a437c46fULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP_ITERATE static_hash_string("resource_source_map_iterate", 27, 0x36567c35fe49c49ULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP_REDUCE static_hash_string("resource_source_map_reduce", 26, 0xd1389433e2bebd27ULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP_CLEAR static_hash_string("resource_source_map_clear", 25, 0xc59507322782e59fULL)
-#define HASH_SYM_RESOURCE_SOURCE_NUM_DEPENDENCIES static_hash_string("resource_source_num_dependencies", 32, 0x12dba7656ef3edc0ULL)
-#define HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES static_hash_string("resource_source_dependencies", 28, 0xd486067ed64fb0d1ULL)
-#define HASH_SYM_RESOURCE_SOURCE_SET_DEPENDENCIES static_hash_string("resource_source_set_dependencies", 32, 0xa7fe76bdeafb6fc4ULL)
-#define HASH_SYM_RESOURCE_STREAM_OPEN_STATIC static_hash_string("resource_stream_open_static", 27, 0x6b9e0fa62ebbdf08ULL)
-#define HASH_SYM_RESOURCE_STREAM_OPEN_DYNAMIC static_hash_string("resource_stream_open_dynamic", 28, 0x847baabb40f95b1bULL)
+#define HASH_SYM_RESOURCE_SOURCE_NUM_DEPENDENCIES \
+	static_hash_string("resource_source_num_dependencies", 32, 0x12dba7656ef3edc0ULL)
+#define HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES \
+	static_hash_string("resource_source_dependencies", 28, 0xd486067ed64fb0d1ULL)
+#define HASH_SYM_RESOURCE_SOURCE_SET_DEPENDENCIES \
+	static_hash_string("resource_source_set_dependencies", 32, 0xa7fe76bdeafb6fc4ULL)
+#define HASH_SYM_RESOURCE_STREAM_OPEN_STATIC \
+	static_hash_string("resource_stream_open_static", 27, 0x6b9e0fa62ebbdf08ULL)
+#define HASH_SYM_RESOURCE_STREAM_OPEN_DYNAMIC \
+	static_hash_string("resource_stream_open_dynamic", 28, 0x847baabb40f95b1bULL)
 #define HASH_SYM_RESOURCE_STREAM_MAKE_PATH static_hash_string("resource_stream_make_path", 25, 0xc45f1361f25a26c2ULL)
-#define HASH_SYM_RESOURCE_STREAM_WRITE_HEADER static_hash_string("resource_stream_write_header", 28, 0x656e92f12ad06cc3ULL)
-#define HASH_SYM_RESOURCE_STREAM_READ_HEADER static_hash_string("resource_stream_read_header", 27, 0x3a9e43e17462cc43ULL)
+#define HASH_SYM_RESOURCE_STREAM_WRITE_HEADER \
+	static_hash_string("resource_stream_write_header", 28, 0x656e92f12ad06cc3ULL)
+#define HASH_SYM_RESOURCE_STREAM_READ_HEADER \
+	static_hash_string("resource_stream_read_header", 27, 0x3a9e43e17462cc43ULL)
 #define HASH_SYM_WINDOW_MODULE_INITIALIZE static_hash_string("window_module_initialize", 24, 0x4724ad65632fad7bULL)
 #define HASH_SYM_WINDOW_MODULE_FINALIZE static_hash_string("window_module_finalize", 22, 0xb3dfa8221af9002cULL)
-#define HASH_SYM_WINDOW_MODULE_IS_INITIALIZED static_hash_string("window_module_is_initialized", 28, 0x9f99362fac2f008dULL)
+#define HASH_SYM_WINDOW_MODULE_IS_INITIALIZED \
+	static_hash_string("window_module_is_initialized", 28, 0x9f99362fac2f008dULL)
 #define HASH_SYM_WINDOW_MODULE_VERSION static_hash_string("window_module_version", 21, 0x38cebb71ec980f9eULL)
 #define HASH_SYM_WINDOW_CREATE static_hash_string("window_create", 13, 0x3345aec3d2dfff64ULL)
 #define HASH_SYM_WINDOW_ALLOCATE static_hash_string("window_allocate", 15, 0xe46d79947f68d9fbULL)

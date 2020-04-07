@@ -1,9 +1,9 @@
-/* types.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* types.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -22,43 +22,43 @@
 
 #include <lua/build.h>
 
-#if defined( LUA_COMPILE ) && LUA_COMPILE
-#  ifdef __cplusplus
-#  define LUA_EXTERN extern "C"
-#  define LUA_API extern "C"
-#  else
-#  define LUA_EXTERN extern
-#  define LUA_API extern
-#  endif
+#if defined(LUA_COMPILE) && LUA_COMPILE
+#ifdef __cplusplus
+#define LUA_EXTERN extern "C"
+#define LUA_API extern "C"
 #else
-#  ifdef __cplusplus
-#  define LUA_EXTERN extern "C"
-#  define LUA_API extern "C"
-#  else
-#  define LUA_EXTERN extern
-#  define LUA_API extern
-#  endif
+#define LUA_EXTERN extern
+#define LUA_API extern
+#endif
+#else
+#ifdef __cplusplus
+#define LUA_EXTERN extern "C"
+#define LUA_API extern "C"
+#else
+#define LUA_EXTERN extern
+#define LUA_API extern
+#endif
 #endif
 
-#define LUA_MAX_ARGS  8
+#define LUA_MAX_ARGS 8
 
 //! Return codes
 typedef enum {
 	//! Call queued
-	LUA_QUEUED                                       = 1,
+	LUA_QUEUED = 1,
 
 	//! Continue script calls
-	LUA_OK                                           = 0,
+	LUA_OK = 0,
 
 	//! Error in script evaluation
-	LUA_ERROR                                        = -1,
+	LUA_ERROR = -1,
 
 	//! Stop further script evaluation
-	LUA_STOP                                         = -2
+	LUA_STOP = -2
 } lua_result_t;
 
 typedef enum {
-	LUADATA_PTR    = 0,
+	LUADATA_PTR = 0,
 	LUADATA_OBJ,
 	LUADATA_INT,
 	LUADATA_REAL,
@@ -99,72 +99,72 @@ struct lua_config_t {
 };
 
 union lua_value_t {
-	void*       ptr;
-	object_t    obj;
-	int         ival;
-	real        val;
+	void* ptr;
+	object_t obj;
+	int ival;
+	real val;
 	const char* str;
-	bool        flag;
-	lua_fn      fn;
-	uuid_t      uuid;
+	bool flag;
+	lua_fn fn;
+	uuid_t uuid;
 };
 
 struct lua_arg_t {
-	int32_t     num;
-	uint8_t     type[LUA_MAX_ARGS];
-	uint16_t    size[LUA_MAX_ARGS];
+	int32_t num;
+	uint8_t type[LUA_MAX_ARGS];
+	uint16_t size[LUA_MAX_ARGS];
 	lua_value_t value[LUA_MAX_ARGS];
 };
 
 struct lua_op_t {
-	lua_command_t         cmd;
+	lua_command_t cmd;
 	union {
-		const char*       name;
-		void*             ptr;
+		const char* name;
+		void* ptr;
 	} data;
-	size_t                size;
-	lua_arg_t             arg;
+	size_t size;
+	lua_arg_t arg;
 };
 
 struct lua_readstream_t {
 	stream_t* stream;
-	uint64_t  remain;
-	char      chunk[512];
+	uint64_t remain;
+	char chunk[512];
 };
 
 struct lua_readbuffer_t {
 	const void* buffer;
-	size_t      size;
-	size_t      offset;
+	size_t size;
+	size_t offset;
 };
 
 struct lua_readstring_t {
 	const char* string;
-	size_t      size;
+	size_t size;
 };
 
 struct lua_t {
 	//! Lua state
-	lua_State*   state;
+	lua_State* state;
 
 	//! Call depth
-	int32_t      calldepth;
+	int32_t calldepth;
 
 #if BUILD_ENABLE_LUA_THREAD_SAFE
 	//! Call queue
-	lua_op_t     queue[BUILD_LUA_CALL_QUEUE_SIZE];
+	lua_op_t queue[BUILD_LUA_CALL_QUEUE_SIZE];
 
 	//! Queue head (protected by execute semaphore)
-	uint32_t     queue_head;
+	uint32_t queue_head;
 
 	//! Queue tail
-	atomic32_t   queue_tail;
+	atomic32_t queue_tail;
 
 	//! Execution right
-	semaphore_t  execution_right;
+	semaphore_t execution_right;
 
 	//! Currently executing thread
-	atomic64_t   executing_thread;
+	atomic64_t executing_thread;
 
 	//! Execution count (protected by execute semaphore)
 	unsigned int executing_count;

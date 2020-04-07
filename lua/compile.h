@@ -1,9 +1,9 @@
-/* compile.h  -  Lua library  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
+/* compile.h  -  Lua library  -  Public Domain  -  2016 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -30,5 +30,5 @@
 \param type_length Length of type string
 \return 0 if successful, <0 if error */
 LUA_API int
-lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
-            const uint256_t source_hash, const char* type, size_t type_length);
+lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source, const uint256_t source_hash,
+            const char* type, size_t type_length);

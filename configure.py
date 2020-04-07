@@ -9,11 +9,11 @@ sys.path.insert(0, os.path.join('build', 'ninja'))
 
 import generator
 
-dependlibs = ['lua', 'render', 'window', 'resource', 'network', 'foundation']
+dependlibs = ['lua', 'render', 'vector', 'task', 'window', 'resource', 'network', 'foundation']
 extralibs = []
 extravariables = {}
 
-generator = generator.Generator(project = 'lua', dependlibs = dependlibs, variables = [('bundleidentifier', 'com.rampantpixels.lua.$(binname)')])
+generator = generator.Generator(project = 'lua', dependlibs = dependlibs, variables = [('bundleidentifier', 'com.maniccoder.lua.$(binname)')])
 target = generator.target
 writer = generator.writer
 toolchain = generator.toolchain
@@ -69,7 +69,7 @@ if target.is_ios() or target.is_android():
       os.path.join('drawable-ldpi', 'icon.png'), os.path.join('drawable-mdpi', 'icon.png'), os.path.join('drawable-hdpi', 'icon.png'),
       os.path.join('drawable-xhdpi', 'icon.png'), os.path.join('drawable-xxhdpi', 'icon.png'), os.path.join('drawable-xxxhdpi', 'icon.png')
     ]]
-    test_extrasources = [os.path.join('all', 'android', 'java', 'com', 'rampantpixels', 'foundation', 'test', item) for item in [
+    test_extrasources = [os.path.join('all', 'android', 'java', 'com', 'maniccoder', 'foundation', 'test', item) for item in [
       'TestActivity.java'
     ]]
   if target.is_macos() or target.is_ios() or target.is_android() or target.is_tizen():

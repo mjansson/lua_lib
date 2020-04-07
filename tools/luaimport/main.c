@@ -1,9 +1,9 @@
-/* main.c  -  Lua library importer  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
+/* main.c  -  Lua library importer  -  Public Domain  -  2016 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -55,7 +55,7 @@ main_initialize(void) {
 	memset(&application, 0, sizeof(application));
 	application.name = string_const(STRING_CONST("luaimport"));
 	application.short_name = string_const(STRING_CONST("luaimport"));
-	application.company = string_const(STRING_CONST("Rampant Pixels"));
+	application.company = string_const(STRING_CONST(""));
 	application.flags = APPLICATION_UTILITY;
 
 	log_enable_prefix(false);

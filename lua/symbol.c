@@ -1,9 +1,9 @@
-/* symbol.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* symbol.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -18,7 +18,8 @@
 #include <foundation/log.h>
 #include <foundation/hash.h>
 #include <foundation/hashmap.h>
-LUA_EXTERN void* lj_clib_getsym_registry(lua_State* state, const char* sym, size_t length);
+LUA_EXTERN void*
+lj_clib_getsym_registry(lua_State* state, const char* sym, size_t length);
 
 static hashmap_t* _lua_symbols;
 
@@ -28,7 +29,7 @@ lua_symbol_initialize(void);
 LUA_EXTERN void
 lua_symbol_finalize(void);
 
-//This is our custom callback point from luajit lj_clib resolver
+// This is our custom callback point from luajit lj_clib resolver
 void*
 lj_clib_getsym_registry(lua_State* state, const char* sym, size_t length) {
 	hash_t symhash = hash(sym, length);

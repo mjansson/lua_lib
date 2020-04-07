@@ -1,9 +1,9 @@
-/* eval.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* eval.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -46,10 +46,7 @@ lua_do_eval_string(lua_t* env, const char* code, size_t length) {
 
 	state = env->state;
 
-	lua_readstring_t read_string = {
-		.string = code,
-		.size   = length
-	};
+	lua_readstring_t read_string = {.string = code, .size = length};
 
 	if (lua_load(state, lua_read_string, &read_string, "=eval") != 0) {
 		string_const_t errmsg = {0, 0};
@@ -81,10 +78,7 @@ lua_do_eval_stream(lua_t* env, stream_t* stream, uint64_t size_limit) {
 
 	state = env->state;
 
-	lua_readstream_t read_stream = {
-		.stream = stream,
-		.remain = size_limit ? size_limit : 0x7FFFFFFFFFFFFFFFULL
-	};
+	lua_readstream_t read_stream = {.stream = stream, .remain = size_limit ? size_limit : 0x7FFFFFFFFFFFFFFFULL};
 
 	if (lua_load(state, lua_read_stream, &read_stream, "=eval") != 0) {
 		string_const_t errmsg = {0, 0};
@@ -119,10 +113,8 @@ lua_do_eval_uuid(lua_t* env, const uuid_t uuid) {
 	bool recompile = false;
 	bool recompiled = false;
 
-	error_context_declare_local(
-	    char uuidbuf[40];
-	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid)
-	);
+	error_context_declare_local(char uuidbuf[40];
+	                            const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid));
 	error_context_push(STRING_CONST("loading resource"), STRING_ARGS(uuidstr));
 
 	platform = lua_resource_platform();
@@ -134,10 +126,8 @@ retry:
 		resource_header_t header = resource_stream_read_header(stream);
 		if ((header.type == HASH_LUA) && (header.version == expected_version)) {
 			success = true;
-		}
-		else {
-			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
-			          STRING_CONST("Got unexpected type/version: %" PRIx64 " : %u"),
+		} else {
+			log_warnf(HASH_LUA, WARNING_INVALID_VALUE, STRING_CONST("Got unexpected type/version: %" PRIx64 " : %u"),
 			          header.type, header.version);
 			recompile = true;
 		}
@@ -154,11 +144,8 @@ retry:
 		if (version == expected_version) {
 			if (lua_do_eval_stream(env, stream, size) == LUA_OK)
 				success = true;
-		}
-		else {
-			log_warnf(HASH_LUA, WARNING_INVALID_VALUE,
-			          STRING_CONST("Got unexpected type/version: %u"),
-			          version);
+		} else {
+			log_warnf(HASH_LUA, WARNING_INVALID_VALUE, STRING_CONST("Got unexpected type/version: %u"), version);
 			recompile = true;
 		}
 		stream_deallocate(stream);

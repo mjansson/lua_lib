@@ -1,9 +1,9 @@
-/* build.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* build.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -31,7 +31,7 @@ on a lua state to one thread at a time. */
 /*! \def BUILD_LUA_CALL_QUEUE_SIZE
 Number of calls that can be queued while synchronizing thread execution. Only used
 if BUILD_ENABLE_LUA_THREAD_SAFE is set. */
-#define BUILD_LUA_CALL_QUEUE_SIZE  256
+#define BUILD_LUA_CALL_QUEUE_SIZE 256
 
 #define BUILD_SIZE_LUA_LOOKUP_BUCKETS 31
 #define BUILD_SIZE_LUA_NAME_MAXLENGTH 128

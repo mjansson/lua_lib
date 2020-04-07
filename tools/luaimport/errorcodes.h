@@ -1,9 +1,9 @@
-/* errorcodes.h  -  Lua library importer  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
+/* errorcodes.h  -  Lua library importer  -  Public Domain  -  2016 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.

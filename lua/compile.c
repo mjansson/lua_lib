@@ -1,9 +1,9 @@
-/* compile.c  -  Lua library  -  Public Domain  -  2016 Mattias Jansson / Rampant Pixels
+/* compile.c  -  Lua library  -  Public Domain  -  2016 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -28,8 +28,8 @@ LUA_API int
 lua_pcall(lua_State* L, int nargs, int nresults, int errfunc);
 
 typedef struct {
-	char*   bytecode;
-	size_t  bytecode_size;
+	char* bytecode;
+	size_t bytecode_size;
 } lua_compile_dump_t;
 
 static FOUNDATION_NOINLINE int
@@ -41,9 +41,9 @@ lua_compile_dump_writer(lua_State* state, const void* buffer, size_t size, void*
 	if (size <= 0)
 		return 0;
 
-	dump->bytecode = (dump->bytecode ?
-	                  memory_reallocate(dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size, 0) :
-	                  memory_allocate(HASH_LUA, size, 0, MEMORY_PERSISTENT));
+	dump->bytecode =
+	    (dump->bytecode ? memory_reallocate(dump->bytecode, dump->bytecode_size + size, 0, dump->bytecode_size, 0) :
+	                      memory_allocate(HASH_LUA, size, 0, MEMORY_PERSISTENT));
 
 	memcpy(dump->bytecode + dump->bytecode_size, buffer, size);
 	dump->bytecode_size += size;
@@ -58,7 +58,7 @@ resource_source_platform_reduce(resource_change_t* change, resource_change_t* be
 	size_t iplat, psize;
 	FOUNDATION_UNUSED(best);
 	if ((platform == RESOURCE_PLATFORM_ALL) ||
-	        resource_platform_is_equal_or_more_specific(change->platform, platform)) {
+	    resource_platform_is_equal_or_more_specific(change->platform, platform)) {
 		for (iplat = 1, psize = array_size(*subplatforms); iplat != psize; ++iplat) {
 			if ((*subplatforms)[iplat] == change->platform)
 				break;
@@ -70,8 +70,8 @@ resource_source_platform_reduce(resource_change_t* change, resource_change_t* be
 }
 
 int
-lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
-            const uint256_t source_hash, const char* type, size_t type_length) {
+lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source, const uint256_t source_hash,
+            const char* type, size_t type_length) {
 	int result = 0;
 	uint64_t* subplatforms = 0;
 	size_t iplat, psize;
@@ -87,10 +87,8 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 	uint64_t restore_platform = lua_resource_platform();
 	lua_resource_set_platform(platform);
 
-	error_context_declare_local(
-	    char uuidbuf[40];
-	    const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid)
-	);
+	error_context_declare_local(char uuidbuf[40];
+	                            const string_t uuidstr = string_from_uuid(uuidbuf, sizeof(uuidbuf), uuid));
 	error_context_push(STRING_CONST("compiling module"), STRING_ARGS(uuidstr));
 
 	array_push(subplatforms, platform);
@@ -113,37 +111,34 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 		platform_decl = resource_platform_decompose(subplatform);
 		bool need_fr2 = lua_arch_is_fr2(platform_decl.arch);
 
-		//We cannot compile for a non-matching FR2 mode
+		// We cannot compile for a non-matching FR2 mode
 		if (need_fr2 != lua_is_fr2()) {
-			log_infof(HASH_RESOURCE, STRING_CONST("Unable to compile for non-matching FR2 mode, platform %"
-			                                      PRIx64 " (FR2 %s)"),
+			log_infof(HASH_RESOURCE,
+			          STRING_CONST("Unable to compile for non-matching FR2 mode, platform %" PRIx64 " (FR2 %s)"),
 			          subplatform, need_fr2 ? "true" : "false");
 			result = -1;
 			break;
 		}
 
-		log_debugf(HASH_RESOURCE, STRING_CONST("Compile for platform: %" PRIx64 " (FR2 %s)"),
-		           subplatform, lua_is_fr2() ? "true" : "false");
+		log_debugf(HASH_RESOURCE, STRING_CONST("Compile for platform: %" PRIx64 " (FR2 %s)"), subplatform,
+		           lua_is_fr2() ? "true" : "false");
 
 		resource_change_t* sourcechange = resource_source_get(source, HASH_SOURCE, subplatform);
 		if (sourcechange && (sourcechange->flags & RESOURCE_SOURCEFLAG_BLOB)) {
 			size_t source_size = sourcechange->value.blob.size;
 			if (source_size <= 0) {
-				log_errorf(HASH_RESOURCE, ERROR_INVALID_VALUE,
-				           STRING_CONST("No blob for platform %" PRIx64),
+				log_errorf(HASH_RESOURCE, ERROR_INVALID_VALUE, STRING_CONST("No blob for platform %" PRIx64),
 				           subplatform);
 				result = -1;
 				continue;
 			}
 
 			void* source_blob = memory_allocate(HASH_RESOURCE, source_size, 0, MEMORY_PERSISTENT);
-			if (!resource_source_read_blob(uuid, HASH_SOURCE, sourcechange->platform,
-			                               sourcechange->value.blob.checksum,
+			if (!resource_source_read_blob(uuid, HASH_SOURCE, sourcechange->platform, sourcechange->value.blob.checksum,
 			                               source_blob, source_size)) {
 				memory_deallocate(source_blob);
 				log_errorf(HASH_RESOURCE, ERROR_SYSTEM_CALL_FAIL,
-				           STRING_CONST("Unable to read blob for platform %" PRIx64),
-				           subplatform);
+				           STRING_CONST("Unable to read blob for platform %" PRIx64), subplatform);
 				result = -1;
 				continue;
 			}
@@ -151,11 +146,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 			lua_t* env;
 			lua_State* state;
 			lua_compile_dump_t dump;
-			lua_readbuffer_t read_buffer = {
-				.buffer = source_blob,
-				.size = source_size,
-				.offset = 0
-			};
+			lua_readbuffer_t read_buffer = {.buffer = source_blob, .size = source_size, .offset = 0};
 
 			FOUNDATION_UNUSED(uuid);
 
@@ -169,8 +160,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 				           errstr ? errstr : "<no error>");
 				lua_pop(state, 1);
 				result = -1;
-			}
-			else {
+			} else {
 				lua_dump(state, lua_compile_dump_writer, &dump);
 
 				if (lua_pcall(state, 0, 0, 0) != 0) {
@@ -179,8 +169,7 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 					           errstr ? errstr : "<no error>");
 					lua_pop(state, 1);
 					result = -1;
-				}
-				else {
+				} else {
 					log_debug(HASH_LUA, STRING_CONST("Lua bytecode dump successful"));
 					compiled_blob = dump.bytecode;
 					compiled_size = dump.bytecode_size;
@@ -201,15 +190,10 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 		stream = resource_local_create_static(uuid, subplatform);
 		if (stream) {
 			const uint32_t version = LUA_RESOURCE_MODULE_VERSION;
-			resource_header_t header = {
-				.type = resource_type_hash,
-				.version = version,
-				.source_hash = source_hash
-			};
+			resource_header_t header = {.type = resource_type_hash, .version = version, .source_hash = source_hash};
 			resource_stream_write_header(stream, header);
 			string_const_t streampath = stream_path(stream);
-			log_debugf(HASH_RESOURCE, STRING_CONST("Wrote static resource stream: %.*s"),
-			           STRING_FORMAT(streampath));
+			log_debugf(HASH_RESOURCE, STRING_CONST("Wrote static resource stream: %.*s"), STRING_FORMAT(streampath));
 			stream_deallocate(stream);
 
 			if (compiled_size > 0) {
@@ -222,17 +206,14 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 					log_debugf(HASH_RESOURCE, STRING_CONST("Wrote dynamic resource stream: %.*s"),
 					           STRING_FORMAT(streampath));
 					stream_deallocate(stream);
-				}
-				else {
+				} else {
 					log_errorf(HASH_RESOURCE, ERROR_SYSTEM_CALL_FAIL,
 					           STRING_CONST("Unable to create dynamic resource stream"));
 					result = -1;
 				}
 			}
-		}
-		else {
-			log_errorf(HASH_RESOURCE, ERROR_SYSTEM_CALL_FAIL,
-			           STRING_CONST("Unable to create static resource stream"));
+		} else {
+			log_errorf(HASH_RESOURCE, ERROR_SYSTEM_CALL_FAIL, STRING_CONST("Unable to create static resource stream"));
 			result = -1;
 		}
 
@@ -252,8 +233,8 @@ lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
 #else
 
 int
-lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source,
-            const uint256_t source_hash, const char* type, size_t type_length) {
+lua_compile(const uuid_t uuid, uint64_t platform, resource_source_t* source, const uint256_t source_hash,
+            const char* type, size_t type_length) {
 	FOUNDATION_UNUSED(uuid);
 	FOUNDATION_UNUSED(platform);
 	FOUNDATION_UNUSED(source);

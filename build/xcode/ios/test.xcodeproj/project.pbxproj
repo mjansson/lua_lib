@@ -332,7 +332,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maniccoder.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -347,7 +347,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maniccoder.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -419,7 +419,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maniccoder.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;
@@ -491,7 +491,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = "../../../test/all/ios/test-all.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.rampantpixels.lua.test-all";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.maniccoder.lua.test-all";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				WRAPPER_EXTENSION = app;

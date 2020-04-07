@@ -1,9 +1,9 @@
-/* read.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* read.h  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -32,4 +32,3 @@ lua_read_buffer(lua_State* state, void* user_data, size_t* size);
 
 LUA_API const char*
 lua_read_string(lua_State* state, void* user_data, size_t* size);
-

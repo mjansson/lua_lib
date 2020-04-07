@@ -1,9 +1,9 @@
-/* lua.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* lua.c  -  Lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -114,12 +114,11 @@ lua_push_op(lua_t* env, lua_op_t* op) {
 		ofs = old + 1;
 		if (ofs >= BUILD_LUA_CALL_QUEUE_SIZE)
 			ofs = 0;
-	}
-	while (!atomic_cas32(&env->queue_tail, ofs, old));
+	} while (!atomic_cas32(&env->queue_tail, ofs, old));
 
-	//Got slot, copy except command
+	// Got slot, copy except command
 	memcpy(&env->queue[ofs].data, &op->data, sizeof(op->data) + sizeof(lua_arg_t));
-	//Now set command, completing insert
+	// Now set command, completing insert
 	env->queue[ofs].cmd = op->cmd;
 }
 
@@ -129,36 +128,36 @@ lua_execute_pending(lua_t* env) {
 
 	unsigned int head = env->queue_head;
 	while (env->queue[head].cmd != LUACMD_WAIT) {
-		//Execute
+		// Execute
 		switch (env->queue[head].cmd) {
-		case LUACMD_LOAD:
-			lua_do_eval_stream(env, env->queue[head].data.ptr, 0);
-			break;
+			case LUACMD_LOAD:
+				lua_do_eval_stream(env, env->queue[head].data.ptr, 0);
+				break;
 
-		case LUACMD_LOAD_RESOURCE:
-			lua_do_eval_uuid(env, env->queue[head].data.ptr);
-			break;
+			case LUACMD_LOAD_RESOURCE:
+				lua_do_eval_uuid(env, env->queue[head].data.ptr);
+				break;
 
-		case LUACMD_EVAL:
-			lua_do_eval_string(env, env->queue[head].data.name, env->queue[head].size);
-			break;
+			case LUACMD_EVAL:
+				lua_do_eval_string(env, env->queue[head].data.name, env->queue[head].size);
+				break;
 
-		case LUACMD_CALL:
-			lua_do_call_custom(env, env->queue[head].data.name, env->queue[head].size, &env->queue[head].arg);
-			break;
+			case LUACMD_CALL:
+				lua_do_call_custom(env, env->queue[head].data.name, env->queue[head].size, &env->queue[head].arg);
+				break;
 
-		case LUACMD_BIND:
-		case LUACMD_BIND_INT:
-		case LUACMD_BIND_VAL:
-			lua_do_bind(env, env->queue[head].data.name, env->queue[head].size, env->queue[head].cmd,
-			            env->queue[head].arg.value[0]);
-			break;
+			case LUACMD_BIND:
+			case LUACMD_BIND_INT:
+			case LUACMD_BIND_VAL:
+				lua_do_bind(env, env->queue[head].data.name, env->queue[head].size, env->queue[head].cmd,
+				            env->queue[head].arg.value[0]);
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 
-		//Mark as executed
+		// Mark as executed
 		env->queue[head].cmd = LUACMD_WAIT;
 
 		if (++head == BUILD_LUA_CALL_QUEUE_SIZE)
@@ -189,10 +188,10 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 	if (!nsize && osize) {
 #if FOUNDATION_SIZE_POINTER == 8
 		if (!lua_is_fr2()) {
-#  if FOUNDATION_PLATFORM_WINDOWS
+#if FOUNDATION_PLATFORM_WINDOWS
 			if (!NtFreeVirtualMemory)
-				NtFreeVirtualMemory = (NtFreeVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"),
-				                                                            "NtFreeVirtualMemory");
+				NtFreeVirtualMemory =
+				    (NtFreeVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtFreeVirtualMemory");
 			if (NtFreeVirtualMemory) {
 				SIZE_T old_size = 0;
 				NtFreeVirtualMemory(INVALID_HANDLE_VALUE, &block, &old_size, MEM_RELEASE);
@@ -200,59 +199,57 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 #else
 			munmap(block, osize);
 #endif
-		}
-		else
+		} else
 #endif
 		{
 			memory_deallocate(block);
 		}
-	}
-	else if (nsize) {
+	} else if (nsize) {
 #if FOUNDATION_SIZE_POINTER == 8
 		if (!lua_is_fr2()) {
 			void* raw_memory = 0;
-			//Non-performance path, used only for compatibility tools
-#  if FOUNDATION_PLATFORM_WINDOWS
+			// Non-performance path, used only for compatibility tools
+#if FOUNDATION_PLATFORM_WINDOWS
 			size_t allocate_size = nsize;
 			if (!NtAllocateVirtualMemory)
-				NtAllocateVirtualMemory = (NtAllocateVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"),
-				                                                                    "NtAllocateVirtualMemory");
-			long vmres = NtAllocateVirtualMemory ? 
-			             NtAllocateVirtualMemory(INVALID_HANDLE_VALUE, &raw_memory, 1, &allocate_size,
-			                                     MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE) :
-			             0;
+				NtAllocateVirtualMemory =
+				    (NtAllocateVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtAllocateVirtualMemory");
+			long vmres = NtAllocateVirtualMemory ?
+			                 NtAllocateVirtualMemory(INVALID_HANDLE_VALUE, &raw_memory, 1, &allocate_size,
+			                                         MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE) :
+			                 0;
 			if (!raw_memory || (vmres != 0)) {
 				log_errorf(HASH_LUA, ERROR_OUT_OF_MEMORY,
-				           STRING_CONST("Unable to allocate %" PRIsize " bytes of memory in low 32bit address space"), nsize);
+				           STRING_CONST("Unable to allocate %" PRIsize " bytes of memory in low 32bit address space"),
+				           nsize);
 				return 0;
 			}
-#  else
-#    ifndef MAP_UNINITIALIZED
-#      define MAP_UNINITIALIZED 0
-#    endif
-#    ifndef MAP_ANONYMOUS
-#      define MAP_ANONYMOUS MAP_ANON
-#    endif			
-#    ifdef MAP_32BIT
+#else
+#ifndef MAP_UNINITIALIZED
+#define MAP_UNINITIALIZED 0
+#endif
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+#ifdef MAP_32BIT
 			raw_memory = mmap(0, nsize, PROT_READ | PROT_WRITE,
-			                 MAP_32BIT | MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
+			                  MAP_32BIT | MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
 			if (raw_memory == MAP_FAILED) {
 				raw_memory = 0;
 			}
-#    endif
-			//On MacOSX app needs to be linked with -pagezero_size 10000 -image_base 100000000 to
+#endif
+			// On MacOSX app needs to be linked with -pagezero_size 10000 -image_base 100000000 to
 			// 1) Free up low 4Gb address range by reducing page zero size
 			// 2) Move executable base address above 4Gb to free up more memory address space
-#    define MMAP_REGION_START ((uintptr_t)0x10000)
-#    define MMAP_REGION_END   ((uintptr_t)0x80000000)
+#define MMAP_REGION_START ((uintptr_t)0x10000)
+#define MMAP_REGION_END ((uintptr_t)0x80000000)
 			static atomicptr_t baseaddr = (void*)MMAP_REGION_START;
 			bool retried = false;
 			while (!raw_memory) {
-				raw_memory = mmap(atomic_load_ptr(&baseaddr, memory_order_acquire), nsize,
-				             PROT_READ | PROT_WRITE,
-				             MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
+				raw_memory = mmap(atomic_load_ptr(&baseaddr, memory_order_acquire), nsize, PROT_READ | PROT_WRITE,
+				                  MAP_PRIVATE | MAP_ANONYMOUS | MAP_UNINITIALIZED, -1, 0);
 				if (((uintptr_t)raw_memory >= MMAP_REGION_START) &&
-				        (uintptr_t)pointer_offset(raw_memory, nsize) < MMAP_REGION_END) {
+				    (uintptr_t)pointer_offset(raw_memory, nsize) < MMAP_REGION_END) {
 					atomic_store_ptr(&baseaddr, pointer_offset(raw_memory, nsize), memory_order_release);
 					break;
 				}
@@ -267,14 +264,14 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 				retried = true;
 				atomic_store_ptr(&baseaddr, (void*)MMAP_REGION_START, memory_order_release);
 			}
-#  endif
+#endif
 			if (block) {
 				if (raw_memory)
 					memcpy(raw_memory, block, (nsize < osize) ? nsize : osize);
-#  if FOUNDATION_PLATFORM_WINDOWS
+#if FOUNDATION_PLATFORM_WINDOWS
 				if (!NtFreeVirtualMemory)
-					NtFreeVirtualMemory = (NtFreeVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"),
-					                                                            "NtFreeVirtualMemory");
+					NtFreeVirtualMemory =
+					    (NtFreeVirtualMemoryFn)GetProcAddress(GetModuleHandleA("ntdll.dll"), "NtFreeVirtualMemory");
 				if (NtFreeVirtualMemory) {
 					SIZE_T old_size = 0;
 					NtFreeVirtualMemory(INVALID_HANDLE_VALUE, &block, &old_size, MEM_RELEASE);
@@ -284,8 +281,7 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 #endif
 			}
 			block = raw_memory;
-		}
-		else
+		} else
 #endif
 		{
 			if (!block)
@@ -294,8 +290,8 @@ lua_allocator(void* env, void* block, size_t osize, size_t nsize) {
 				block = memory_reallocate(block, nsize, 0, osize, MEMORY_PERSISTENT);
 		}
 		if (!block && env && ((lua_t*)env)->state)
-			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY, STRING_CONST("Unable to allocate Lua memory (%" PRIsize " bytes)"),
-			           nsize);
+			log_panicf(HASH_LUA, ERROR_OUT_OF_MEMORY,
+			           STRING_CONST("Unable to allocate Lua memory (%" PRIsize " bytes)"), nsize);
 	}
 	return block;
 }
@@ -304,7 +300,7 @@ static FOUNDATION_NOINLINE int
 lua_panic(lua_State* state) {
 	string_const_t errmsg = {0, 0};
 	errmsg.str = lua_tolstring(state, -1, &errmsg.length);
-	//FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length,
+	// FOUNDATION_ASSERT_FAILFORMAT("unprotected error in call to Lua API: %.*s", errmsg.length,
 	//                             errmsg.str);
 	log_errorf(HASH_LUA, ERROR_EXCEPTION, STRING_CONST("unprotected error in call to Lua API: %.*s"),
 	           STRING_FORMAT(errmsg));
@@ -320,7 +316,7 @@ lua_t*
 lua_allocate(void) {
 	lua_t* env = lua_allocator(0, 0, 0, sizeof(lua_t));
 
-	//Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
+	// Foundation allocators can meet demands of luajit on both 32 and 64 bit platforms
 	lua_State* state = env ? lua_newstate(lua_allocator, env) : nullptr;
 	if (!state) {
 		log_error(HASH_LUA, ERROR_INTERNAL_FAILURE, STRING_CONST("Unable to allocate Lua state"));
@@ -330,7 +326,7 @@ lua_allocate(void) {
 
 	lua_atpanic(state, lua_panic);
 
-	//Disable automagic gc
+	// Disable automagic gc
 	lua_gc(state, LUA_GCCOLLECT, 0);
 
 	lua_pushlightuserdata(state, env);
@@ -449,18 +445,16 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 		part = string_copy(buffer, sizeof(buffer), property, next);
 		lua_getlglobal(state, part.str, part.length);
 		if (lua_isnil(state, -1)) {
-			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
-			           STRING_CONST("Invalid script get, '%.*s' is not set (%.*s)"),
+			log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Invalid script get, '%.*s' is not set (%.*s)"),
 			           STRING_FORMAT(part), (int)length, property);
 			return LUA_ERROR;
-		}
-		else if (!lua_istable(state, -1)) {
+		} else if (!lua_istable(state, -1)) {
 			log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
 			           STRING_CONST("Invalid script get, existing data '%.*s' in '%.*s' is not a table"),
 			           STRING_FORMAT(part), (int)length, property);
 			return LUA_ERROR;
 		}
-		//Top of stack is now table
+		// Top of stack is now table
 		FOUNDATION_ASSERT(lua_istable(state, -1));
 		++next;
 		start = next;
@@ -471,18 +465,16 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 			lua_pushlstring(state, part.str, part.length);
 			lua_gettable(state, -2);
 			if (lua_isnil(state, -1)) {
-				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
-				           STRING_CONST("Invalid script call, '%.*s' is not set (%.*s)"),
+				log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Invalid script call, '%.*s' is not set (%.*s)"),
 				           STRING_FORMAT(part), (int)next, property);
 				return LUA_ERROR;
-			}
-			else if (!lua_istable(state, -1)) {
+			} else if (!lua_istable(state, -1)) {
 				log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
 				           STRING_CONST("Invalid script call, existing data '%.*s' in '%.*s' is not a table"),
 				           STRING_FORMAT(part), (int)next, property);
 				return LUA_ERROR;
 			}
-			//Top of stack is now table
+			// Top of stack is now table
 			FOUNDATION_ASSERT(lua_istable(state, -1));
 
 			++next;
@@ -493,16 +485,14 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 		part = string_copy(buffer, sizeof(buffer), property + start, length - start);
 		lua_pushlstring(state, part.str, part.length);
 		lua_gettable(state, -2);
-	}
-	else {
+	} else {
 		part = string_copy(buffer, sizeof(buffer), property, length);
 		lua_getlglobal(state, part.str, part.length);
 	}
 
 	if (lua_isnil(state, -1)) {
-		//Property does not exist in Lua context
-		log_errorf(HASH_LUA, ERROR_INVALID_VALUE,
-		           STRING_CONST("Invalid script get, '%.*s' is not a property"),
+		// Property does not exist in Lua context
+		log_errorf(HASH_LUA, ERROR_INVALID_VALUE, STRING_CONST("Invalid script get, '%.*s' is not a property"),
 		           (int)length, property);
 		return LUA_ERROR;
 	}
@@ -513,8 +503,8 @@ lua_do_get(lua_t* env, const char* property, size_t length) {
 void
 lua_execute(lua_t* env, int gc_time, bool force) {
 #if BUILD_ENABLE_LUA_THREAD_SAFE
-	if ((env->queue[ env->queue_head ].cmd == LUACMD_WAIT) && !gc_time)
-		return; //Nothing executable pending
+	if ((env->queue[env->queue_head].cmd == LUACMD_WAIT) && !gc_time)
+		return;  // Nothing executable pending
 
 	if (!lua_acquire_execution_right(env, force))
 		return;
@@ -561,16 +551,16 @@ lua_state(lua_t* env) {
 int
 lua_arch_is_fr2(int arch) {
 	switch (arch) {
-	case ARCHITECTURE_X86:
-	case ARCHITECTURE_PPC:
-	case ARCHITECTURE_ARM5:
-	case ARCHITECTURE_ARM6:
-	case ARCHITECTURE_ARM7:
-	case ARCHITECTURE_ARM8:
-	case ARCHITECTURE_MIPS:
-		return false;
-	default:
-		break;
+		case ARCHITECTURE_X86:
+		case ARCHITECTURE_PPC:
+		case ARCHITECTURE_ARM5:
+		case ARCHITECTURE_ARM6:
+		case ARCHITECTURE_ARM7:
+		case ARCHITECTURE_ARM8:
+		case ARCHITECTURE_MIPS:
+			return false;
+		default:
+			break;
 	}
 	return true;
 }
@@ -607,19 +597,18 @@ lua_module_initialize(const lua_config_t config) {
 		return -1;
 
 	hashmap_t* symbol_map = lua_symbol_lookup_map();
-	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_foundation")), (void*)(uintptr_t)lua_symbol_load_foundation);
-	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_network")), (void*)(uintptr_t)lua_symbol_load_network);
-	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_resource")), (void*)(uintptr_t)lua_symbol_load_resource);
+	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_foundation")),
+	               (void*)(uintptr_t)lua_symbol_load_foundation);
+	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_network")),
+	               (void*)(uintptr_t)lua_symbol_load_network);
+	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_resource")),
+	               (void*)(uintptr_t)lua_symbol_load_resource);
 	hashmap_insert(symbol_map, hash(STRING_CONST("lua_symbol_load_window")), (void*)(uintptr_t)lua_symbol_load_window);
 
-	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader,
-	                    lua_symbol_load_foundation);
-	lua_module_register(STRING_CONST("network"), LUA_NETWORK_UUID, lua_module_loader,
-	                    lua_symbol_load_network);
-	lua_module_register(STRING_CONST("resource"), LUA_RESOURCE_UUID, lua_module_loader,
-	                    lua_symbol_load_resource);
-	lua_module_register(STRING_CONST("window"), LUA_WINDOW_UUID, lua_module_loader,
-	                    lua_symbol_load_window);
+	lua_module_register(STRING_CONST("foundation"), LUA_FOUNDATION_UUID, lua_module_loader, lua_symbol_load_foundation);
+	lua_module_register(STRING_CONST("network"), LUA_NETWORK_UUID, lua_module_loader, lua_symbol_load_network);
+	lua_module_register(STRING_CONST("resource"), LUA_RESOURCE_UUID, lua_module_loader, lua_symbol_load_resource);
+	lua_module_register(STRING_CONST("window"), LUA_WINDOW_UUID, lua_module_loader, lua_symbol_load_window);
 
 	resource_import_register(lua_import);
 	resource_compile_register(lua_compile);
@@ -656,9 +645,8 @@ lua_module_config(void) {
 }
 
 void
-lua_module_parse_config(const char* path, size_t path_size,
-                        const char* buffer, size_t size,
-                        const json_token_t* tokens, size_t num_tokens) {
+lua_module_parse_config(const char* path, size_t path_size, const char* buffer, size_t size, const json_token_t* tokens,
+                        size_t num_tokens) {
 	FOUNDATION_UNUSED(path);
 	FOUNDATION_UNUSED(path_size);
 	FOUNDATION_UNUSED(buffer);

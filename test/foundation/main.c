@@ -1,9 +1,9 @@
-/* main.c  -  Foundation bind test for lua library  -  Public Domain  -  2013 Mattias Jansson / Rampant Pixels
+/* main.c  -  Foundation bind test for lua library  -  Public Domain  -  2013 Mattias Jansson
  *
  * This library provides a cross-platform lua library in C11 for games and applications
  * based on out foundation library. The latest source code is always available at
  *
- * https://github.com/rampantpixels/lua_lib
+ * https://github.com/mjansson/lua_lib
  *
  * This library is put in the public domain; you can redistribute it and/or modify it without
  * any restrictions.
@@ -24,7 +24,7 @@ test_foundation_application(void) {
 	memset(&app, 0, sizeof(app));
 	app.name = string_const(STRING_CONST("Lua foundation tests"));
 	app.short_name = string_const(STRING_CONST("test_lua_foundation"));
-	app.company = string_const(STRING_CONST("Rampant Pixels"));
+	app.company = string_const(STRING_CONST(""));
 	app.flags = APPLICATION_UTILITY;
 	app.exception_handler = test_exception_handler;
 	return app;
@@ -43,9 +43,8 @@ test_foundation_config(void) {
 }
 
 static void
-test_parse_config(const char* path, size_t path_size,
-                  const char* buffer, size_t size,
-                  const json_token_t* tokens, size_t num_tokens) {
+test_parse_config(const char* path, size_t path_size, const char* buffer, size_t size, const json_token_t* tokens,
+                  size_t num_tokens) {
 	resource_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 	lua_module_parse_config(path, path_size, buffer, size, tokens, num_tokens);
 }
@@ -97,26 +96,25 @@ DECLARE_TEST(foundation, log) {
 	lua_t* env = lua_allocate();
 
 	log_set_suppress(HASH_LUA, ERRORLEVEL_NONE);
-	//log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
+	// log_set_suppress(HASH_RESOURCE, ERRORLEVEL_NONE);
 
 	EXPECT_NE(env, 0);
 
-	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require(\"ffi\")\n"
-	    "local foundation = require(\"foundation\")\n"
-	    "local C = ffi.C\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
-	    "foundation.log.debug(\"Testing log debug output\")\n"
-	    "foundation.log.info(\"Testing log info output\")\n"
-	    "foundation.log.warn(\"Testing log warning output\")\n"
-	    "C.log_enable_prefix(false)\n"
-	    "foundation.log.error(\"Testing log error output without prefix\")\n"
-	    "C.log_enable_stdout(false)\n"
-	    "foundation.log.debug(\"Invisible on stdout\")\n"
-	    "C.log_enable_stdout(true)\n"
-	    "C.log_enable_prefix(true)\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
-	));
+	string_const_t testcode =
+	    string_const(STRING_CONST("local ffi = require(\"ffi\")\n"
+	                              "local foundation = require(\"foundation\")\n"
+	                              "local C = ffi.C\n"
+	                              "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_NONE)\n"
+	                              "foundation.log.debug(\"Testing log debug output\")\n"
+	                              "foundation.log.info(\"Testing log info output\")\n"
+	                              "foundation.log.warn(\"Testing log warning output\")\n"
+	                              "C.log_enable_prefix(false)\n"
+	                              "foundation.log.error(\"Testing log error output without prefix\")\n"
+	                              "C.log_enable_stdout(false)\n"
+	                              "foundation.log.debug(\"Invisible on stdout\")\n"
+	                              "C.log_enable_stdout(true)\n"
+	                              "C.log_enable_prefix(true)\n"
+	                              "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
 	EXPECT_EQ(error(), ERROR_SCRIPT);
@@ -134,23 +132,22 @@ DECLARE_TEST(foundation, environment) {
 
 	EXPECT_NE(env, 0);
 
-	string_const_t testcode = string_const(STRING_CONST(
-	    "local ffi = require(\"ffi\")\n"
-	    "local foundation = require(\"foundation\")\n"
-	    "local C = ffi.C\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_DEBUG)\n"
-	    "C.log_enable_prefix(false)\n"
-	    "foundation.log.info(\"Executable name: \" .. tostring(C.environment_executable_name()))\n"
-	    "local cmdline = \"\"\n"
-	    "local cmdline_tab = C.environment_command_line()\n"
-	    "local num = C.array_size(cmdline_tab)"
-	    "for i = 0, num-1 do\n"
-	    "  cmdline = cmdline .. \" \" .. tostring(cmdline_tab[i])\n"
-	    "end\n"
-	    "foundation.log.info(\"Command line:\" .. cmdline)\n"
-	    "C.log_enable_prefix(true)\n"
-	    "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"
-	));
+	string_const_t testcode = string_const(
+	    STRING_CONST("local ffi = require(\"ffi\")\n"
+	                 "local foundation = require(\"foundation\")\n"
+	                 "local C = ffi.C\n"
+	                 "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_DEBUG)\n"
+	                 "C.log_enable_prefix(false)\n"
+	                 "foundation.log.info(\"Executable name: \" .. tostring(C.environment_executable_name()))\n"
+	                 "local cmdline = \"\"\n"
+	                 "local cmdline_tab = C.environment_command_line()\n"
+	                 "local num = C.array_size(cmdline_tab)"
+	                 "for i = 0, num-1 do\n"
+	                 "  cmdline = cmdline .. \" \" .. tostring(cmdline_tab[i])\n"
+	                 "end\n"
+	                 "foundation.log.info(\"Command line:\" .. cmdline)\n"
+	                 "C.log_enable_prefix(true)\n"
+	                 "C.log_set_suppress(foundation.HASH_LUA, foundation.ERRORLEVEL_INFO)\n"));
 
 	EXPECT_EQ(lua_eval_string(env, STRING_ARGS(testcode)), LUA_OK);
 
@@ -169,14 +166,8 @@ test_foundation_declare(void) {
 }
 
 static test_suite_t test_foundation_suite = {
-	test_foundation_application,
-	test_foundation_memory_system,
-	test_foundation_config,
-	test_foundation_declare,
-	test_foundation_initialize,
-	test_foundation_finalize,
-	test_foundation_event
-};
+    test_foundation_application, test_foundation_memory_system, test_foundation_config, test_foundation_declare,
+    test_foundation_initialize,  test_foundation_finalize,      test_foundation_event};
 
 #if BUILD_MONOLITHIC
 
