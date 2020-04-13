@@ -600,7 +600,7 @@
 #define HASH_SYM_NETWORK_POLL_UPDATE_SOCKET static_hash_string("network_poll_update_socket", 26, 0x283308d4ed2ec23eULL)
 #define HASH_SYM_NETWORK_POLL_REMOVE_SOCKET static_hash_string("network_poll_remove_socket", 26, 0xdc4448db9306f2ceULL)
 #define HASH_SYM_NETWORK_POLL_HAS_SOCKET static_hash_string("network_poll_has_socket", 23, 0x2ff8f45699014b19ULL)
-#define HASH_SYM_NETWORK_POLL_NUM_SOCKETS static_hash_string("network_poll_num_sockets", 24, 0xcb8f46263891c312ULL)
+#define HASH_SYM_NETWORK_POLL_SOCKETS_COUNT static_hash_string("network_poll_sockets_count", 26, 0xceb7e5768330ba9aULL)
 #define HASH_SYM_NETWORK_POLL_SOCKETS static_hash_string("network_poll_sockets", 20, 0x6ba542fbab08b00bULL)
 #define HASH_SYM_NETWORK_POLL static_hash_string("network_poll", 12, 0xf2871d1e050c6107ULL)
 #define HASH_SYM_SOCKET_FINALIZE static_hash_string("socket_finalize", 15, 0x889d0fb09d1d7deULL)
@@ -769,12 +769,20 @@
 #define HASH_SYM_RESOURCE_SOURCE_MAP_ITERATE static_hash_string("resource_source_map_iterate", 27, 0x36567c35fe49c49ULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP_REDUCE static_hash_string("resource_source_map_reduce", 26, 0xd1389433e2bebd27ULL)
 #define HASH_SYM_RESOURCE_SOURCE_MAP_CLEAR static_hash_string("resource_source_map_clear", 25, 0xc59507322782e59fULL)
-#define HASH_SYM_RESOURCE_SOURCE_NUM_DEPENDENCIES \
-	static_hash_string("resource_source_num_dependencies", 32, 0x12dba7656ef3edc0ULL)
+#define HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES_COUNT \
+	static_hash_string("resource_source_dependencies_count", 34, 0xf08087a74fce8a55ULL)
 #define HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES \
 	static_hash_string("resource_source_dependencies", 28, 0xd486067ed64fb0d1ULL)
 #define HASH_SYM_RESOURCE_SOURCE_SET_DEPENDENCIES \
 	static_hash_string("resource_source_set_dependencies", 32, 0xa7fe76bdeafb6fc4ULL)
+#define HASH_SYM_RESOURCE_SOURCE_REVERSE_DEPENDENCIES_COUNT \
+	static_hash_string("resource_source_reverse_dependencies_count", 42, 0x3155e34f92cc3a42ULL)
+#define HASH_SYM_RESOURCE_SOURCE_REVERSE_DEPENDENCIES \
+	static_hash_string("resource_source_reverse_dependencies", 36, 0x3acda9e30aff3ab3ULL)
+#define HASH_SYM_RESOURCE_SOURCE_ADD_REVERSE_DEPENDENCY \
+	static_hash_string("resource_source_add_reverse_dependency", 38, 0x929048a00b379915ULL)
+#define HASH_SYM_RESOURCE_SOURCE_REMOVE_REVERSE_DEPENDENCY \
+	static_hash_string("resource_source_remove_reverse_dependency", 41, 0xea5475c2e677bd8cULL)
 #define HASH_SYM_RESOURCE_STREAM_OPEN_STATIC \
 	static_hash_string("resource_stream_open_static", 27, 0x6b9e0fa62ebbdf08ULL)
 #define HASH_SYM_RESOURCE_STREAM_OPEN_DYNAMIC \
@@ -790,8 +798,6 @@
 	static_hash_string("window_module_is_initialized", 28, 0x9f99362fac2f008dULL)
 #define HASH_SYM_WINDOW_MODULE_VERSION static_hash_string("window_module_version", 21, 0x38cebb71ec980f9eULL)
 #define HASH_SYM_WINDOW_CREATE static_hash_string("window_create", 13, 0x3345aec3d2dfff64ULL)
-#define HASH_SYM_WINDOW_ALLOCATE static_hash_string("window_allocate", 15, 0xe46d79947f68d9fbULL)
-#define HASH_SYM_WINDOW_INITIALIZE static_hash_string("window_initialize", 17, 0xb04ba6b04393ea4eULL)
 #define HASH_SYM_WINDOW_FINALIZE static_hash_string("window_finalize", 15, 0xbc9cf6a7c1e9f0f1ULL)
 #define HASH_SYM_WINDOW_DEALLOCATE static_hash_string("window_deallocate", 17, 0x9ea9a27d26b21251ULL)
 #define HASH_SYM_WINDOW_ADAPTER static_hash_string("window_adapter", 14, 0x45d4bf55378ed0ecULL)

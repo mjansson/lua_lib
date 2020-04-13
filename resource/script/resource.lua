@@ -130,9 +130,11 @@ void resource_source_map_all(resource_source_t*, hashmap_t*, bool);
 void resource_source_map_iterate(resource_source_t*, hashmap_t*, void*, resource_source_map_iterate_fn);
 void resource_source_map_reduce(resource_source_t*, hashmap_t*, void*, resource_source_map_reduce_fn);
 void resource_source_map_clear(hashmap_t*);
-size_t resource_source_num_dependencies(const uuid_t, uint64_t);
-size_t resource_source_dependencies(const uuid_t, uint64_t, uuid_t*, size_t);
-void resource_source_set_dependencies(const uuid_t, uint64_t, const uuid_t*, size_t);
+size_t resource_source_dependencies_count(const uuid_t, uint64_t);
+size_t resource_source_dependencies(const uuid_t, uint64_t, resource_dependency_t*, size_t);
+void resource_source_set_dependencies(const uuid_t, uint64_t, const resource_dependency_t*, size_t);
+size_t resource_source_reverse_dependencies_count(const uuid_t, uint64_t);
+size_t resource_source_reverse_dependencies(const uuid_t, uint64_t, resource_dependency_t*, size_t);
 
 stream_t* resource_stream_open_static(const uuid_t, uint64_t);
 stream_t* resource_stream_open_dynamic(const uuid_t, uint64_t);

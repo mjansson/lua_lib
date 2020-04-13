@@ -158,9 +158,13 @@ lua_symbol_load_resource(void) {
 	RESOURCE_SYM(resource_source_map_iterate, RESOURCE_SOURCE_MAP_ITERATE);
 	RESOURCE_SYM(resource_source_map_reduce, RESOURCE_SOURCE_MAP_REDUCE);
 	RESOURCE_SYM(resource_source_map_clear, RESOURCE_SOURCE_MAP_CLEAR);
-	RESOURCE_SYM(resource_source_num_dependencies, RESOURCE_SOURCE_NUM_DEPENDENCIES);
+	RESOURCE_SYM(resource_source_dependencies_count, RESOURCE_SOURCE_DEPENDENCIES_COUNT);
 	RESOURCE_SYM(resource_source_dependencies, RESOURCE_SOURCE_DEPENDENCIES);
 	RESOURCE_SYM(resource_source_set_dependencies, RESOURCE_SOURCE_SET_DEPENDENCIES);
+	RESOURCE_SYM(resource_source_reverse_dependencies_count, RESOURCE_SOURCE_REVERSE_DEPENDENCIES_COUNT);
+	RESOURCE_SYM(resource_source_reverse_dependencies, RESOURCE_SOURCE_REVERSE_DEPENDENCIES);
+	RESOURCE_SYM(resource_source_add_reverse_dependency, RESOURCE_SOURCE_ADD_REVERSE_DEPENDENCY);
+	RESOURCE_SYM(resource_source_remove_reverse_dependency, RESOURCE_SOURCE_REMOVE_REVERSE_DEPENDENCY);
 
 	RESOURCE_SYM(resource_stream_open_static, RESOURCE_STREAM_OPEN_STATIC);
 	RESOURCE_SYM(resource_stream_open_dynamic, RESOURCE_STREAM_OPEN_DYNAMIC);

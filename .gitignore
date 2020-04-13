@@ -250,3 +250,6 @@ lua/luajit/src/*.lib
 lua/luajit/src/*.dll
 
 lua/luajit/build/*
+
+#Imported resource source files
+resource/source

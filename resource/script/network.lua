@@ -66,7 +66,7 @@ bool network_poll_add_socket(network_poll_t*, socket_t*);
 void network_poll_update_socket(network_poll_t*, socket_t*);
 void network_poll_remove_socket(network_poll_t*, socket_t*);
 bool network_poll_has_socket(network_poll_t*, socket_t*);
-size_t network_poll_num_sockets(network_poll_t*);
+size_t network_poll_sockets_count(network_poll_t*);
 void network_poll_sockets(network_poll_t*, socket_t**, size_t);
 size_t network_poll(network_poll_t*, network_poll_event_t*, size_t, unsigned int);
 

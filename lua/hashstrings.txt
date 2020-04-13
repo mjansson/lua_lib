@@ -611,7 +611,7 @@ HASH_SYM_NETWORK_POLL_ADD_SOCKET        network_poll_add_socket
 HASH_SYM_NETWORK_POLL_UPDATE_SOCKET     network_poll_update_socket
 HASH_SYM_NETWORK_POLL_REMOVE_SOCKET     network_poll_remove_socket
 HASH_SYM_NETWORK_POLL_HAS_SOCKET        network_poll_has_socket
-HASH_SYM_NETWORK_POLL_NUM_SOCKETS       network_poll_num_sockets
+HASH_SYM_NETWORK_POLL_SOCKETS_COUNT     network_poll_sockets_count
 HASH_SYM_NETWORK_POLL_SOCKETS           network_poll_sockets
 HASH_SYM_NETWORK_POLL                   network_poll
 
@@ -757,9 +757,13 @@ HASH_SYM_RESOURCE_SOURCE_MAP_ALL              resource_source_map_all
 HASH_SYM_RESOURCE_SOURCE_MAP_ITERATE          resource_source_map_iterate
 HASH_SYM_RESOURCE_SOURCE_MAP_REDUCE           resource_source_map_reduce
 HASH_SYM_RESOURCE_SOURCE_MAP_CLEAR            resource_source_map_clear
-HASH_SYM_RESOURCE_SOURCE_NUM_DEPENDENCIES     resource_source_num_dependencies
+HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES_COUNT   resource_source_dependencies_count
 HASH_SYM_RESOURCE_SOURCE_DEPENDENCIES         resource_source_dependencies
 HASH_SYM_RESOURCE_SOURCE_SET_DEPENDENCIES     resource_source_set_dependencies
+HASH_SYM_RESOURCE_SOURCE_REVERSE_DEPENDENCIES_COUNT   resource_source_reverse_dependencies_count
+HASH_SYM_RESOURCE_SOURCE_REVERSE_DEPENDENCIES         resource_source_reverse_dependencies
+HASH_SYM_RESOURCE_SOURCE_ADD_REVERSE_DEPENDENCY       resource_source_add_reverse_dependency
+HASH_SYM_RESOURCE_SOURCE_REMOVE_REVERSE_DEPENDENCY    resource_source_remove_reverse_dependency
 
 HASH_SYM_RESOURCE_STREAM_OPEN_STATIC          resource_stream_open_static
 HASH_SYM_RESOURCE_STREAM_OPEN_DYNAMIC         resource_stream_open_dynamic

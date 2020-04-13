@@ -28,14 +28,14 @@ lua_read_stream(lua_State* state, void* user_data, size_t* size) {
 		return 0;
 	}
 
-	uint64_t num_read = stream_read(read->stream, read->chunk,
-	                                (read->remain > sizeof(read->chunk)) ? sizeof(read->chunk) : read->remain);
+	uint64_t bytes_read = stream_read(read->stream, read->chunk,
+	                                  (read->remain > sizeof(read->chunk)) ? sizeof(read->chunk) : read->remain);
 
 	if (size)
-		*size = (size_t)num_read;
-	read->remain -= num_read;
+		*size = (size_t)bytes_read;
+	read->remain -= bytes_read;
 
-	return num_read ? read->chunk : 0;
+	return bytes_read ? read->chunk : 0;
 }
 
 const char*

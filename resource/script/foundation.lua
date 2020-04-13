@@ -702,13 +702,13 @@ local function wrap_string_array_to_table(arr)
 end
 
 local function wrap_string_table_to_array(tab)
-	local num = 0
-	while tab[num+1] ~= nil do num = num + 1 end
-	local arr = C.array_allocate_string(num)
-	for i = 0, num-1 do
+	local count = 0
+	while tab[count+1] ~= nil do count = count + 1 end
+	local arr = C.array_allocate_string(count)
+	for i = 0, count-1 do
 		C.array_set_element_string(arr, i, C.string_clone(tab[i+1], #tab[i+1]))
 	end
-	return ffi.gc(arr, C.string_array_deallocate), num
+	return ffi.gc(arr, C.string_array_deallocate), count
 end
 
 local PREHASH_LUA = wrap_string_hash("lua")

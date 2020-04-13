@@ -65,7 +65,7 @@ lua_symbol_load_network(void) {
 	NETWORK_SYM(network_poll_update_socket, NETWORK_POLL_UPDATE_SOCKET);
 	NETWORK_SYM(network_poll_remove_socket, NETWORK_POLL_REMOVE_SOCKET);
 	NETWORK_SYM(network_poll_has_socket, NETWORK_POLL_HAS_SOCKET);
-	NETWORK_SYM(network_poll_num_sockets, NETWORK_POLL_NUM_SOCKETS);
+	NETWORK_SYM(network_poll_sockets_count, NETWORK_POLL_SOCKETS_COUNT);
 	NETWORK_SYM(network_poll_sockets, NETWORK_POLL_SOCKETS);
 	NETWORK_SYM(network_poll, NETWORK_POLL);
 
