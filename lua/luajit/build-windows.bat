@@ -1,4 +1,4 @@
-call D:\dev\vs2017\vc\Auxiliary\Build\vcvarsall.bat amd64
+REM call D:\dev\vs2017\vc\Auxiliary\Build\vcvarsall.bat amd64
 
 cd src
 call msvcbuild.bat gc64 static
